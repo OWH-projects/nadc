@@ -33,6 +33,7 @@ class Giver(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     canonical = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=65)
+    standdardname = models.CharField(max_length=65)
     address = models.CharField(max_length=75, null=True, blank=True)
     city = models.CharField(max_length=40, null=True, blank=True)
     state = models.CharField(max_length=40, null=True, blank=True)
@@ -40,15 +41,16 @@ class Giver(models.Model):
     contributor_type = models.CharField(max_length=15, null=True, blank=True)
     city = models.CharField(max_length=40, null=True, blank=True)    
 
-class CanonicalLookup(models.Model):
-    orig_id = models.CharField(max_length=20, null=True, blank=True)
-    our_id = models.CharField(max_length=20, null=True, blank=True)
-    our_name = models.CharField(max_length=30)
+#class CanonicalLookup(models.Model):
+#    orig_id = models.CharField(max_length=20, null=True, blank=True)
+#    our_id = models.CharField(max_length=20, null=True, blank=True)
+#    our_name = models.CharField(max_length=30)
     
 class Getter(models.Model):
     id = models.CharField(max_length=10, primary_key=True)
     canonical = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=65)
+    standardname = models.CharField(max_length=65)
     address = models.CharField(max_length=75, null=True, blank=True)
     city = models.CharField(max_length=40, null=True, blank=True)
     state = models.CharField(max_length=40, null=True, blank=True)
