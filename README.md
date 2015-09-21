@@ -1,3 +1,4 @@
+```
                    .___      
   ____ _____     __| _/____  
  /    \\__  \   / __ |/ ___\ 
@@ -5,6 +6,7 @@
 |___|  (____  /\____ |\___  >
      \/     \/      \/    \/ 
 
+```
 App to import, standardize and display contribution information from the Nebraska Accountability and Disclosure Commission.
 
 ##Import
