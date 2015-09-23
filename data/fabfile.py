@@ -5,7 +5,11 @@ from fabric.operations import *
 from canonical.canonical import CANON
 
 """
-This function rolls through four of the main contribution files and extracts IDs for contributors and donors. Returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump the list to a text file.
+
+This function rolls through four of the main contribution files and extracts IDs for contributors and donors. It returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump the list to a text file.
+
+sample command-line usage: fab getUniqueList:giver,yes
+
 """
 
 def getUniqueList(data_type, writeout="no"):
@@ -51,31 +55,40 @@ def getUniqueList(data_type, writeout="no"):
 
 """
 This function compares the list of unique getters to the NADC's top-level loopup committee table and returns a list of any discrepancies.
-
 """
         
 def whoAintWeKnowAbout():
     list_of_getters = getUniqueList("getter")
-    list_of_givers = getUniqueList("givers")
-    derp = []
+    committees_in_lookup = []
     with open("forma1.txt", "rb") as comm:
         reader = csv.reader(comm, delimiter="|")
         reader.next()
         for row in reader:
             getter_id = row[0]
-            derp.append(getter_id)
-        uniq_derp = set(derp)
-    u_derp = list(uniq_derp)
+            committees_in_lookup.append(getter_id)
+        uniq_comms = set(committees_in_lookup)
     not_in_a1 = []
     for id in list_of_getters:
-        if id not in u_derp:
+        if id not in list(uniq_comms):
             not_in_a1.append(id)
     if len(not_in_a1) > 0:
-        print not_in_a1
+        print "FOUND " + str(len(not_in_a1)) + " recipient IDs that weren't in the main lookup file."
+        togrep = "\|".join(not_in_a1)
+        local('grep "' + togrep + '" *.txt > committee_ids_we_aint_know_about.txt', capture=False)
     
-        
-        
-            
+"""
+This lil fella makes the actual lookup table for getters and givers.
+"""
+    
+def makeTables():
+    print "Hey bud maybe check to see if there is a grepped file that has committees to add manually."
+    local('csvcut -d "|" ')
+    list_of_givers = getUniqueList("givers")
+    with open("formXXXXXXX.txt", "rb") as f:
+        reader = csv.reader(comm, delimiter="|")
+        reader.next()
+        for row in reader:
+            print row
 
 def makeTables():
     print "Making lookup table ..."
