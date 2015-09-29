@@ -26,6 +26,24 @@ mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE 'formb5.txt' INTO TABLE canfin.b5 FIELDS TERMINATED BY '|' IGNORE 1 LINES;"
 printf "~~ loaded new data ~~\n\n"
 
-#fab makeTables
+#check for unknown committee IDs, manually add later to upload file
+fab whoAintWeKnowAbout
+printf "~~ Hey you maybe check to see if they's peeps we ain't know about in 'at 'er grepfile ~~\n\n"
 
-#fab loadData
+#make the lookup tables
+fab makeTables
+
+#sorting and cleanup
+cd toupload
+csvsort -c 1 getters.txt > getters_to_upload.txt
+rm getters.txt
+printf "~~ OK so now check getters_dupes.txt and manually clean up the handful of duplicate IDs in there ~~\n\n"
+
+#create mongo file
+fab stackItUp
+
+#dedupe that mongo file
+dedupeThatShizz
+
+#csvcut -c
+

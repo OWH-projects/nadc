@@ -2,24 +2,6 @@ from django.db import models
 from django.db.models import *
 from django.template.defaultfilters import slugify
 
-"""
-class Example(models.Model):
-    charfield = models.CharField(max_length=100, null=False, blank=False, primary_key=True)
-    intfield = models.IntegerField(null=True, blank=True)
-    boolfield = models.NullBooleanField()
-    decimalfield = models.DecimalField(null=True, max_digits=12, decimal_places=2, blank=True)
-    textfield = models.TextField(null=True, blank=True)
-
-    class Meta:
-        db_table = u'example'
-
-    def __unicode__(self):
-        return self.charfield
-
-    def save(self):
-        print self.charfield
-        super(Example, self).save()
-"""
 SOURCE_CHOICES = (
         ('B1AB', 'B1AB'),
         ('B2A', 'B2A'),
@@ -29,7 +11,7 @@ SOURCE_CHOICES = (
     )
 
 class Giver(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
+    nadcid = models.CharField(max_length=10)
     canonical = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=65)
     standard_name = models.CharField(max_length=65)
@@ -51,13 +33,11 @@ class Getter(models.Model):
     recipient_type = models.CharField(max_length=15, null=True, blank=True)
 
 class Donation(models.Model):
-    donor = models.ForeignKey(Giver)
+    nadcid = models.ForeignKey(Giver)
     recipient = models.ForeignKey(Getter)
     cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     pledge = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind_desc = models.TextField(null=True, blank=True)
     date = models.DateField()
-    intermediary = models.CharField(max_length=60, null=True, blank=True) #If earmarked donation, group through which donation was funneled
     source = models.CharField(max_length=5, choices=SOURCE_CHOICES)
-    
