@@ -11,7 +11,7 @@ SOURCE_CHOICES = (
     )
 
 class Giver(models.Model):
-    nadcid = models.CharField(max_length=10)
+    nadcid = models.CharField(max_length=10, primary_key=True)
     canonical = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=65)
     standard_name = models.CharField(max_length=65)
@@ -22,7 +22,7 @@ class Giver(models.Model):
     contributor_type = models.CharField(max_length=15, null=True, blank=True)
 
 class Getter(models.Model):
-    id = models.CharField(max_length=10, primary_key=True)
+    nadcid = models.CharField(max_length=10, primary_key=True)
     canonical = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=65)
     standard_name = models.CharField(max_length=65)
@@ -33,7 +33,7 @@ class Getter(models.Model):
     recipient_type = models.CharField(max_length=15, null=True, blank=True)
 
 class Donation(models.Model):
-    nadcid = models.ForeignKey(Giver)
+    donor = models.ForeignKey(Giver)
     recipient = models.ForeignKey(Getter)
     cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)

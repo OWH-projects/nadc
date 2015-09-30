@@ -1,5 +1,5 @@
 import os
-import csv
+import csvkit
 import fabric
 from fabric.api import *
 from fabric.operations import *
@@ -58,6 +58,30 @@ def getUniqueList(data_type, writeout="no"):
         pass
 
 
+
+"""
+This function creates a file of unique recipients, ready to load into the getter model, and a file with the handful of duplicates that exist.
+--> fab makeTables
+
+"""
+        
+def makeTables():
+    f = open("toupload/getters.txt", "wb")
+    x = open("toupload/getters_dupes.txt", "wb")
+    ls = []
+    with open("forma1.txt", "rb") as comm:
+        reader = csv.reader(comm, delimiter="|")
+        reader.next()
+        for row in reader:
+            ls.append(row[0])
+            r = [row[0].strip(),"",row[1].strip(),"",row[2].strip(),row[3].strip(),row[4].strip(),row[5].strip(),row[6].strip()]
+            f.write("|".join(r) + "\n")
+    f.close()
+    dupes = [item for item, count in collections.Counter(ls).items() if count > 1]
+    if len(dupes) > 0:
+        for i in dupes:
+            x.write(i + "\n")
+    x.close()
         
 """
 This function compares the list of unique recipients to the NADC lookup table, forma1.txt, and writes out a list of any discrepancies to a text file.
@@ -169,54 +193,13 @@ def stackItUp():
     f.close()
     
 
-def dedupeThatShizz():
+"""
+Homeboy here kicks out duplicates. Pandas!
+--> fab dedupeDonations
+
+"""
+
+def dedupeDonations():
     toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/alldonations.txt", delimiter="|", low_memory=False)
     deduped = toclean.drop_duplicates()
-    deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|", quotechar="")
-    
-"""
-This lil fella makes the main lookup tables for givers and getters.
---> fab makeTables
-
-"""
-    
-def makeTables():
-    f = open("toupload/getters.txt", "wb")
-    x = open("toupload/getters_dupes.txt", "wb")
-    ls = []
-    with open("forma1.txt", "rb") as comm:
-        reader = csv.reader(comm, delimiter="|")
-        reader.next()
-        for row in reader:
-            ls.append(row[0])
-            r = [row[0].strip(),"",row[1].strip(),"",row[2].strip(),row[3].strip(),row[4].strip(),row[5].strip(),row[6].strip()]
-            f.write("|".join(r) + "\n")
-    f.close()
-    dupes = [item for item, count in collections.Counter(ls).items() if count > 1]
-    if len(dupes) > 0:
-        for i in dupes:
-            x.write(i + "\n")
-    x.close()
-    
-    master_giver_ls = []
-    
-    
-    
-    """
-    now:
-    - open each file
-    - 
-    
-    """
-    
-    #list_of_getters = getUniqueList("getter")
-    
-
-    
-    """
-    with open("formXXXXXXX.txt", "rb") as f:
-        reader = csv.reader(comm, delimiter="|")
-        reader.next()
-        for row in reader:
-            print row
-    """
+    deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")

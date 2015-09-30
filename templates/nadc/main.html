@@ -1,14 +1,50 @@
 {% extends 'nadc/base.html' %}
 {% load humanize %}
-
-{% block title %}nadc{% endblock%}
+{% load searchwidget %}
 
 {% block social %}{% endblock %}
 
-{% block morestyles %}{% endblock %}
-
-{% block content %}
-    <div class="container" style="margin-top:50px;"><h1>Hello, world</h1></div>
+{% block morestyles %}
 {% endblock %}
 
-{% block scripts %}{% endblock %}
+{% block content %}
+<div class="jumbotron" style="padding-top:60px; padding-bottom: 30px;">
+    <div class="container">
+        <h1 class="bold"><span class="sf">c</span> Campaign finance</h1>
+        <p class="lead">blah blah blah lead-in text for {{ DONATION_TOTAL }} donations to political causes in Nebraska since {{ MIN_YEAR }} SOME YEAR</p>
+        <p class="lead"><a id="tw"><i class="fa fa-twitter"></i></a>&emsp;<a id="fb"><i class="fa fa-facebook-square"></i></a></p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+        summary chart<br>
+        top donors<br>
+        top recipients<br>
+        </div>
+        <div class="col-md-4">
+            {% returnsearch %}
+            <p class="small pull-right"><a href="/campaign-finance/about">About this data</a></p>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+        var $tw = $('#tw');
+        var $fb = $('#fb');
+        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL }} Nebraska campaign finance records since {{ MIN_YEAR }} SOME YEAR: http://www.dataomaha.com/campaign-finance");
+        $tw.attr({
+            'href': msg,
+            'target': '_blank'
+        });
+        $fb.attr({
+            'href':'http://www.facebook.com/sharer.php?u=http://www.dataomaha.com/campaign-finance',
+            'target': '_blank'           
+        });        
+</script>
+{% endblock %}

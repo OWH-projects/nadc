@@ -28,9 +28,9 @@ printf "~~ loaded new data ~~\n\n"
 
 #check for unknown committee IDs, manually add later to upload file
 fab whoAintWeKnowAbout
-printf "~~ Hey you maybe check to see if they's peeps we ain't know about in 'at 'er grepfile ~~\n\n"
+printf "~~ Hey there maybe check to see if we got peeps we ain't know about in 'at 'er grepfile ~~\n\n"
 
-#make the lookup tables
+#make the lookup tables for recipients
 fab makeTables
 
 #sorting and cleanup
@@ -45,5 +45,4 @@ fab stackItUp
 #dedupe that mongo file
 dedupeThatShizz
 
-#csvcut -c
 
