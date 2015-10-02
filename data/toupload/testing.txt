@@ -1,6 +1,0 @@
-1|12|matt wynn|1|12343 sdfkjhsdf|omaha|Nebraska|68132|individual
-2|423|cody j winchester|2|12343 sdfkjhsdf|omaha|Nebraska|68132|party committee
-3|25643|matthew wynn|1|12343 sdfkjhsdf|omaha|Nebraska|68104|I dunno
-4|dsd23|some more weird character$|3|12343 sdfkjhsdf|omaha|NE|5579|soemthing else
-5|423|Daniel Q. Wheaton|4|12343 sdfkjhsdf|omaha|IA|12|wekl;jhdf3489^*()$
-

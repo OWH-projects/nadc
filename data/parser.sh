@@ -24,25 +24,28 @@ mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE 'formb3.txt' INTO TABLE canfin.b3 FIELDS TERMINATED BY '|' IGNORE 1 LINES;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE 'formb4a.txt' INTO TABLE canfin.b4a FIELDS TERMINATED BY '|' IGNORE 1 LINES;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE 'formb5.txt' INTO TABLE canfin.b5 FIELDS TERMINATED BY '|' IGNORE 1 LINES;"
-printf "~~ loaded new data ~~\n\n"
+printf "~~ loaded new data into analysis tables ~~\n\n"
 
-#check for unknown committee IDs, manually add later to upload file
+#dedupe getters into toupload/getters.txt
+fab dedupeGetters
+printf "~~ deduped getters ~~\n\n"
+
+#check for unknown committee IDs, append to toupload/getters.txt
 fab whoAintWeKnowAbout
-printf "~~ Hey there maybe check to see if we got peeps we ain't know about in 'at 'er grepfile ~~\n\n"
+printf "~~ appended stray committees ~~\n\n"
 
-#make the lookup tables for recipients
-fab makeTables
-
-#sorting and cleanup
-cd toupload
-csvsort -c 1 getters.txt > getters_to_upload.txt
-rm getters.txt
-printf "~~ OK so now check getters_dupes.txt and manually clean up the handful of duplicate IDs in there ~~\n\n"
-
-#create mongo file
+#create mongo file called alldonations.txt
 fab stackItUp
+printf "~~ created mongo file of donations ~~\n\n"
 
-#dedupe that mongo file
-dedupeThatShizz
+#dedupe donations from alldonations.txt
+fab dedupeDonations
+printf "~~ deduped donations ~~\n\n"
 
+# dedupe givers from alldonations.txt
+fab dedupeGivers
+printf "~~ deduped givers ~~\n\n"
 
+# dedupe givers from alldonations.txt
+fab loadData
+printf "~~ loaded data ~~\n\n"

@@ -5,10 +5,13 @@ from myproject.nadc.models import *
 from django.http import HttpResponse
 from django.db.models import F
 
-DONATION_TOTAL = Donation.objects.all().count()
+DONATION_TOTAL = Donation.objects.count()
 
 def Main(request):
-    dictionaries = {'DONATION_TOTAL':DONATION_TOTAL, }
+    #FIX LATER -- GROUP ON CANONICAL ONCE THAT ISH GETS SORTED
+    top10 = Donation.objects.values("donor_id", "donor_id__name").annotate(totes=Sum("cash")).order_by("-cash")[:10]
+    byyear = Donation.objects.values('donation_year').annotate(sum=Sum('cash'))
+    dictionaries = {'DONATION_TOTAL':DONATION_TOTAL, 'top10':top10,'byyear':byyear,}
     return render_to_response('nadc/main.html', dictionaries)
     
 def About(request):

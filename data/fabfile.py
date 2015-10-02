@@ -7,15 +7,15 @@ from canonical.canonical import CANON
 import collections
 import pandas as pd
 
+fabric.state.output.status = False
+
 files_to_roll_through = [
-        {'filename': 'formb1ab.txt', 'giver_col':4, 'getter_col':1},
+        {'filename': 'formb1ab.txt', 'giver_col':4, 'getter_col':1, 'getter_name':0},
         {'filename': 'formb2a.txt', 'giver_col':2, 'getter_col':0},
         {'filename': 'formb4a.txt', 'giver_col':2, 'getter_col':0},
-        {'filename': 'formb5.txt', 'giver_col':7, 'getter_col':1},
-    ]
-
+        {'filename': 'formb5.txt', 'giver_col':7, 'getter_col':1, 'getter_name':0},
+    ]    
     
-
 """
 This function rolls through four of the main contribution files and extracts IDs for contributors and donors and returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump to a text file.
 --> fab getUniqueList:giver,yes
@@ -27,7 +27,7 @@ def getUniqueList(data_type, writeout="no"):
     if data_type == "giver":
         for thing in files_to_roll_through:
             with open(thing['filename'], 'rb') as f:
-                reader = csv.reader(f, delimiter="|")
+                reader = csvkit.reader(f, delimiter="|")
                 reader.next()
                 for row in reader:
                     giver_id = row[thing['giver_col']]
@@ -42,7 +42,7 @@ def getUniqueList(data_type, writeout="no"):
     elif data_type == "getter":
         for thing in files_to_roll_through:
             with open(thing['filename'], 'rb') as f:
-                reader = csv.reader(f, delimiter="|")
+                reader = csvkit.reader(f, delimiter="|")
                 reader.next()
                 for row in reader:
                     getter_id = row[thing['getter_col']]
@@ -60,31 +60,28 @@ def getUniqueList(data_type, writeout="no"):
 
 
 """
-This function creates a file of unique recipients, ready to load into the getter model, and a file with the handful of duplicates that exist.
+This function creates a file of unique recipients.
 --> fab makeTables
 
 """
         
-def makeTables():
-    f = open("toupload/getters.txt", "wb")
-    x = open("toupload/getters_dupes.txt", "wb")
-    ls = []
-    with open("forma1.txt", "rb") as comm:
-        reader = csv.reader(comm, delimiter="|")
-        reader.next()
-        for row in reader:
-            ls.append(row[0])
-            r = [row[0].strip(),"",row[1].strip(),"",row[2].strip(),row[3].strip(),row[4].strip(),row[5].strip(),row[6].strip()]
-            f.write("|".join(r) + "\n")
-    f.close()
-    dupes = [item for item, count in collections.Counter(ls).items() if count > 1]
-    if len(dupes) > 0:
-        for i in dupes:
-            x.write(i + "\n")
-    x.close()
-        
+def dedupeGetters():
+    toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/forma1.txt", delimiter="|", low_memory=False)
+    deduped = toclean.drop_duplicates(subset="Committee ID Number")
+    deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
+    with hide('running', 'stdout', 'stderr'):
+        local('csvcut -H -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | sed \'1d\' > toupload/getters.txt', capture=False)
+        local('rm deduped-getters.txt', capture=False)
+
+
 """
-This function compares the list of unique recipients to the NADC lookup table, forma1.txt, and writes out a list of any discrepancies to a text file.
+This function does a lot of things. It:
+- compares the list of unique recipients to the NADC lookup table (forma1.txt),
+- finds any IDs that don't exist in the lookup table,
+- captures a newline-separated grep string of the files in which those IDs are found,
+- captures the name and ID of each 
+
+
 --> fab whoAintWeKnowAbout
 
 """
@@ -93,7 +90,7 @@ def whoAintWeKnowAbout():
     list_of_getters = getUniqueList("getter")
     committees_in_lookup = []
     with open("forma1.txt", "rb") as comm:
-        reader = csv.reader(comm, delimiter="|")
+        reader = csvkit.reader(comm, delimiter="|")
         reader.next()
         for row in reader:
             getter_id = row[0]
@@ -104,10 +101,30 @@ def whoAintWeKnowAbout():
         if id not in list(uniq_comms):
             not_in_a1.append(id)
     if len(not_in_a1) > 0:
-        print "Found " + str(len(not_in_a1)) + " recipient IDs that weren't in the main lookup file."
-        togrep = "\|".join(not_in_a1)
-        local('grep "' + togrep + '" *.txt > toupload/committee_ids_we_aint_know_about.txt', capture=False)
-    
+        ls= []
+        done = []
+        for i in not_in_a1:
+            with hide('running', 'stdout', 'stderr'):
+                grepstring = local('grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt', capture=True)
+                for dude in grepstring.split("\n"):
+                    r = dude.split("|")
+                    file = r[0].split(":")[0]
+                    for x in files_to_roll_through:
+                        if x['filename'] == file:
+                            getter_id = r[x['getter_col']]
+                            if getter_id not in done:
+                                done.append(getter_id)
+                                try:
+                                    getter_name = r[x['getter_name']].split(":")[1].strip()
+                                except:
+                                    getter_name = ""
+                                ls.append([getter_id, getter_name])
+        with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
+            for q in ls:
+                comm_id = q[0]
+                comm_name = q[1]
+                outlist = [comm_id, comm_name, '', '', '', '', '']
+                x.write("|".join(outlist) + "\n")
 
     
 """
@@ -127,14 +144,13 @@ def lookItUp(str, param):
     
 def stackItUp():
 
-    #f = open("donors_flattened.txt", "wb")
     headers = [ "giver_id", "canonical_id", "giver_name", "giver_canonical_name", "giver_address", "giver_city", "giver_state", "giver_zip", "giver_type", "getter_id", "cash_donation", "inkind_amount", "pledge_amount", "inkind_desc", "donation_date" ]
     
     with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
         alldonations = []
 
         #do b1ab
-        reader_b1ab = csv.reader(b1ab, delimiter="|")
+        reader_b1ab = csvkit.reader(b1ab, delimiter="|")
         reader_b1ab.next()
         for row in reader_b1ab:
             name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())
@@ -143,7 +159,7 @@ def stackItUp():
             alldonations.append(standardrow)
         
         #do b5
-        reader_b5= csv.reader(b5, delimiter="|")
+        reader_b5= csvkit.reader(b5, delimiter="|")
         reader_b5.next()
         interimlist = []      
         for row in reader_b5:
@@ -164,25 +180,28 @@ def stackItUp():
                 pledge = row[11]
                 interimlist.append(row)
             else:
-                continue
+                cash = row[11]
+                inkind = ""
+                pledge = ""
+                interimlist.append(row)
         for row in interimlist:
-            r = [ row[7], str(lookItUp(row[7],"canonicalid")), " ".join(row[15].split()), str(lookItUp(row[15],"canonicalname")), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", str(row[10]) ]
+            r = [ row[7], str(lookItUp(row[7],"canonicalid")), " ".join(row[15].split()), str(lookItUp(row[7],"canonicalname")), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", str(row[10]) ]
             standardrow = "|".join(r) + "\n"
             alldonations.append(standardrow)
                     
         #do b2a
-        reader_b2a = csv.reader(b2a, delimiter="|")
+        reader_b2a = csvkit.reader(b2a, delimiter="|")
         reader_b2a.next()
         for row in reader_b2a:
-            r = [ row[2], str(lookItUp(row[2],"canonicalid")), " ".join(row[7].split()), str(lookItUp(row[7],"canonicalname")), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", str(row[1]) ]
+            r = [ row[2], str(lookItUp(row[2],"canonicalid")), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname")), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", str(row[1]) ]
             standardrow = "|".join(r) + "\n"
             alldonations.append(standardrow)
            
         #do b4a
-        reader_b4a = csv.reader(b4a, delimiter="|")
+        reader_b4a = csvkit.reader(b4a, delimiter="|")
         reader_b4a.next()
         for row in reader_b4a:
-            r = [ row[2], str(lookItUp(row[2],"canonicalid")), " ".join(row[7].split()), str(lookItUp(row[7],"canonicalname")), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", str(row[1]) ]
+            r = [ row[2], str(lookItUp(row[2],"canonicalid")), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname")), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", str(row[1]) ]
             standardrow = "|".join(r) + "\n"
             alldonations.append(standardrow)
 
@@ -203,3 +222,45 @@ def dedupeDonations():
     toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/alldonations.txt", delimiter="|", low_memory=False)
     deduped = toclean.drop_duplicates()
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
+    local('csvcut -d "|" -c cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id deduped.csv | csvformat -D "|" > toupload/donations.txt', capture=False)
+    
+def dedupeGivers():
+    #Make a table of all givers, with dupes
+    local('csvsort -d "|" -c donation_date deduped.csv | csvcut -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" > rawgivers.txt', capture=False)
+    
+    #Now let's go through that and get a list of every NADC id
+    rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
+    nadcids = []
+    for row in rawgivers:
+        if row[0] not in nadcids:
+            nadcids.append(row[0])
+            
+    #For every id, we need to find the most detailed row to keep. 
+    mastergivers = []
+    for idx, id in enumerate(nadcids):
+        print str(idx)
+        rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
+        #print "id number " + str(id)
+        matches = []
+        for row in rawgivers:
+            if row[0] == id:
+                matches.append(row)
+        #print "We've got " + str(len(matches)) + " matches"
+        for row in matches:
+            master = None
+            if len(row[3]) > 1 and len(row[4]) > 1 and len(row[5]) > 1:
+                if master == None:
+                    master = row
+            else:
+                if master == None:
+                    master = row
+        mastergivers.append(master)
+    with open("/home/apps/myproject/myproject/nadc/data/toupload/givers.txt", "wb") as f:
+        for row in mastergivers:
+            #print row
+            standardrow = "|".join(row) + "\n"
+            f.write(standardrow)
+    f.close()
+    
+def loadData():
+    local('cd /home/apps/myproject/ && python2.7 manage.py load_nadc', capture=False)

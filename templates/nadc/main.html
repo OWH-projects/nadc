@@ -5,36 +5,129 @@
 {% block social %}{% endblock %}
 
 {% block morestyles %}
+<style>
+#chart { width: 100%; height: 250px; margin-bottom:30px;}
+h3 { margin-top:0px; }
+.item { margin-bottom:40px; }
+</style>
 {% endblock %}
 
 {% block content %}
+
 <div class="jumbotron" style="padding-top:60px; padding-bottom: 30px;">
     <div class="container">
-        <h1 class="bold"><span class="sf">c</span> Campaign finance</h1>
-        <p class="lead">blah blah blah lead-in text for {{ DONATION_TOTAL }} donations to political causes in Nebraska since {{ MIN_YEAR }} SOME YEAR</p>
+        <h1 class="bold">Campaign finance</h1>
+        <p class="lead">blah blah blah lead-in text for {{ DONATION_TOTAL }} donations to political causes in <span class="sf">c</span> since <span class="minyear"></span></p>
         <p class="lead"><a id="tw"><i class="fa fa-twitter"></i></a>&emsp;<a id="fb"><i class="fa fa-facebook-square"></i></a></p>
     </div>
 </div>
 
-<div class="container">
+<div class="container" style="margin-bottom:50px;">
     <div class="row">
         <div class="col-md-8">
-        summary chart<br>
-        top donors<br>
-        top recipients<br>
+        
+        <div id="barchart" class="item">
+            <h3>Political giving, <span class="minyear"></span> to <span class="maxyear"></span></h3>
+            <div id="chart"></div>
         </div>
-        <div class="col-md-4">
+        
+        <div id="topdonors" class="item">
+            <h3>Top donors</h3>
+            <table class="table">{% for thing in top10 %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/donor/{{ thing.donor_id}}">{{ thing.donor_id__name }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+            </table>
+        </div>
+        
+        <div id="toprecips" class="item">
+            <h3>Top recipients</h3>
+        </div>
+        
+        </div>
+    <div class="col-md-4">
             {% returnsearch %}
             <p class="small pull-right"><a href="/campaign-finance/about">About this data</a></p>
         </div>
     </div>
 </div>
 
-
 {% endblock %}
 
 {% block scripts %}
+<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.min.js"></script>
+<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
 <script>
+    var getYear = function(y) {
+        return new Date(y, 0, 1).getTime();
+    };
+    
+    var addCommas = function(nStr) {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    };
+
+    var formatter = function(val, axis) {
+        return addCommas(val);
+    };
+    
+    var by_year = [{% for dude in byyear %}{"year":{{ dude.donation_year }}, "sum":{{ dude.sum }}}{% if not forloop.last %},{% endif %}{% endfor%}];
+
+    var d1 = [];
+    
+    _.each(by_year, function(d) {
+        d1.push([getYear(d.year), d.sum]);
+    });
+    
+    var minyear = _.min(_.pluck(by_year, "year"));
+    var maxyear = _.max(_.pluck(by_year, "year"));
+    
+    $('.minyear').text(minyear);
+    $('.maxyear').text(maxyear);
+    
+    var chartIt = function() {
+        $.plot($("#chart"), [d1], {
+            series: {
+                bars: {
+                    show: true,
+                    fill: true,
+                    fillColor: '#eef5fa',
+                    align: "center"
+                },
+              color: "#fffff8"
+            },
+            bars: { barWidth: 60*60*24*365*1000 },
+            shadowSize: 0,
+            xaxis: {
+                mode: "time",
+                tickLength: 0
+            },
+            yaxis: {
+                tickFormatter: formatter
+            },        
+            grid: {
+                borderWidth: 0.5,
+                axisMargin: 0,
+                borderColor: '#eee',
+                color: '#eee',
+                labelMargin:15
+                }
+        });
+    };
+
+    $(document).ready(function() {
+        chartIt();
+    });
+        
+    window.onresize = function() {
+        chartIt();
+    };
+
         var $tw = $('#tw');
         var $fb = $('#fb');
         var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL }} Nebraska campaign finance records since {{ MIN_YEAR }} SOME YEAR: http://www.dataomaha.com/campaign-finance");
