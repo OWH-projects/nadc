@@ -203,6 +203,7 @@ def stackItUp():
                 r = ["", row[4], str(lookItUp(row[4],"canonicalid", name)), name, lookItUp(row[4],"canonicalname", name), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[3]), str(row[1]), getFloat(str(row[6])), getFloat(str(row[7])), getFloat(str(row[8])), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
+        print "B1AB done: " + str(len(alldonations))
         
         #do b5
         reader_b5= csvkit.reader(b5, delimiter="|")
@@ -240,11 +241,12 @@ def stackItUp():
                     inkind = ""
                     pledge = ""
                     interimlist.append(row)
-            for row in interimlist:
-                r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), " ".join(row[15].split()), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", d, d.split("-")[0] ]
-                standardrow = "|".join(r)
-                alldonations.append(standardrow)
-                    
+        for row in interimlist:
+            r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), " ".join(row[15].split()), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", d, d.split("-")[0] ]
+            standardrow = "|".join(r)
+            alldonations.append(standardrow)
+        print "B5 done: " + str(len(alldonations))
+        
         #do b2a
         reader_b2a = csvkit.reader(b2a, delimiter="|")
         reader_b2a.next()
@@ -262,7 +264,8 @@ def stackItUp():
                 r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r) + "\n"
                 alldonations.append(standardrow)
-           
+        print "2A done: " + str(len(alldonations))
+        
         #do b4a
         reader_b4a = csvkit.reader(b4a, delimiter="|")
         reader_b4a.next()
@@ -280,7 +283,8 @@ def stackItUp():
                 r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
-                
+        print "B4A done: " + str(len(alldonations))
+        
     if len(rows_with_new_bad_dates) > 0:
         print "Got some records with bad dates -- I'll hang here while you add them to canonical.py:"
         for thing in rows_with_new_bad_dates:
@@ -288,7 +292,9 @@ def stackItUp():
         raw_input("Press any key when you're ready to continue.")
     else:
         print "All the dates check out. Moving on ..."
-
+    
+    print "Final length of alldonations: " + str(len(alldonations))
+    
     with open("/home/apps/myproject/myproject/nadc/data/alldonations.txt", "wb") as f:
         f.write("|".join(headers) + "\n")
         for row in alldonations:

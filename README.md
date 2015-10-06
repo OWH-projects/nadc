@@ -11,9 +11,9 @@
 An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
 Dependencies: 
-[csvkit](https://csvkit.readthedocs.org/en/0.9.1/)
-[pandas!](http://pandas.pydata.org/pandas-docs/stable/)
-[fabric](http://www.fabfile.org/)
+- [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
+- [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
+- [fabric](http://www.fabfile.org/)  
 
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>
@@ -57,7 +57,7 @@ Susan Lorenz at the Nebraska Accountability and Disclosure Commission told us th
 Very few records have data entry problems with dates. We added these to a dictionary in canonical and they are fixed on import.
 Since we can't predict the ways dates will be screwed up in the future, we halt import on dates that don't exist yet aren't in canonical.
 
-##Purposeful duplication
+###Purposeful duplication
 Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas deduplication.
 
 
