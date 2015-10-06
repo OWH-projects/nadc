@@ -3,10 +3,10 @@ import csvkit
 import fabric
 from fabric.api import *
 from fabric.operations import *
-from canonical.canonical import *
 import collections
 import pandas as pd
 import datetime
+from canonical.canonical import *
 
 fabric.state.output.status = False
 
@@ -181,10 +181,9 @@ def stackItUp():
     headers = [ "id", "giver_id", "canonical_id", "giver_name", "giver_canonical_name", "giver_address", "giver_city", "giver_state", "giver_zip", "giver_type", "getter_id", "cash_donation", "inkind_amount", "pledge_amount", "inkind_desc", "donation_date", "donation_year" ]
     
     rows_with_new_bad_dates = []
-    
-    with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
-        alldonations = []
+    alldonations = []
 
+    with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
         #do b1ab
         reader_b1ab = csvkit.reader(b1ab, delimiter="|")
         reader_b1ab.next()
@@ -203,7 +202,6 @@ def stackItUp():
                 r = ["", row[4], str(lookItUp(row[4],"canonicalid", name)), name, lookItUp(row[4],"canonicalname", name), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[3]), str(row[1]), getFloat(str(row[6])), getFloat(str(row[7])), getFloat(str(row[8])), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
-        print "B1AB done: " + str(len(alldonations))
         
         #do b5
         reader_b5= csvkit.reader(b5, delimiter="|")
@@ -245,7 +243,6 @@ def stackItUp():
             r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), " ".join(row[15].split()), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", d, d.split("-")[0] ]
             standardrow = "|".join(r)
             alldonations.append(standardrow)
-        print "B5 done: " + str(len(alldonations))
         
         #do b2a
         reader_b2a = csvkit.reader(b2a, delimiter="|")
@@ -264,7 +261,6 @@ def stackItUp():
                 r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r) + "\n"
                 alldonations.append(standardrow)
-        print "2A done: " + str(len(alldonations))
         
         #do b4a
         reader_b4a = csvkit.reader(b4a, delimiter="|")
@@ -283,24 +279,19 @@ def stackItUp():
                 r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
-        print "B4A done: " + str(len(alldonations))
         
     if len(rows_with_new_bad_dates) > 0:
-        print "Got some records with bad dates -- I'll hang here while you add them to canonical.py:"
+        print "Got some records with bad dates. Go fix this in canonical.py and rerun parser.sh:"
         for thing in rows_with_new_bad_dates:
             print thing
-        raw_input("Press any key when you're ready to continue.")
+        local("killall parser.sh", capture=False)
     else:
-        print "All the dates check out. Moving on ..."
-    
-    print "Final length of alldonations: " + str(len(alldonations))
-    
-    with open("/home/apps/myproject/myproject/nadc/data/alldonations.txt", "wb") as f:
-        f.write("|".join(headers) + "\n")
-        for row in alldonations:
-            final = str(row) + "\n"
-            f.write(final)
-    f.close()
+        with open("/home/apps/myproject/myproject/nadc/data/alldonations.txt", "wb") as f:
+            f.write("|".join(headers) + "\n")
+            for row in alldonations:
+                final = str(row) + "\n"
+                f.write(final)
+        f.close()
     
 
 """
