@@ -19,7 +19,6 @@ files_to_roll_through = [
     
 """
 A helper function to test whether a date sucks and is bad, and one to return "0.0" instead of a string.
-
 """
 
 def validDate(datestring):
@@ -44,15 +43,11 @@ def getFloat(i):
         return "0.0"
     else:
         return i
-    
-
-    
 
     
 """
 This function rolls through the four main contribution files, extracts IDs for contributors and donors and returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump to a text file.
 --> fab getUniqueList:giver,yes
-
 """
 
 def getUniqueList(data_type, writeout="no"):
@@ -91,11 +86,9 @@ def getUniqueList(data_type, writeout="no"):
         pass
 
 
-
 """
 This function creates a file of unique recipients -- this is our lookup table for the Getters model.
 --> fab makeTables
-
 """
         
 def dedupeGetters():
@@ -115,13 +108,12 @@ This function does a lot of things. It:
 - captures the name and ID of each in a list
 - appends to the master recipient file
 --> fab whoAintWeKnowAbout
-
 """
         
 def whoAintWeKnowAbout():
     list_of_getters = getUniqueList("getter")
     committees_in_lookup = []
-    with open("forma1.txt", "rb") as comm:
+    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt", "rb") as comm:
         reader = csvkit.reader(comm, delimiter="|")
         reader.next()
         for row in reader:
@@ -137,7 +129,7 @@ def whoAintWeKnowAbout():
         done = []
         for i in not_in_a1:
             with hide('running', 'stdout', 'stderr'):
-                grepstring = local('grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt', capture=True)
+                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt', capture=True)
                 for dude in grepstring.split("\n"):
                     r = dude.split("|")
                     file = r[0].split(":")[0]
@@ -160,12 +152,57 @@ def whoAintWeKnowAbout():
 
     
 """
+This function parses the table of loan information into something our database model can ingest.
+
+--> fab parseLoans
+"""
+
+def parseCands():
+    getters = getUniqueList("getter")
+    with open("/home/apps/myproject/myproject/nadc/data/forma1cand.txt", "rb") as f:
+        reader = csvkit.reader(f, delimiter="|")
+        reader.next()
+        x = open("/home/apps/myproject/myproject/nadc/data/toupload/candidates.txt", "wb")
+        for row in reader:
+            if row[0] in getters:
+                cand_id = row[2]
+                comm_id = row[0]
+                cand_name = ' '.join((row[4] + " " + row[5] + " " + row[3].strip()).split())
+                print cand_name
+                r = ["", cand_id, cand_name, comm_id ]
+                x.write("|".join(r) + "\n")
+        x.close()
+                
+
+
+def parseLoans():
+    getters = getUniqueList("getter")
+    with open("/home/apps/myproject/myproject/nadc/data/formb1c.txt", "rb") as f:
+        reader = csvkit.reader(f, delimiter="|")
+        reader.next()
+        ls = []
+        for row in reader:
+            if row[1] in getters:
+                #Committee Name|Committee ID|Date Received|Lender Name|Lender Address|Loan Date|Amount Received|Amount Repaid|Amount Forgiven|Paid by 3rd Party|Guarantor
+                comm_id = row[1]
+                lender_name = row[3].strip()
+                lender_addr = row[4].strip()
+                loan_date = row[5]
+                loan_amount = row[6]
+                loan_repaid = row[7]
+                loan_forgiven = row[8]
+                paid_by_third_party = row[9]
+                guarantor = row[10]
+                d = validDate(loan_date)
+                # finish this
+    
+    
+"""
 This guy makes a big ol' master table of donations to mow down.
 --> fab StackItUp
 
 Helper function lookItUp checks our canonical dict.
 --> lookItUp("098SCO832", "canonicalid", "Ronald F. McDonald")
-
 """
 
 def lookItUp(str, param, namefield):
@@ -326,6 +363,12 @@ def dedupeDonations():
     with hide('running', 'stdout', 'stderr'):
         local('csvcut -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed \'1d\' > toupload/donations.txt', capture=False)
 
+        
+"""
+This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. It takes about 18 hours to run.
+
+--> fab dedupeGivers
+"""
         
 def dedupeGivers():
     #Make a table of all givers, with dupes

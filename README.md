@@ -60,7 +60,6 @@ Since we can't predict the ways dates will be screwed up in the future, we halt 
 ###Purposeful duplication
 Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas deduplication.
 
-
-
-
+##Data excluded
+The script excludes loans from the handful of committees that didn't receive any reportable donations.
 

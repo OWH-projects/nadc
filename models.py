@@ -31,3 +31,8 @@ class Donation(models.Model):
     inkind_desc = models.TextField(null=True, blank=True)
     donation_date = models.DateField()
     donation_year = models.CharField(max_length=4, default="")
+    
+class Candidate(models.Model):
+    cand_id = models.CharField(max_length=40, null=False, blank=False)
+    cand_name = models.CharField(max_length=70, null=False, blank=False)
+    committee = models.ForeignKey(Getter)

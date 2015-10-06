@@ -1,6 +1,4 @@
 data/backup
 data/toupload
-data/deduped.csv
-data/alldonations.txt
 data/rawgivers.txt
 *.pyc
