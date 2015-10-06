@@ -61,5 +61,9 @@ Since we can't predict the ways dates will be screwed up in the future, we halt 
 Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas deduplication.
 
 ##Data excluded
-The script excludes loans from the handful of committees that didn't receive any reportable donations.
+The script excludes:
+<ul>
+<li>Loans from the handful of committees that didn't receive any reportable donations.</li>
+<li>Candidates attached to a committee that doesn't appear in the NADC's lookup table(s).</li>
+</ul>
 
