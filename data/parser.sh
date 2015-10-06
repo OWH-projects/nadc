@@ -46,6 +46,11 @@ printf "~~ deduped donations ~~\n\n"
 fab dedupeGivers
 printf "~~ deduped givers ~~\n\n"
 
-# dedupe givers from alldonations.txt
-fab loadData
-printf "~~ loaded data ~~\n\n"
+# kill 'n' fill data
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "TRUNCATE django_database.nadc_donation;"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "DELETE FROM django_database.nadc_giver;"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "DELETE FROM django_database.nadc_getter;"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/givers.txt' INTO TABLE django_database.nadc_giver FIELDS TERMINATED BY '|';"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/getters.txt' INTO TABLE django_database.nadc_getter FIELDS TERMINATED BY '|';"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/donations.txt' INTO TABLE django_database.nadc_donation FIELDS TERMINATED BY '|';"
+printf "~~ loaded new data ~~\n\n"

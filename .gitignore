@@ -1,2 +1,5 @@
-/data/backup
+data/backup
+data/toupload
+data/deduped.csv
+data/alldonations.txt
 *.pyc

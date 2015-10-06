@@ -181,3 +181,13 @@ CANON = {
     "99CON05466": {"origfirst":"VENTEICHER","origlast":"GEORGE","canonicalid":72,"canonicalname":"George and Susan Venteicher"},
     "99CON02766": {"origfirst":"VENTEICHER","origlast":"GEO","canonicalid":72,"canonicalname":"George and Susan Venteicher"}
 }
+
+
+SHITDATES = {
+    "2021-09-26": "2012-09-26",
+    "2096-05-09": "1996-05-09",
+    "2096-04-29": "1996-04-29",
+    "2200-04-23": "2007-04-23",
+    "2104-04-11": "2014-04-11",
+    "0214-10-02": "2014-10-02",
+}

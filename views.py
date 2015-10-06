@@ -9,7 +9,7 @@ DONATION_TOTAL = Donation.objects.count()
 
 def Main(request):
     #FIX LATER -- GROUP ON CANONICAL ONCE THAT ISH GETS SORTED
-    top10 = Donation.objects.values("donor_id", "donor_id__name").annotate(totes=Sum("cash")).order_by("-cash")[:10]
+    top10 = Donation.objects.values("donor_id", "donor_id__name").annotate(totes=Sum("cash")).order_by("-totes")[:10]
     byyear = Donation.objects.values('donation_year').annotate(sum=Sum('cash'))
     dictionaries = {'DONATION_TOTAL':DONATION_TOTAL, 'top10':top10,'byyear':byyear,}
     return render_to_response('nadc/main.html', dictionaries)
