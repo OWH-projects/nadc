@@ -1,12 +1,4 @@
-```
-                                               .___      
-                              ____ _____     __| _/____  
-                             /    \\__  \   / __ |/ ___\ 
-                            |   |  \/ __ \_/ /_/ \  \___ 
-                            |___|  (____  /\____ |\___  >
-                                 \/     \/      \/    \/ 
-
-```
+#NE campaign finance
 
 An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
