@@ -9,9 +9,9 @@ Run `pip install -r requirements.txt` to install the dependencies:
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
 - [fabric](http://www.fabfile.org/)
 
-We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
+We expect to get a full dump from the NADC every year and overwrite the database in full. The update process:
 <ol>
-<li>Drop new data files into nadc/data.</li>
+<li>Drop new data files into <code>nadc/data</code>.</li>
 <li>Run <code>nadc/data/parser.sh</code></li>
 <li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to <code>nadc/data/canonical/canonical.py</code></li>
 </ol>
