@@ -2,8 +2,6 @@ CANON = {
     "06CON11492": {"origfirst":"","origlast":"","canonicalid":1,"canonicalname":"Pete Ricketts"},
     "10CON15399": {"origfirst":"","origlast":"","canonicalid":1,"canonicalname":"Pete Ricketts"},
     "13CON19248": {"origfirst":"","origlast":"","canonicalid":1,"canonicalname":"Pete Ricketts"},
-    "15CON24252": {"origfirst":"","origlast":"","canonicalid":1,"canonicalname":"Pete Ricketts"},
-    "99CON01372": {"origfirst":"","origlast":"","canonicalid":1,"canonicalname":"Pete Ricketts"},
     "99CON05435": {"origfirst":"RICKETTS","origlast":"J. PETER","canonicalid":1,"canonicalname":"Pete Ricketts"},
     "11CON16732": {"origfirst":"","origlast":"","canonicalid":2,"canonicalname":"Dick Holland"},
     "09CUA05808": {"origfirst":"","origlast":"","canonicalid":2,"canonicalname":"Dick Holland"},
