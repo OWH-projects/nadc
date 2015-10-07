@@ -10,7 +10,7 @@
 
 An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
-<img src="https://media.giphy.com/media/YU0HoCQidyGEE/giphy.gif" style="max-width:100%;" />
+<img src="https://media.giphy.com/media/xTiTnqUxyWbsAXq7Ju/giphy.gif" style="max-width:100%;" />
 
 Run `pip install -r requirements.txt` to install the dependencies:
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
@@ -37,7 +37,7 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 <li><strong>Form B5</strong>: Late contributions</li>
 </ul>
 
-A shell script, `nadc/data/parser.sh`, makes backups of the raw data, loads a MySQL database with raw data from key tables for separate analysis and boils down these eight files (which contain duplicate donations, recipients and donors between tables) into six tables of unique(ish, we'll get to that) entities:
+A shell script, `nadc/data/parser.sh`, makes backups of the raw data, loads a separate MySQL database with raw data for separate analysis and boils down these eight files (which contain duplicate donations, recipients and donors between tables) into six tables of unique(ish, we'll get to that) entities:
 <ul>
 <li><code>nadc/data/toupload/getters.txt</code>: Any group or individual who received a donation. These come exclusively from Form A1.</li>
 <li><code>nadc/data/toupload/givers.txt</code>: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
