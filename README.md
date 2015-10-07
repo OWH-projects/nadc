@@ -75,11 +75,11 @@ Very few records have data entry problems with dates. We added these to a lookup
 Since we can't predict the ways dates will be screwed up in the future, we halt `parser.sh` when confronted with an invalid date that doesn't exist in the lookup.
 
 ###Purposeful duplication
-Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with the pandas' [`drop_duplicates`](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.drop_duplicates.html).
+Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas' [`drop_duplicates`](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.drop_duplicates.html).
 
 ##Data excluded
 <ul>
-<li>Data prior to 1999, which is not considered reliable.</li>
+<li>Pre-1999 records, which are not considered reliable.</li>
 <li>Loans from the handful of committees that didn't receive any reportable donations or had invalid dates.</li>
 <li>Candidates attached to a committee that doesn't appear in the NADC's lookup table(s).</li>
 </ul>

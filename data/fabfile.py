@@ -47,6 +47,7 @@ def getFloat(i):
     
 """
 This function rolls through the four main contribution files, extracts IDs for contributors and donors and returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump to a text file.
+
 --> fab getUniqueList:giver,yes
 """
 
@@ -88,6 +89,7 @@ def getUniqueList(data_type, writeout="no"):
 
 """
 This function creates a file of unique recipients -- this is our lookup table for the Getters model.
+
 --> fab makeTables
 """
         
@@ -96,7 +98,7 @@ def dedupeGetters():
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -H -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | sed \'1d\' > toupload/getters.txt', capture=False)
+        local('csvcut -H -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" > toupload/getters.txt', capture=False)
         local('rm deduped-getters.txt', capture=False)
 
 
