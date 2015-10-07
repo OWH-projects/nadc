@@ -24,7 +24,7 @@ So: `pip install -r requirements.txt`
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>
 <li>Drop new data files into nadc/data.</li>
-<li>Run `parser.sh`</li>
+<li>Run <code>parser.sh</code></li>
 <li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to `data/canonical/canonical.py`</li>
 </ol>
 
