@@ -1,21 +1,25 @@
 ```
-                   .___      
-  ____ _____     __| _/____  
- /    \\__  \   / __ |/ ___\ 
-|   |  \/ __ \_/ /_/ \  \___ 
-|___|  (____  /\____ |\___  >
-     \/     \/      \/    \/ 
+                                               .___      
+                              ____ _____     __| _/____  
+                             /    \\__  \   / __ |/ ___\ 
+                            |   |  \/ __ \_/ /_/ \  \___ 
+                            |___|  (____  /\____ |\___  >
+                                 \/     \/      \/    \/ 
 
 ```
 
 An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
-<img src="https://media.giphy.com/media/YU0HoCQidyGEE/giphy.gif" style="max-width:100%; text-align:center;" />
+
+
+<img src="https://media.giphy.com/media/YU0HoCQidyGEE/giphy.gif" style="max-width:100%;" />
 
 Dependencies: 
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
 - [fabric](http://www.fabfile.org/)  
+
+So: `pip install -r requirements.txt`
 
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>

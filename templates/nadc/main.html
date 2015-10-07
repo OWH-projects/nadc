@@ -32,8 +32,22 @@ h3 { margin-top:0px; }
         </div>
         
         <div id="topdonors" class="item">
-            <h3>Top donors</h3>
-            <table class="table">{% for thing in top10 %}
+            <h3>Top individual donors</h3>
+            <table class="table">{% for thing in top10ind %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/donor/{{ thing.donor_id}}">{{ thing.donor_id__name }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+            </table>
+        </div>
+        
+        <div id="topdonors" class="item">
+            <h3>Top organizational donors</h3>
+            <table class="table">{% for thing in top10pac %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/donor/{{ thing.donor_id}}">{{ thing.donor_id__name }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+            </table>
+        </div>
+        
+        <div id="topdonors" class="item">
+            <h3>Top business donors</h3>
+            <table class="table">{% for thing in top10cos %}
                 <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/donor/{{ thing.donor_id}}">{{ thing.donor_id__name }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
             </table>
         </div>
