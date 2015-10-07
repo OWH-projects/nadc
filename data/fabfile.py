@@ -92,13 +92,13 @@ This function creates a file of unique recipients -- this is our lookup table fo
 
 --> fab makeTables
 """
-        
+
 def dedupeGetters():
     toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/forma1.txt", delimiter="|", low_memory=False)
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -H -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" > toupload/getters.txt', capture=False)
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed \'s/,//g\' | sed \'s/\&AMP;/\&/g\' > toupload/getters.txt', capture=False)
         local('rm deduped-getters.txt', capture=False)
 
 
