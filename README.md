@@ -12,12 +12,10 @@ An app to import, standardize and display political contribution data from the N
 
 <img src="https://media.giphy.com/media/YU0HoCQidyGEE/giphy.gif" style="max-width:100%;" />
 
-Dependencies: 
+Run `pip install -r requirements.txt` to install the dependencies:
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
-- [fabric](http://www.fabfile.org/)  
-
-So: `pip install -r requirements.txt`
+- [fabric](http://www.fabfile.org/)
 
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>
