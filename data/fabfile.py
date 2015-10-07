@@ -194,7 +194,7 @@ def parseLoans():
                 paid_by_third_party = row[9]
                 guarantor = row[10]
                 d = validDate(loan_date)
-                # finish this
+                print row
     
     
 """

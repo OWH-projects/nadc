@@ -78,9 +78,7 @@ printf "~~ killed and filled new data ~~\n\n"
 
 #cleanup
 printf "~~ cleaning up ~~\n"
-rm /home/apps/myproject/myproject/nadc/data/deduped.csv
-rm /home/apps/myproject/myproject/nadc/data/alldonations.txt
-rm /home/apps/myproject/myproject/nadc/data/rawgivers.txt
+rm /home/apps/myproject/myproject/nadc/data/deduped.csv /home/apps/myproject/myproject/nadc/data/alldonations.txt /home/apps/myproject/myproject/nadc/data/rawgivers.txt
 printf "~~ cleaned up ~~\n\n"
 
 printf "~~ DONE. ~~"
