@@ -181,8 +181,12 @@ def parseLoans():
         reader = csvkit.reader(f, delimiter="|")
         reader.next()
         ls = []
+        total = []
         for row in reader:
-            if row[1] in getters:
+            total.append(row[1])
+            if row[1] not in getters:
+                ls.append(row[1])
+            else:
                 #Committee Name|Committee ID|Date Received|Lender Name|Lender Address|Loan Date|Amount Received|Amount Repaid|Amount Forgiven|Paid by 3rd Party|Guarantor
                 comm_id = row[1]
                 lender_name = row[3].strip()
@@ -194,7 +198,10 @@ def parseLoans():
                 paid_by_third_party = row[9]
                 guarantor = row[10]
                 d = validDate(loan_date)
-                print row
+                if d == "broke":
+                    ls.append(row[1])
+        print "Total: " + str(len(total))
+        print "Bad: " + str(len(ls))
     
     
 """
