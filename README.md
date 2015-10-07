@@ -1,6 +1,6 @@
 #NE campaign finance
 
-An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
+A Django app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
 <img src="https://media.giphy.com/media/xTiTnqUxyWbsAXq7Ju/giphy.gif" style="max-width:100%;" />
 
