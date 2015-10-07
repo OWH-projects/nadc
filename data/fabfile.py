@@ -177,17 +177,12 @@ def parseCands():
 
 def parseLoans():
     getters = getUniqueList("getter")
+    x = open("/home/apps/myproject/myproject/nadc/data/toupload/loans.txt", "wb")
     with open("/home/apps/myproject/myproject/nadc/data/formb1c.txt", "rb") as f:
         reader = csvkit.reader(f, delimiter="|")
         reader.next()
-        ls = []
-        total = []
         for row in reader:
-            total.append(row[1])
-            if row[1] not in getters:
-                ls.append(row[1])
-            else:
-                #Committee Name|Committee ID|Date Received|Lender Name|Lender Address|Loan Date|Amount Received|Amount Repaid|Amount Forgiven|Paid by 3rd Party|Guarantor
+            if row[1] in getters:
                 comm_id = row[1]
                 lender_name = row[3].strip()
                 lender_addr = row[4].strip()
@@ -198,10 +193,10 @@ def parseLoans():
                 paid_by_third_party = row[9]
                 guarantor = row[10]
                 d = validDate(loan_date)
-                if d == "broke":
-                    ls.append(row[1])
-        print "Total: " + str(len(total))
-        print "Bad: " + str(len(ls))
+                if d != "broke":
+                    r = ["", lender_name, lender_addr, loan_date, loan_amount, loan_repaid, loan_forgiven, paid_by_third_party, guarantor, comm_id]
+                    x.write("|".join(r) + "\n")
+    x.close()
     
     
 """

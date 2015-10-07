@@ -36,3 +36,15 @@ class Candidate(models.Model):
     cand_id = models.CharField(max_length=40, null=False, blank=False)
     cand_name = models.CharField(max_length=70, null=False, blank=False)
     committee = models.ForeignKey(Getter)
+
+class Loan(models.Model):
+    committee = models.ForeignKey(Getter)
+    lender_name = models.CharField(max_length=70, null=False, blank=False)
+    lender_addr = models.CharField(max_length=70)
+    loan_date = models.DateField()
+    loan_amount = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    loan_repaid = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    loan_forgiven = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    paid_by_third_party = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    guarantor = models.CharField(max_length=70, null=False, blank=True)
+    

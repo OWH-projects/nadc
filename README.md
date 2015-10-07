@@ -10,6 +10,8 @@
 
 An app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
 
+<div style="height:200px; width:100%; background-image:url('https://media.giphy.com/media/YU0HoCQidyGEE/giphy.gif');">testing</div>
+
 Dependencies: 
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
