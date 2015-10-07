@@ -48,3 +48,13 @@ class Loan(models.Model):
     paid_by_third_party = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     guarantor = models.CharField(max_length=70, null=False, blank=True)
     
+class Expenditure(models.Model):
+    committee = models.ForeignKey(Getter)
+    payee = models.CharField(max_length=70, null=False, blank=False)
+    payee_addr = models.CharField(max_length=70)
+    exp_date = models.DateField()
+    exp_purpose = models.CharField(max_length=200)
+    amount = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    in_kind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    
+    

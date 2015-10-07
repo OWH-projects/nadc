@@ -109,6 +109,7 @@ This function does a lot of things. It:
 - captures a newline-separated grep string of the files in which those IDs are found,
 - captures the name and ID of each in a list
 - appends to the master recipient file
+
 --> fab whoAintWeKnowAbout
 """
         
@@ -154,9 +155,9 @@ def whoAintWeKnowAbout():
 
     
 """
-This function parses the table of loan information into something our database model can ingest.
+This function parses the table of candidate information into something our database model can ingest.
 
---> fab parseLoans
+--> fab parseCands
 """
 
 def parseCands():
@@ -174,8 +175,13 @@ def parseCands():
                 r = ["", cand_id, cand_name, comm_id ]
                 x.write("|".join(r) + "\n")
         x.close()
-                
+    
+    
+"""
+This function parses the table of loan information into something our database model can ingest.
 
+--> fab parseLoans
+"""
 
 def parseLoans():
     getters = getUniqueList("getter")
@@ -200,7 +206,36 @@ def parseLoans():
                     x.write("|".join(r) + "\n")
     x.close()
     
-    
+  
+
+"""
+This function parses the table of expenditure information into something our database model can ingest.
+
+--> fab parseExp
+"""
+
+def parseExp():
+    getters = getUniqueList("getter")
+    x = open("/home/apps/myproject/myproject/nadc/data/toupload/expenditures.txt", "wb")
+    with open("/home/apps/myproject/myproject/nadc/data/formb1d.txt", "rb") as f:
+        reader = csvkit.reader(f, delimiter="|")
+        reader.next()
+        for row in reader:
+            if row[1] in getters:
+                #Committee Name|Committee ID|Date Received|Payee Name|Payee Address|Expenditure Purpose|Expenditure Date|Amount|In-Kind
+                comm_id = row[1]
+                payee_name = row[3].strip()
+                payee_addr = row[4].strip()
+                exp_purpose = row[5].strip()
+                exp_date = row[6]
+                exp_amount = row[7]
+                in_kind_amount = row[8]
+                d = validDate(exp_date)
+                if d != "broke":                    
+                    r = ["", payee_name, payee_addr, exp_date, exp_purpose, exp_amount, in_kind_amount, comm_id]
+                    x.write("|".join(r) + "\n")
+    x.close()
+  
 """
 This guy makes a big ol' master table of donations to mow down.
 --> fab StackItUp
@@ -336,9 +371,9 @@ def stackItUp():
     
 
 """
-Homeboy here kicks out duplicates. Pandas!
---> fab dedupeDonations
+Homeboy here kicks out duplicate donations. Pandas!
 
+--> fab dedupeDonations
 """
 
 def dedupeDonations():
@@ -369,7 +404,7 @@ def dedupeDonations():
 
         
 """
-This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. It takes about 18 hours to run.
+This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. It takes about 18 hours to run, so.
 
 --> fab dedupeGivers
 """

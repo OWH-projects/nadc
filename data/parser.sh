@@ -44,6 +44,11 @@ printf "~~ parsing loan data ~~\n"
 fab parseLoans
 printf "~~ parsed loan data ~~\n\n"
 
+#parse expenditure data
+printf "~~ parsing expenditure data ~~\n"
+fab parseExp
+printf "~~ parsed expenditure data ~~\n\n"
+
 #parse candidate data
 printf "~~ parsing candidate data ~~\n"
 fab parseCands
@@ -69,6 +74,7 @@ printf "~~ killing and filling new data ~~\n"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "TRUNCATE django_database.nadc_donation;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "TRUNCATE django_database.nadc_candidate;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "TRUNCATE django_database.nadc_loan;"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "TRUNCATE django_database.nadc_expenditure;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "DELETE FROM django_database.nadc_giver;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "DELETE FROM django_database.nadc_getter;"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/givers.txt' INTO TABLE django_database.nadc_giver FIELDS TERMINATED BY '|';"
@@ -76,6 +82,7 @@ mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/donations.txt' INTO TABLE django_database.nadc_donation FIELDS TERMINATED BY '|';"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/candidates.txt' INTO TABLE django_database.nadc_candidate FIELDS TERMINATED BY '|';"
 mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/loans.txt' INTO TABLE django_database.nadc_loan FIELDS TERMINATED BY '|';"
+mysql --local-infile -u ${FUSSY_USER} -p${FUSSY_PW} -e "LOAD DATA LOCAL INFILE '/home/apps/myproject/myproject/nadc/data/toupload/expenditures.txt' INTO TABLE django_database.nadc_expenditure FIELDS TERMINATED BY '|';"
 printf "~~ killed and filled new data ~~\n\n"
 
 #cleanup

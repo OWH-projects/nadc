@@ -29,27 +29,29 @@ We expect to get a full dump from the NADC every year and overwrite the database
 </ol>
 
 ##Overview
-A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `data/nadc_tables.rtf`). We focus on seven of them:
+A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `data/nadc_tables.rtf`). We focus on eight of them:
 <ul>
 <li>Form A1: Lookup table for campaign committees</li>
 <li>Form A1CAND: Candidates tied to campaign committees</li>
 <li>Form B1AB: Main table of individual/other contributions</li>
 <li>Form B1C: Loans to campaign committees</li>
+<li>Form B1D: Expenditures by campaign committees</li>
 <li>Form B2A: Contributions to political party committees</li>
 <li>Form B4A: PAC contributions</li>
 <li>Form B5: Late contributions</li>
 </ul>
 
-A shell script, `data/parser.sh`, makes backups of the raw data, loads a mysql database with raw data from a couple key tables for separate analysis and boils down these seven files (which contain duplicate donations, recipients and donors between tables) into five tables of unique(ish, we'll get to that) entities:
+A shell script, `data/parser.sh`, makes backups of the raw data, loads a mysql database with raw data from a couple key tables for separate analysis and boils down these eight files (which contain duplicate donations, recipients and donors between tables) into six tables of unique(ish, we'll get to that) entities:
 <ul>
 <li><code>toupload/getters.txt</code>: Any group or individual who received a donation. These come exclusively from Form A1.</li>
 <li><code>toupload/givers.txt</code>: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
 <li><code>toupload/donations.txt</code>: Money, inkind donations or pledges to getters from givers.</li>
 <li><code>toupload/candidates.txt</code>: Candidates tied to campaign committees.</li>
 <li><code>toupload/loans.txt</code>: Lending to campaign committees.</li>
+<li><code>toupload/expenditures.txt</code>: Expenditures by campaign committees.</li>
 </ul>
 
-Then the clean files are uploaded to the Django MySQL database powering the app.
+The clean files are then uploaded to the Django MySQL database that powers the app.
 
 ##Handling duplication
 ###Names
@@ -80,6 +82,7 @@ Somehow, about a dozen organizations in Form A1 show up multiple times. We handl
 ##Data excluded
 <ul>
 <li>Pre-1999 records, which are not considered reliable.</li>
-<li>Loans from the handful of committees that didn't receive any reportable donations or had invalid dates.</li>
-<li>Candidates attached to a committee that doesn't appear in the NADC's lookup table(s).</li>
+<li>Loans from the handful of committees that didn't receive any reportable donations.</li>
+<li>Loans and expenditures that had invalid dates.</li>
+<li>Candidates or expenditures attached to a committee that doesn't appear in the NADC's lookup table(s).</li>
 </ul>
