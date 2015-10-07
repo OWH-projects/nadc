@@ -25,7 +25,7 @@ We expect to get a full dump from the NADC every year and overwrite the database
 <ol>
 <li>Drop new data files into nadc/data.</li>
 <li>Run <code>parser.sh</code></li>
-<li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to `data/canonical/canonical.py`</li>
+<li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to <code>data/canonical/canonical.py</code></li>
 </ol>
 
 ##Overview
@@ -42,11 +42,11 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 
 A shell script, `data/parser.sh`, makes backups of the raw data, loads a mysql database with raw data from a couple key tables for separate analysis and boils down these seven files (which contain duplicate donations, recipients and donors between tables) into five tables of unique(ish, we'll get to that) entities:
 <ul>
-<li>`toupload/getters.txt`: Any group or individual who received a donation. These come exclusively from Form A1.</li>
-<li>`toupload/givers.txt`: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
-<li>`toupload/donations.txt`: Money, inkind donations or pledges to getters from givers.</li>
-<li>`toupload/candidates.txt`: Candidates tied to campaign committees.</li>
-<li>`toupload/loans.txt`: Lending to campaign committees.</li>
+<li><code>toupload/getters.txt</code>: Any group or individual who received a donation. These come exclusively from Form A1.</li>
+<li><code>toupload/givers.txt</code>: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
+<li><code>toupload/donations.txt</code>: Money, inkind donations or pledges to getters from givers.</li>
+<li><code>toupload/candidates.txt</code>: Candidates tied to campaign committees.</li>
+<li><code>toupload/loans.txt</code>: Lending to campaign committees.</li>
 </ul>
 
 Then the clean files are uploaded to the Django MySQL database powering the app.
