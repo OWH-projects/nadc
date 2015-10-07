@@ -79,6 +79,7 @@ Somehow, about a dozen organizations in Form A1 show up multiple times. We handl
 
 ##Data excluded
 <ul>
+<li>Data prior to 1999, which is not considered reliable.</li>
 <li>Loans from the handful of committees that didn't receive any reportable donations or had invalid dates.</li>
 <li>Candidates attached to a committee that doesn't appear in the NADC's lookup table(s).</li>
 </ul>

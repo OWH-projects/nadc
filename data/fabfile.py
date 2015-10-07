@@ -26,7 +26,7 @@ def validDate(datestring):
         return SHITDATES[datestring]
     except:
         high = datetime.datetime.now()
-        low = datetime.datetime.strptime("1995-01-01", '%Y-%m-%d')
+        low = datetime.datetime.strptime("1999-01-01", '%Y-%m-%d')
         try:
             # does it parse correctly?
             x = datetime.datetime.strptime(datestring, '%Y-%m-%d')
