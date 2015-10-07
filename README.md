@@ -24,47 +24,58 @@ So: `pip install -r requirements.txt`
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>
 <li>Drop new data files into nadc/data.</li>
-<li>Run parser.sh</li>
-<li>If there are new incorrect dates that we haven't encountered, you'll be prompted to add those to canonical/canonical.py</li>
+<li>Run `parser.sh`</li>
+<li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to `data/canonical/canonical.py`</li>
 </ol>
 
 ##Overview
-A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `/data/nadc_tables.rtf`). We focus on five:
+A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `data/nadc_tables.rtf`). We focus on seven of them:
 <ul>
-<li>Form A1: Lookup table for committees</li>
+<li>Form A1: Lookup table for campaign committees</li>
+<li>Form A1CAND: Candidates tied to campaign committees</li>
 <li>Form B1AB: Main table of individual/other contributions</li>
+<li>Form B1C: Loans to campaign committees</li>
 <li>Form B2A: Contributions to political party committees</li>
 <li>Form B4A: PAC contributions</li>
 <li>Form B5: Late contributions</li>
 </ul>
 
-A fabfile boils our five tables (which contain duplicate donations, recipients and donors between tables) into three tables of unique(ish, we'll get to that) entities:
+A shell script, `data/parser.sh`, makes backups of the raw data, loads a mysql database with raw data from a couple key tables for separate analysis and boils down these seven files (which contain duplicate donations, recipients and donors between tables) into five tables of unique(ish, we'll get to that) entities:
 <ul>
-<li>Getters: Any group or individual who received a donation. These come exclusively from Form A1.</li>
-<li>Givers: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. Further, the same donation could be duplicated among those tables.</li>
-<li>Donations: Money, inkind donations or pledges to getters from givers. </li>
+<li>`toupload/getters.txt`: Any group or individual who received a donation. These come exclusively from Form A1.</li>
+<li>`toupload/givers.txt`: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
+<li>`toupload/donations.txt`: Money, inkind donations or pledges to getters from givers.</li>
+<li>`toupload/candidates.txt`: Candidates tied to campaign committees.</li>
+<li>`toupload/loans.txt`: Lending to campaign committees.</li>
 </ul>
+
+Then the clean files are uploaded to the Django MySQL database powering the app.
 
 ##Handling duplication
 ###Names
-NADC has unique identifiers for each donor, but they identify only address and exact name. If "Matt Wynn" at 1314 Douglas St gave, and "Matthew A Wynn" at 1300 Douglas Street gave, they would be considered two different donors.
+NADC has unique identifiers for each donor, but they identify only the address and exact name. If "Matt Wynn" at 1314 Douglas St. gave money, and "Matthew A Wynn" at 1300 Douglas St. gave money, they're considered two different donors.
+
 This is wrong.
-Our solution was to create a lookup for any "large" donors, whether in terms of total donations or the number of donations. Super fellow [Daniel Wheaton] (https://twitter.com/theheroofthyme) assigned new, real unique identifiers for any of the top 100 donors by both measures. Those lists overlapped a bit, so we wound up dedupklicating around 70 givers all told. This is why Givers have two ids, with canonical_id representing our assignment of an identity.
-The NADC is is copied to canonical_id for records that are not deduplicated.
-Getter records were clean and did not require the same method.
+
+Our solution was to create a lookup dict (`canonical/canonical.py`) for any "large" donors, whether in terms of total donations or the number of donations. Super fellow [Daniel Wheaton](https://twitter.com/theheroofthyme) assigned new, real unique identifiers for any of the top 100 donors by both measures. Those lists overlapped a bit, so we wound up deduplicating around 70 givers on the first pass. This is why each giver has two ids, with canonical_id representing our assignment of an identity.
+
+The NADC ID is copied to canonical_id for records that are not deduplicated. Getter records were basically clean and didn't require the same methods.
 
 ###Donations
-Some donations are recorded in several places. A late donation, for instance, may also show up as a normal record in B1AB.
-Donations can also be duplicated within a record, inaccurately. For example, a 1999 ballot committee reported each of its donations twice, leading to a vastly inflated fundraising report. 
-Susan Lorenz at the Nebraska Accountability and Disclosure Commission told us that donations from a giver to an orgnization on the same day should nto be duplicated. Therefore, we deduplicated using those three values.
+Some donations are recorded in several places. A late donation, for instance, may also show up as a normal donation record in B1AB.
+
+Donations can also be duplicated within a record, inaccurately. For example, a 1999 ballot committee reported each of its donations twice, leading to a vastly inflated fundraising report.
+
+Susan Lorenz at the Nebraska Accountability and Disclosure Commission told us that donations from a giver to an orgnization on the same day should not be duplicated. Therefore, we deduplicated using those three values.
 
 ##Known problems
 ###Dates
-Very few records have data entry problems with dates. We added these to a dictionary in canonical and they are fixed on import.
-Since we can't predict the ways dates will be screwed up in the future, we halt import on dates that don't exist yet aren't in canonical.
+Very few records have data entry problems with dates. We added these to a lookup dict in `canonical/canonical.py` and they get fixed on import.
+
+Since we can't predict the ways dates will be screwed up in the future, we halt `parser.sh` when confronted with an invalid date that doesn't exist in the lookup.
 
 ###Purposeful duplication
-Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas deduplication.
+Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with the pandas' [`drop_duplicates`](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.drop_duplicates.html).
 
 ##Data excluded
 <ul>
