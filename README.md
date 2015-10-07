@@ -12,7 +12,7 @@ Run `pip install -r requirements.txt` to install the dependencies:
 We expect to get a full dump from the NADC every year and overwrite the database in full. The update process is
 <ol>
 <li>Drop new data files into nadc/data.</li>
-<li>Run <code>nadc/dataparser.sh</code></li>
+<li>Run <code>nadc/data/parser.sh</code></li>
 <li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to <code>nadc/data/canonical/canonical.py</code></li>
 </ol>
 
