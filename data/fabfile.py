@@ -191,7 +191,6 @@ def parseCands():
                 cand_id = row[2]
                 comm_id = row[0]
                 cand_name = ' '.join((row[4] + " " + row[5] + " " + row[3].strip()).split())
-                print cand_name
                 r = ["", cand_id, cand_name, comm_id ]
                 x.write("|".join(r) + "\n")
         x.close()

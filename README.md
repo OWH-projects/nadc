@@ -7,7 +7,7 @@ A Django app to import, standardize and display political contribution data from
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
 - [fabric](http://www.fabfile.org/)
 
-We expect to get a full dump from the NADC every year and overwrite the database in full. The update process:
+We expect to get regular data dumps from the NADC and overwrite the database in full. The update process:
 <ol>
 <li>Drop new data files into <code>nadc/data</code>.</li>
 <li>Run <code>nadc/data/parser.sh</code></li>
