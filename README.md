@@ -1,4 +1,4 @@
-#NE campaign finance
+#Nebraska campaign finance data
 
 <img src="https://media.giphy.com/media/z9BW7ApDO6hTq/giphy.gif" style="max-width:100%;" />
 
