@@ -1,7 +1,5 @@
 #NE campaign finance
 
-A Django app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
-
 <img src="https://media.giphy.com/media/z9BW7ApDO6hTq/giphy.gif" style="max-width:100%;" />
 
 Run `pip install -r requirements.txt` to install the dependencies:
