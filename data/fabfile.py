@@ -44,7 +44,8 @@ def getFloat(i):
     else:
         return i
 
-    
+        
+        
 """
 This function rolls through the four main contribution files, extracts IDs for contributors and donors and returns a list of unique IDs for whatever type you specify. Set writeout to "yes" if you want to dump to a text file.
 
@@ -86,7 +87,26 @@ def getUniqueList(data_type, writeout="no"):
     else:
         pass
 
+"""
+OK so this one returns a list of lists of IDs and types. Todo: incorporate into getUniqueList somehow?
 
+--> fab getContribTypes
+"""
+
+def getContribTypes():
+    masterlist = []
+    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt") as a1:
+        reader = csvkit.reader(a1, delimiter="|")
+        for row in reader:
+            r = [row[0], row[6]]
+            masterlist.append(r)
+
+    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt") as a1:
+        reader = csvkit.reader(a1, delimiter="|")
+        for row in reader:
+            r = [row[0], row[6]]
+            masterlist.append(r)
+            
 """
 This function creates a file of unique recipients -- this is our lookup table for the Getters model.
 
@@ -254,16 +274,47 @@ def lookItUp(str, param, namefield):
             return namefield
     
 def stackItUp():
-    headers = [ "id", "giver_id", "canonical_id", "giver_name", "giver_canonical_name", "giver_address", "giver_city", "giver_state", "giver_zip", "giver_type", "getter_id", "cash_donation", "inkind_amount", "pledge_amount", "inkind_desc", "donation_date", "donation_year" ]
+    headers = [
+        "id",
+        "giver_id",
+        "canonical_id",
+        "giver_name",
+        "giver_canonical_name",
+        "giver_address",
+        "giver_city",
+        "giver_state",
+        "giver_zip",
+        "giver_type",
+        "getter_id",
+        "cash_donation",
+        "inkind_amount",
+        "pledge_amount",
+        "inkind_desc",
+        "donation_date",
+        "donation_year"
+        ]
     
     rows_with_new_bad_dates = []
     alldonations = []
+    typecomparison = {}
+    
+    #get IDs and types from Form A1
+    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt", "rb") as a1:
+        reader = csvkit.reader(a1, delimiter="|")
+        for row in reader:
+            comm_id = row[0]
+            comm_type = row[6]
+            typecomparison[comm_id] = commm_type
 
     with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
+        
         #do b1ab
         reader_b1ab = csvkit.reader(b1ab, delimiter="|")
         reader_b1ab.next()
         for row in reader_b1ab:
+            donor_id = row[4]
+            donor_type = row[3]
+            typecomparison[donor_id] = donor_type
             don_date = str(row[5])
             d = validDate(don_date)
             if d == "broke":
@@ -274,22 +325,27 @@ def stackItUp():
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
             else:
-                name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())
-                r = ["", row[4], str(lookItUp(row[4],"canonicalid", name)), name, lookItUp(row[4],"canonicalname", name), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[3]), str(row[1]), getFloat(str(row[6])), getFloat(str(row[7])), getFloat(str(row[8])), "", d, d.split("-")[0] ]
-                standardrow = "|".join(r)
-                alldonations.append(standardrow)
+                year = d.split("-")[0]
+                if int(year) >= 1999:
+                    name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())                
+                    r = ["", row[4], str(lookItUp(row[4],"canonicalid", name)), name, lookItUp(row[4],"canonicalname", name), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[3]), str(row[1]), getFloat(str(row[6])), getFloat(str(row[7])), getFloat(str(row[8])), "", d, year ]
+                    standardrow = "|".join(r)
+                    alldonations.append(standardrow)
         
         #do b5
         reader_b5= csvkit.reader(b5, delimiter="|")
         reader_b5.next()
         interimlist = []      
         for row in reader_b5:
+            donor_id = row[7]
+            donor_type = row[8]
+            typecomparison[donor_id] = donor_type
             don_date = str(row[10])
             d = validDate(don_date)
             if d == "broke":
                 dict = {}
-                dict["giver_id"] = row[10]
-                dict["getter_id"] = row[7]
+                dict["giver_id"] = donor_id
+                dict["getter_id"] = row[1]
                 dict["source_table"] = "b5"
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
@@ -316,45 +372,64 @@ def stackItUp():
                     pledge = ""
                     interimlist.append(row)
         for row in interimlist:
-            r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), getFloat(cash), getFloat(inkind), getFloat(pledge), "", d, d.split("-")[0] ]
-            standardrow = "|".join(r)
-            alldonations.append(standardrow)
+            year = d.split("-")[0]
+            if int(year) >= 1999:
+                name = " ".join(row[15].split())
+                r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", str(row[8]), str(row[1]), getFloat(cash), getFloat(inkind), getFloat(pledge), "", d, year ]
+                standardrow = "|".join(r)
+                alldonations.append(standardrow)
         
         #do b2a
         reader_b2a = csvkit.reader(b2a, delimiter="|")
         reader_b2a.next()
         for row in reader_b2a:
+            donor_id = row[2]
             don_date = str(row[1])
             d = validDate(don_date)
             if d == "broke":
                 dict = {}
-                dict["giver_id"] = row[2]
+                dict["giver_id"] = donor_id
                 dict["getter_id"] = row[0]
                 dict["source_table"] = "b2a"
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
             else:
-                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, d.split("-")[0] ]
-                standardrow = "|".join(r) + "\n"
-                alldonations.append(standardrow)
+                try:
+                    givertype = typecomparison[donor_id]
+                except:
+                    givertype = ""
+                year = d.split("-")[0]
+                if int(year) >= 1999:
+                    name = " ".join(row[7].split())
+                    r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), name, str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", givertype, str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, year ]
+                    standardrow = "|".join(r) + "\n"
+                    alldonations.append(standardrow)
         
         #do b4a
         reader_b4a = csvkit.reader(b4a, delimiter="|")
         reader_b4a.next()
         for row in reader_b4a:
+            donor_id = row[2]
             don_date = str(row[1])
             d = validDate(don_date)
             if d == "broke":
                 dict = {}
-                dict["giver_id"] = row[2]
+                dict["giver_id"] = donor_id
                 dict["getter_id"] = row[0]
                 dict["source_table"] = "b4a"
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
             else:
-                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, d.split("-")[0] ]
-                standardrow = "|".join(r)
-                alldonations.append(standardrow)
+                try:
+                    givertype = typecomparison[donor_id]
+                except:
+                    givertype = ""                        
+                year = d.split("-")[0]
+                if int(year) >= 1999:
+                    name = " ".join(row[7].split())
+                    r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), name, str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", givertype, str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, year ]
+                    standardrow = "|".join(r)
+                    alldonations.append(standardrow)
         
     if len(rows_with_new_bad_dates) > 0:
         print "Got some records with bad dates. Go fix this in canonical.py and rerun parser.sh:"
@@ -404,7 +479,7 @@ def dedupeDonations():
 
         
 """
-This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. It takes about 18 hours to run, so.
+This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. Rn it about 18 hours to run, so any performance tips welcome.
 
 --> fab dedupeGivers
 """
@@ -413,17 +488,19 @@ def dedupeGivers():
     #Make a table of all givers, with dupes
     with hide('running', 'stdout', 'stderr'):
         local('csvsort -d "|" -c donation_date deduped.csv | csvcut -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" | sed \'1d\' > rawgivers.txt', capture=False)
-        
+    
     #Now let's go through that and get a list of every NADC id
     rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
     nadcids = []
     for row in rawgivers:
-        if row[0] not in nadcids:
-            nadcids.append(row[0])
-            
+        nadcids.append(row[0])
+    
+    #Run set() to get uniques
+    uniques = list(set(nadcids))
+
     #For every id, we need to find the most detailed row to keep. 
     mastergivers = []
-    for idx, id in enumerate(nadcids):
+    for idx, id in enumerate(uniques):
         print str(idx)
         rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
         #print "id number " + str(id)
@@ -434,6 +511,7 @@ def dedupeGivers():
         #print "We've got " + str(len(matches)) + " matches"
         for row in matches:
             master = None
+            #
             if len(row[3]) > 1 and len(row[4]) > 1 and len(row[5]) > 1:
                 if master == None:
                     master = row

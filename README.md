@@ -1,6 +1,6 @@
 #Nebraska campaign finance data
 
-<img src="https://media.giphy.com/media/z9BW7ApDO6hTq/giphy.gif" style="max-width:100%;" />
+<img src="https://media.giphy.com/media/z9BW7ApDO6hTq/giphy.gif" style="width:100%; max-width:100%;" />
 
 A Django app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission. Run `pip install -r requirements.txt` to install the dependencies:
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
@@ -64,6 +64,9 @@ Since we can't predict the ways dates will be screwed up in the future, we halt 
 
 ###Purposeful duplication
 Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas' [`drop_duplicates`](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.drop_duplicates.html).
+
+###Donor types
+Donors to independent expenditure committees and political party committees don't have a "type" (individual, corporate, etc.) listed. Nearly every one of these donors show up in another table, however, so we extract type data from other tables to round out these records.
 
 ##Data excluded
 <ul>
