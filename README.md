@@ -2,6 +2,8 @@
 
 <img src="https://media.giphy.com/media/z9BW7ApDO6hTq/giphy.gif" style="max-width:100%;" />
 
+A Django app to import, standardize and display political contribution data from the Nebraska Accountability and Disclosure Commission.
+
 Run `pip install -r requirements.txt` to install the dependencies:
 - [csvkit](https://csvkit.readthedocs.org/en/0.9.1/)  
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
