@@ -26,7 +26,7 @@ def validDate(datestring):
         return SHITDATES[datestring]
     except:
         high = datetime.datetime.now()
-        low = datetime.datetime.strptime("1999-01-01", '%Y-%m-%d')
+        low = datetime.datetime.strptime("1995-01-01", '%Y-%m-%d')
         try:
             # does it parse correctly?
             x = datetime.datetime.strptime(datestring, '%Y-%m-%d')
@@ -397,7 +397,7 @@ def dedupeDonations():
         "donation_year": object
         }
     )
-    deduped = toclean.drop_duplicates()
+    deduped = toclean.drop_duplicates(subset=["giver_id", "donation_date", "getter_id", "cash_donation", "inkind_amount", "pledge_amount"])
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
     with hide('running', 'stdout', 'stderr'):
         local('csvcut -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed \'1d\' > toupload/donations.txt', capture=False)
