@@ -304,7 +304,7 @@ def stackItUp():
         for row in reader:
             comm_id = row[0]
             comm_type = row[6]
-            typecomparison[comm_id] = commm_type
+            typecomparison[comm_id] = comm_type
 
     with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
         
