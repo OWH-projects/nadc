@@ -316,7 +316,7 @@ def stackItUp():
                     pledge = ""
                     interimlist.append(row)
         for row in interimlist:
-            r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), " ".join(row[15].split()), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), cash, inkind, pledge, "", d, d.split("-")[0] ]
+            r = [ "", row[7], str(lookItUp(row[7],"canonicalid"," ".join(row[15].split()))), str(lookItUp(row[7],"canonicalname"," ".join(row[15].split()))), "", "", "", "", str(row[8]), str(row[1]), getFloat(cash), getFloat(inkind), getFloat(pledge), "", d, d.split("-")[0] ]
             standardrow = "|".join(r)
             alldonations.append(standardrow)
         
@@ -334,7 +334,7 @@ def stackItUp():
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
             else:
-                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
+                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r) + "\n"
                 alldonations.append(standardrow)
         
@@ -352,7 +352,7 @@ def stackItUp():
                 dict["donation_date"] = don_date
                 rows_with_new_bad_dates.append(dict)
             else:
-                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), str(row[4]), str(row[5]), str(row[6]), "", d, d.split("-")[0] ]
+                r = [ "", row[2], str(lookItUp(row[2],"canonicalid"," ".join(row[7].split()))), " ".join(row[7].split()), str(lookItUp(row[2],"canonicalname"," ".join(row[7].split()))), "", "", "", "", "", str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, d.split("-")[0] ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
         
