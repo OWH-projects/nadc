@@ -7,6 +7,7 @@ import collections
 import pandas as pd
 import datetime
 from canonical.canonical import *
+import time
 
 fabric.state.output.status = False
 
@@ -549,7 +550,30 @@ def dedupeGivers():
     
     #Run set() to get uniques
     uniques = list(set(nadcids))
+    
+    mastergivers = []
+    for idx, i in enumerate(uniques):
+        print str(idx)
+        with hide('running', 'stdout', 'stderr'):
+            grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep "' + i + '" rawgivers.txt', capture=True)
+            g = grepstring.split("\n") #list of records that match
+            for dude in g:
+                row = dude.split("|") #actual record
+                master = None
+                if len(row[3]) > 1 and len(row[4]) > 1 and len(row[5]) > 1:
+                    if master == None:
+                        master = row
+                else:
+                    if master == None:
+                        master = row
+            mastergivers.append(master)
+    with open("/home/apps/myproject/myproject/nadc/data/toupload/givers.txt", "wb") as f:
+        for row in mastergivers:
+            standardrow = "|".join(row) + "\n"
+            f.write(standardrow)
+    
 
+    """
     #For every id, we need to find the most detailed row to keep. 
     mastergivers = []
     for idx, id in enumerate(uniques):
@@ -577,6 +601,7 @@ def dedupeGivers():
             standardrow = "|".join(row) + "\n"
             f.write(standardrow)
     f.close()
+    """
 
 """    
 def fixBlankTypes(filename, delim):

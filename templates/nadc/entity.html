@@ -1,0 +1,19 @@
+{% extends 'nadc/base.html' %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block title %}{% endblock %}
+
+{% block morestyles %}
+<link rel="stylesheet" href="/static/nadc/donor.css">
+{% endblock %}
+
+{% block content %}
+<h1>GIVES</h1>
+{% for gift in gives %}
+{{ gift }}
+{% endfor %}
+
+
+
+{% endblock %}
