@@ -87,25 +87,6 @@ def getUniqueList(data_type, writeout="no"):
     else:
         pass
 
-"""
-OK so this one returns a list of lists of IDs and types. Todo: incorporate into getUniqueList somehow?
-
---> fab getContribTypes
-"""
-
-def getContribTypes():
-    masterlist = []
-    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt") as a1:
-        reader = csvkit.reader(a1, delimiter="|")
-        for row in reader:
-            r = [row[0], row[6]]
-            masterlist.append(r)
-
-    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt") as a1:
-        reader = csvkit.reader(a1, delimiter="|")
-        for row in reader:
-            r = [row[0], row[6]]
-            masterlist.append(r)
             
 """
 This function creates a file of unique recipients -- this is our lookup table for the Getters model.
@@ -118,7 +99,7 @@ def dedupeGetters():
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed \'s/,//g\' | sed \'s/\&AMP;/\&/g\' > toupload/getters.txt', capture=False)
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' > toupload/getters.txt', capture=False)
         local('rm deduped-getters.txt', capture=False)
 
 
@@ -236,10 +217,10 @@ This function parses the table of expenditure information into something our dat
 def parseExp():
     getters = getUniqueList("getter")
     x = open("/home/apps/myproject/myproject/nadc/data/toupload/expenditures.txt", "wb")
-    with open("/home/apps/myproject/myproject/nadc/data/formb1d.txt", "rb") as f:
-        reader = csvkit.reader(f, delimiter="|")
-        reader.next()
-        for row in reader:
+    with open("/home/apps/myproject/myproject/nadc/data/formb1d.txt", "rb") as b1d:
+        b1dreader = csvkit.reader(b1d, delimiter="|")
+        b1dreader.next()
+        for row in b1dreader:
             if row[1] in getters:
                 #Committee Name|Committee ID|Date Received|Payee Name|Payee Address|Expenditure Purpose|Expenditure Date|Amount|In-Kind
                 comm_id = row[1]
@@ -274,24 +255,23 @@ def lookItUp(str, param, namefield):
     
 def stackItUp():
     headers = [
-        "wtfisthis",
-        "id",
-        "giver_id",
-        "canonical_id",
-        "giver_name",
-        "giver_canonical_name",
-        "giver_address",
-        "giver_city",
-        "giver_state",
-        "giver_zip",
-        "giver_type",
-        "getter_id",
-        "cash_donation",
-        "inkind_amount",
-        "pledge_amount",
-        "inkind_desc",
-        "donation_date",
-        "donation_year"
+            "id",
+            "giver_id",
+            "canonical_id",
+            "giver_name",
+            "giver_canonical_name",
+            "giver_address",
+            "giver_city",
+            "giver_state",
+            "giver_zip",
+            "giver_type",
+            "getter_id",
+            "cash_donation",
+            "inkind_amount",
+            "pledge_amount",
+            "inkind_desc",
+            "donation_date",
+            "donation_year"
         ]
     
     rows_with_new_bad_dates = []
@@ -329,7 +309,6 @@ def stackItUp():
                 if int(year) >= 1999:
                     name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())                
                     r = [
-                    "b1ab",
                     "", #id
                     row[4], #giver_id 
                     str(lookItUp(row[4],"canonicalid", name)), #canonical
@@ -395,7 +374,6 @@ def stackItUp():
             if int(year) >= 1999:
                 name = " ".join(row[15].split())
                 r = [
-                "b5",
                 "", #id
                 donor_id, #giver_id 
                 str(lookItUp(donor_id,"canonicalid",name)), #canonical_id
@@ -417,7 +395,6 @@ def stackItUp():
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
         
-        print typecomparison
         #do b2a
         reader_b2a = csvkit.reader(b2a, delimiter="|")
         reader_b2a.next()
@@ -440,8 +417,7 @@ def stackItUp():
                 year = d.split("-")[0]
                 if int(year) >= 1999:
                     name = " ".join(row[7].split())
-                    r = [ 
-                    "b2a",
+                    r = [
                     "", #id
                     donor_id, #canonical_id
                     str(lookItUp(donor_id,"canonicalid", name)), #canonicalid
@@ -485,8 +461,7 @@ def stackItUp():
                 year = d.split("-")[0]
                 if int(year) >= 1999:
                     name = " ".join(row[7].split())
-                    r = [ 
-                    "b4a",
+                    r = [
                     "", #id
                     donor_id, #giver_id
                     str(lookItUp(donor_id,"canonicalid",name)), #canonical_id
@@ -552,7 +527,7 @@ def dedupeDonations():
     deduped = toclean.drop_duplicates(subset=["giver_id", "donation_date", "getter_id", "cash_donation", "inkind_amount", "pledge_amount"])
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed \'1d\' > toupload/donations.txt', capture=False)
+        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > toupload/donations.txt', capture=False)
 
         
 """
@@ -564,7 +539,7 @@ This one checks every donation record to return a unique list of contributors wi
 def dedupeGivers():
     #Make a table of all givers, with dupes
     with hide('running', 'stdout', 'stderr'):
-        local('csvsort -d "|" -c donation_date deduped.csv | csvcut -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" | sed \'1d\' > rawgivers.txt', capture=False)
+        local('csvsort -d "|" -c donation_date deduped.csv | csvcut -x -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\'> rawgivers.txt', capture=False)
     
     #Now let's go through that and get a list of every NADC id
     rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
@@ -602,3 +577,25 @@ def dedupeGivers():
             standardrow = "|".join(row) + "\n"
             f.write(standardrow)
     f.close()
+
+"""    
+def fixBlankTypes(filename, delim):
+    z = open("blanktypematches.txt", "wb")
+    blanktypes = []
+    with open(filename, "rb") as f:
+        reader = csvkit.reader(f, delimiter=delim)
+        for row in reader:
+            try:
+                donor_type = row[10]
+                if not donor_type or donor_type == "":
+                    blanktypes.append(row[2])
+            except:
+                pass
+    for i in blanktypes:
+            with hide('running', 'stdout', 'stderr'):
+                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep "' + i + '" *.txt', capture=True)
+                for dude in grepstring.split("\n"):
+                    r = dude.split("|")
+                    file = r[0].split(":")[0]
+                    z.write(file + "\n")
+"""

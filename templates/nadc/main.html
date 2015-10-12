@@ -87,7 +87,7 @@ h3 { margin-top:0px; }
     };
 
     var formatter = function(val, axis) {
-        return addCommas(val);
+        return '$' + addCommas(val);
     };
     
     var by_year = [{% for dude in byyear %}{"year":{{ dude.donation_year }}, "sum":{{ dude.sum }}}{% if not forloop.last %},{% endif %}{% endfor%}];
