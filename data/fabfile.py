@@ -274,6 +274,7 @@ def lookItUp(str, param, namefield):
     
 def stackItUp():
     headers = [
+        "wtfisthis",
         "id",
         "giver_id",
         "canonical_id",
@@ -327,7 +328,26 @@ def stackItUp():
                 year = d.split("-")[0]
                 if int(year) >= 1999:
                     name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())                
-                    r = ["", row[4], str(lookItUp(row[4],"canonicalid", name)), name, lookItUp(row[4],"canonicalname", name), str(row[13]), str(row[14]), str(row[15]), str(row[16]), str(row[3]), str(row[1]), getFloat(str(row[6])), getFloat(str(row[7])), getFloat(str(row[8])), "", d, year ]
+                    r = [
+                    "b1ab",
+                    "", #id
+                    row[4], #giver_id 
+                    str(lookItUp(row[4],"canonicalid", name)), #canonical
+                    name, #rawname
+                    lookItUp(row[4],"canonicalname", name), #canonicalname 
+                    str(row[13]), #address
+                    str(row[14]), #city
+                    str(row[15]), #state
+                    str(row[16]), #zip
+                    str(row[3]), #type
+                    str(row[1]), #getter_id
+                    getFloat(str(row[6])), #cash
+                    getFloat(str(row[7])), #inkind
+                    getFloat(str(row[8])), #pledge
+                    "", #inkind_desc
+                    d, #donation_date
+                    year #donation_year
+                    ]
                     standardrow = "|".join(r)
                     alldonations.append(standardrow)
         
@@ -374,10 +394,30 @@ def stackItUp():
             year = d.split("-")[0]
             if int(year) >= 1999:
                 name = " ".join(row[15].split())
-                r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", str(row[8]), str(row[1]), getFloat(cash), getFloat(inkind), getFloat(pledge), "", d, year ]
+                r = [
+                "b5",
+                "", #id
+                donor_id, #giver_id 
+                str(lookItUp(donor_id,"canonicalid",name)), #canonical_id
+                name,
+                str(lookItUp(donor_id,"canonicalname", name)), #canonical_name
+                "", #address
+                "", #city
+                "", #state
+                "", #zip
+                str(row[8]), #type 
+                str(row[1]), #getter_id
+                getFloat(cash), #cash
+                getFloat(inkind), #inkind
+                getFloat(pledge), #pledge
+                "", #inkind_desc
+                d, #date
+                year #year
+                ]
                 standardrow = "|".join(r)
                 alldonations.append(standardrow)
         
+        print typecomparison
         #do b2a
         reader_b2a = csvkit.reader(b2a, delimiter="|")
         reader_b2a.next()
@@ -400,7 +440,26 @@ def stackItUp():
                 year = d.split("-")[0]
                 if int(year) >= 1999:
                     name = " ".join(row[7].split())
-                    r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), name, str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", givertype, str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, year ]
+                    r = [ 
+                    "b2a",
+                    "", #id
+                    donor_id, #canonical_id
+                    str(lookItUp(donor_id,"canonicalid", name)), #canonicalid
+                    name, #rawname
+                    str(lookItUp(donor_id,"canonicalname", name)), #canonicalname
+                    "", #address
+                    "", #city
+                    "", #state
+                    "", #zip
+                    givertype, #givertype 
+                    str(row[0]), #getter
+                    getFloat(str(row[4])), #cash_donation 
+                    getFloat(str(row[5])), #inkind
+                    getFloat(str(row[6])), #pledge
+                    "", #inkind_desc
+                    d, #date
+                    year #year
+                    ]
                     standardrow = "|".join(r) + "\n"
                     alldonations.append(standardrow)
         
@@ -426,7 +485,26 @@ def stackItUp():
                 year = d.split("-")[0]
                 if int(year) >= 1999:
                     name = " ".join(row[7].split())
-                    r = [ "", donor_id, str(lookItUp(donor_id,"canonicalid",name)), name, str(lookItUp(donor_id,"canonicalname", name)), "", "", "", "", givertype, str(row[0]), getFloat(str(row[4])), getFloat(str(row[5])), getFloat(str(row[6])), "", d, year ]
+                    r = [ 
+                    "b4a",
+                    "", #id
+                    donor_id, #giver_id
+                    str(lookItUp(donor_id,"canonicalid",name)), #canonical_id
+                    name, #name
+                    str(lookItUp(donor_id,"canonicalname", name)), #canonical name
+                    "", #address
+                    "", #city
+                    "", #state
+                    "",#zip
+                    givertype, #type
+                    str(row[0]), #getter
+                    getFloat(str(row[4])), #cash
+                    getFloat(str(row[5])), #inkind
+                    getFloat(str(row[6])), #pledge
+                    "", #inkind_desc
+                    d, #date
+                    year #year
+                    ]
                     standardrow = "|".join(r)
                     alldonations.append(standardrow)
         
