@@ -23,6 +23,27 @@ def About(request):
 def Coverage(request):
     dictionaries = {}
     return render_to_response('nadc/coverage.html', dictionaries)
+
+def Search(request):
+    query = request.GET.get('q', '')
+    exploded = query.split(" ")
+    q_objects = Q()
+    for term in exploded:
+        q_objects &= Q(name__icontains=term)
+
+    if query:
+        qset = (
+            q_objects
+        )
+        giver_results = Giver.objects.filter(qset)
+        getter_results = Getter.objects.filter(qset)
+        
+    else:
+        giver_results = []
+        getter_results = []
+
+    dictionaries = { 'giver_results': giver_results, 'getter_results': getter_results, 'query': query, }
+    return render_to_response('nadc/search.html', dictionaries)    
     
 # Committees share an id when listed as both donors and recipients. Our approach will be to have one page listing everything
 # for every entity. So the thinking is: a handful of complex templates, rather than many possible views.
@@ -30,21 +51,38 @@ def Coverage(request):
 # We shall see how this goes.
 def Entity(request, entity):
 
+    try:
+        name = Giver.objects.filter(canonical=entity)[0]
+    except:
+        name = Getter.objects.filter(nadcid=entity)[0]
+
     # Get any/all records of donations given by entity
     try:
-        gives = Donation.objects.filter(donor=entity)
+        gives = Donation.objects.filter(donor__canonical=entity)
+        topgives = gives.values('recipient__name').annotate(totalcash=Sum('cash')).order_by('-totalcash')[:5]
+        totalcashdonated = gives.aggregate(Sum('cash'))
+        totalinkinddonated = gives.aggregate(Sum('inkind'))
     except:
         gives = []
+        topgives = []
+        totalcashdonated = []
+        totalinkinddonated = []
 
     # Get any/all records of donations received by entity    
     try:
-        gets = Donation.objects.filter(recipient=entity)
+        gets = Donation.objects.filter(recipient__nadcid=entity)
+        topgets = gets.values('donor__standard_name').annotate(totalcash=Sum('cash')).order_by('-totalcash')[:5]
+        totalcashreceived = gets.aggregate(Sum('cash'))
+        totalinkindreceived = gets.aggregate(Sum('inkind'))
     except:
         gets = []
+        topgets = []
+        totalcashreceived = []
+        totalinkindreceived = []        
     
     # Expenditures
     try:
-        expenditures = Expenditure.objects.filter(commitee=entity)
+        expenditures = Expenditure.objects.filter(committee=entity)
     except:
         expenditures = []
 
@@ -54,6 +92,6 @@ def Entity(request, entity):
     except:
         loans = []
         
-    dictionaries = {'gives': gives, 'gets': gets, 'expenditures': expenditures, 'loans': loans, }
+    dictionaries = {'topgets': topgets, 'totalcashreceived': totalcashreceived, 'totalinkindreceived': totalinkindreceived, 'topgives': topgives, 'totalcashdonated': totalcashdonated, 'totalinkinddonated': totalinkinddonated,'gives': gives, 'gets': gets, 'expenditures': expenditures, 'loans': loans, 'name':name, }
     return render_to_response('nadc/entity.html', dictionaries)
     

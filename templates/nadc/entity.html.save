@@ -17,9 +17,6 @@
 
 <br><br><br>
 <h1>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</h1>
-{% if gives %}Total donated: ${{ totalcashdonated.cash__sum|intcomma }}{% endif %}<br>
-{% if gets %}Total raised: ${{ totalcashreceived.cash__sum|intcomma }}{% endif %}<br>
-
 
 {% if gives %}
 <h2>GIVES</h2>
@@ -89,39 +86,11 @@
 </tr>
 {% endfor %}
 </table>
-{% endif %}
 
-{% if loans %}
 <br><br>
 <h2>LOANS</h2>
 <h3>Loans taken</h3>
 <table>
-<th><td>Lender</td><td>Date borrowed</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_amount > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_amount|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
-<h3>Loans repaid</h3>
-<table>
-<th><td>Lender</td><td>Date repaid</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_repaid > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_repaid|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
-<h3>Loans forgiven</h3>
-<table>
-<th><td>Lender</td><td>Date repaid</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_repaid > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_repaid|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
-
-{% endif %}
-
-
 <tr>
 
 

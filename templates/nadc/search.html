@@ -1,0 +1,36 @@
+{% extends 'nadc/base.html' %}
+{% load humanize %}
+{% load searchwidget %}
+
+{% block social %}{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-bottom:50px;">
+<div class="row">
+        <div class="col-md-8">
+<div id="topdonors" class="item">
+<br><br><br>
+
+<h2>DONORS</h2>
+{% for giver in giver_results %}
+<a href="/campaign-finance/{{ giver.canonical }}">{{ giver.name }}</a><br>
+{% endfor %}
+<br><br>
+
+<h2>RECIPIENTS</h2>
+{% for getter in getter_results %}
+<a href="/campaign-finance/{{ getter.nadcid }}">{{ getter.name }}</a><br>
+{% endfor %}
+
+
+
+
+
+
+
+
+</div>
+</div>
+</div>
+</div>
+{% endblock%}
