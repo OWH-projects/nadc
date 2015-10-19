@@ -48,7 +48,7 @@
 		<tbody>
 		{% for gift in gives %}
 			<tr>
-				<td>{{ gift.recipient.name|title }}</td>
+				<td><a href="/campaign-finance/{{ gift.recipient.nadcid }}">{{ gift.recipient.name|title }}</a></td>
 				{% if gift.pledge = 0 %}{% if gift.cash > 0 %}<td class="r">${{ gift.cash|intcomma }}</td>{% else %}<td class="r">${{ gift.inkind|intcomma }}</td>{% endif %}{% endif %}
 				<td class="r">{{ gift.donation_date }}</td>
 			<tr>

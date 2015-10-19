@@ -16,6 +16,7 @@ files_to_roll_through = [
         {'filename': 'formb2a.txt', 'giver_col':2, 'getter_col':0},
         {'filename': 'formb4a.txt', 'giver_col':2, 'getter_col':0},
         {'filename': 'formb5.txt', 'giver_col':7, 'getter_col':1, 'getter_name':0},
+        {'filename': 'formb7.txt', 'giver_col':1, 'getter_col':8, 'getter_name':11, 'giver_name':0},
     ]
     
 """
@@ -100,7 +101,7 @@ def dedupeGetters():
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' > toupload/getters.txt', capture=False)
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' > toupload/getters.txt', capture=False)
         local('rm deduped-getters.txt', capture=False)
 
 
@@ -134,26 +135,29 @@ def whoAintWeKnowAbout():
         done = []
         for i in not_in_a1:
             with hide('running', 'stdout', 'stderr'):
-                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt', capture=True)
+                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt formb7.txt', capture=True)
                 for dude in grepstring.split("\n"):
                     r = dude.split("|")
                     file = r[0].split(":")[0]
                     for x in files_to_roll_through:
                         if x['filename'] == file:
                             getter_id = r[x['getter_col']]
-                            if getter_id not in done:
-                                done.append(getter_id)
-                                try:
-                                    getter_name = r[x['getter_name']].split(":")[1].strip()
-                                except:
-                                    getter_name = ""
-                                ls.append([getter_id, getter_name])
-        with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
-            for q in ls:
-                comm_id = q[0]
-                comm_name = q[1]
-                outlist = [comm_id, comm_name, '', '', '', '', '']
-                x.write("|".join(outlist) + "\n")
+                            if not getter_id.startswith("Committee ID") and not getter_id.startswith("form") and not getter_id.startswith("PAC ID") and getter_id.strip() != "":
+                                if getter_id not in done:
+                                    done.append(getter_id)
+                                    try:
+                                        getter_name = r[x['getter_name']].split(":")[1].strip()
+                                    except:
+                                        getter_name = ""
+                                    ls.append([getter_id, getter_name])
+        
+                
+        #with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
+        #   for q in ls:
+        #      comm_id = q[0]
+        #        comm_name = q[1]
+        #        outlist = [comm_id, comm_name, '', '', '', '', '']
+           #     x.write("|".join(outlist) + "\n")
 
     
 """
@@ -287,7 +291,7 @@ def stackItUp():
             comm_type = row[6]
             typecomparison[comm_id] = comm_type
 
-    with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5:
+    with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5, open("formb72.txt", "rb") as b72:
         
         #do b1ab
         reader_b1ab = csvkit.reader(b1ab, delimiter="|")
@@ -419,8 +423,6 @@ def stackItUp():
                     givertype = ""
                 year = d.split("-")[0]
                 if int(year) >= 1999:
-                    donor_id = row[2]                    
-                    don_date = str(row[1])
                     name = " ".join(row[7].split())
                     r = [
                     "", #id
@@ -465,8 +467,6 @@ def stackItUp():
                     givertype = ""                        
                 year = d.split("-")[0]
                 if int(year) >= 1999:
-                    donor_id = row[2]
-                    don_date = str(row[1])
                     name = " ".join(row[7].split())
                     r = [
                     "", #id
@@ -483,6 +483,54 @@ def stackItUp():
                     getFloat(str(row[4])), #cash
                     getFloat(str(row[5])), #inkind
                     getFloat(str(row[6])), #pledge
+                    "", #inkind_desc
+                    d, #date
+                    year #year
+                    ]
+                    standardrow = "|".join(r)
+                    alldonations.append(standardrow)
+                    
+        #do b72 -- remember, the committee/donor ID and name labels are wrong -- swapped -- b/c why not
+        reader_b72 = csvkit.reader(b72, delimiter="|")
+        reader_b72.next()
+        for row in reader_b72:
+            comm_id = row[3]
+            comm_name = row[7]
+            donor_id = row[1]
+            donor_name = row[0]
+            donation_date = row[2]
+            amount = row[5]
+            d = validDate(donation_date)
+            if d == "broke":
+                dict = {}
+                dict["giver_id"] = donor_id
+                dict["getter_id"] = comm_id
+                dict["source_table"] = "b72"
+                dict["donation_date"] = donation_date
+                rows_with_new_bad_dates.append(dict)
+            else:
+                try:
+                    givertype = typecomparison[donor_id]
+                except:
+                    givertype = ""
+                year = d.split("-")[0]
+                if int(year) >= 1999:
+                    name = " ".join(row[0].split())
+                    r = [
+                    "", #id
+                    donor_id, #giver_id
+                    str(lookItUp(donor_id,"canonicalid",name)), #canonical_id
+                    name, #name
+                    str(lookItUp(donor_id,"canonicalname", name)), #canonical name
+                    "", #address
+                    "", #city
+                    "", #state
+                    "",#zip
+                    givertype, #type
+                    comm_id, #getter
+                    getFloat(amount), #cash
+                    "", #inkind
+                    "", #pledge
                     "", #inkind_desc
                     d, #date
                     year #year
