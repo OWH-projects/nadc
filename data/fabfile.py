@@ -365,11 +365,12 @@ def stackItUp():
                     inkind = ""
                     pledge = row[11]
                     interimlist.append(row)
-                else:
-                    cash = row[11]
-                    inkind = ""
-                    pledge = ""
-                    interimlist.append(row)
+                #This needs to go in the loan table actually smart guy
+                #else:
+                #    cash = row[11]
+                #    inkind = ""
+                #    pledge = ""
+                #    interimlist.append(row)
         for row in interimlist:
             year = d.split("-")[0]
             if int(year) >= 1999:
@@ -505,34 +506,21 @@ Homeboy here kicks out duplicate donations. Pandas!
 """
 
 def dedupeDonations():
-    toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/alldonations.txt", delimiter="|", dtype={
-        "id": object,
-        "giver_id": object,
-        "canonical_id": object,
-        "giver_name": object,
-        "giver_canonical_name": object,
-        "giver_address": object,
-        "giver_city": object,
-        "giver_state": object,
-        "giver_zip": object,
-        "giver_type": object,
-        "getter_id": object,
-        "cash_donation": object,
-        "inkind_amount": object,
-        "pledge_amount": object,
-        "inkind_desc": object,
-        "donation_date": object,
-        "donation_year": object
-        }
-    )
-    deduped = toclean.drop_duplicates(subset=["giver_id", "donation_date", "getter_id", "cash_donation", "inkind_amount", "pledge_amount"])
-    deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > toupload/donations.txt', capture=False)
+        local('csvcut -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year alldonations.txt | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > sliceddonations.csv', capture=False)
+    reader = open('/home/apps/myproject/myproject/nadc/data/sliceddonations.csv', 'r')
+    uniques = set()
+    for obj in reader:
+        uniques.add(obj)
+    file = open("/home/apps/myproject/myproject/nadc/data/toupload/donations.txt", "w")
+    for obj in uniques:
+        file.write(obj)
+    file.close()
+    
 
         
 """
-This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. Rn it about 18 hours to run, so any performance tips welcome.
+This one checks every donation record to return a unique list of contributors with the most complete and/or latest information.
 
 --> fab dedupeGivers
 """

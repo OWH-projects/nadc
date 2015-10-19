@@ -8,7 +8,7 @@ from django.db.models import F
 DONATION_TOTAL = Donation.objects.count()
 
 def Main(request):
-    donations = Donation.objects.filter(donation_date__gte='2005-01-01')
+    donations = Donation.objects.all()
     top10ind = donations.filter(donor_id__contributor_type="I").values("donor_id__canonical", "donor_id__standard_name").annotate(totes=Sum("cash")).order_by("-totes")[:10]
     top10pac = donations.filter(donor_id__contributor_type="C").values("donor_id__canonical", "donor_id__standard_name").annotate(totes=Sum("cash")).order_by("-totes")[:10]
     top10cos = donations.filter(donor_id__contributor_type="").values("donor_id__canonical", "donor_id__standard_name").annotate(totes=Sum("cash")).order_by("-totes")[:10]

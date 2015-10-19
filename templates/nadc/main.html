@@ -16,10 +16,10 @@ h3 { margin-top:0px; }
 
 <div class="jumbotron" style="padding-top:60px; padding-bottom: 30px;">
     <div class="container">
-        <h1 class="bold">Campaign finance</h1>
-        <p class="lead">blah blah blah lead-in text for {{ DONATION_TOTAL|intcomma }} donations to political causes in <span class="sf">c</span> since <span class="minyear"></span></p>
-        <p class="lead"><a id="tw"><i class="fa fa-twitter"></i></a>&emsp;<a id="fb"><i class="fa fa-facebook-square"></i></a></p>
-    </div>
+		<p class="sf">c</p>
+        <h1 class="bold">Nebraska campaign finance</h1>
+        <p>{{ DONATION_TOTAL|intcomma }} donations to political causes since <span class="minyear"></span></p>
+       </div>
 </div>
 
 <div class="container" style="margin-bottom:50px;">
@@ -48,7 +48,7 @@ h3 { margin-top:0px; }
         <div id="topdonors" class="item">
             <h3>Top business donors</h3>
             <table class="table">{% for thing in top10cos %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/donor/{{ thing.donor_id}}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
             </table>
         </div>
         
@@ -110,7 +110,7 @@ h3 { margin-top:0px; }
                 bars: {
                     show: true,
                     fill: true,
-                    fillColor: 'steelblue',
+                    fillColor: '#333',
                     align: "center"
                 },
               color: "#fff"

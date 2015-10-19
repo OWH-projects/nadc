@@ -16,32 +16,48 @@
 
 
 <br><br><br>
-<h1>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</h1>
-{% if gives %}Total donated: ${{ totalcashdonated.cash__sum|intcomma }}{% endif %}<br>
-{% if gets %}Total raised: ${{ totalcashreceived.cash__sum|intcomma }}{% endif %}<br>
+<h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</b></h1>
+{% if gives %}<p>${{ totalcashdonated.cash__sum|intcomma }} in donations</p>{% endif %}
+{% if gets %}<p>${{ totalcashreceived.cash__sum|intcomma }} raised</p>{% endif %}
 
 
 {% if gives %}
-<h2>GIVES</h2>
-<table>
-<th>
-<td>Recipient</td>
-<td>Amount</td>
-<td>Date</td>
-</th>
-{% for gift in gives %}
-<tr>
-<td>{{ gift.recipient.name }}</td>
-{% if gift.pledge = 0 %}{% if gift.cash > 0 %}<td>${{ gift.cash|intcomma }}</td>{% else %}<td>${{ gift.inkind|intcomma }}</td>{% endif %}{% endif %}
-<td>{{ gift.donation_date }}</td>
-<tr>
-{% endfor %}
-</table>
+	<h2>GIVES</h2>
+	
+	
+	<h3>Top committees supported</h3>
+	
+	<table class="table table-condensed">
+		{% for row in topgives %}
+		<tr>
+			<td>{{ row.recipient__name|title }}</td>
+			<td class="r">${{ row.totalcash|intcomma }}<td>
+		</tr>
+		{% endfor %}
+	</table>
+	
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Recipient</th>
+				<th class="r">Amount</th>
+				<th class="r">Date</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+		{% for gift in gives %}
+			<tr>
+				<td>{{ gift.recipient.name|title }}</td>
+				{% if gift.pledge = 0 %}{% if gift.cash > 0 %}<td class="r">${{ gift.cash|intcomma }}</td>{% else %}<td class="r">${{ gift.inkind|intcomma }}</td>{% endif %}{% endif %}
+				<td class="r">{{ gift.donation_date }}</td>
+			<tr>
+		{% endfor %}
 
-<h3>Top committees supported</h3>
-{% for row in topgives %}
-{{ row.recipient__name|title }}, ${{ row.totalcash|intcomma }}<br>
-{% endfor %}
+		</tbody>
+	</table>
+
+	
 {% endif %}
 
 {% if gets %}
