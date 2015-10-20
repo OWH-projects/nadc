@@ -48,7 +48,7 @@
 		<tbody>
 		{% for gift in gives %}
 			<tr>
-				<td><a href="/campaign-finance/{{ gift.recipient.nadcid }}">{{ gift.recipient.name|title }}</a></td>
+				<td><a href="/campaign-finance/{{ gift.recipient.nadcid }}/{{ gift.recipient.name|slugify }}">{{ gift.recipient.name|title }}</a></td>
 				{% if gift.pledge = 0 %}{% if gift.cash > 0 %}<td class="r">${{ gift.cash|intcomma }}</td>{% else %}<td class="r">${{ gift.inkind|intcomma }}</td>{% endif %}{% endif %}
 				<td class="r">{{ gift.donation_date }}</td>
 			<tr>
@@ -61,6 +61,12 @@
 {% endif %}
 
 {% if gets %}
+
+<h3>Top donors</h3>
+{% for row in topgets %}
+{{ row.donor__standard_name|title }}, ${{ row.totalcash|intcomma }}<br>
+{% endfor %}
+
 <br><br>
 <h2>GETS</h2>
 <table>
@@ -72,7 +78,7 @@
 {% for donation in gets %}
 {% if donation.pledge = 0 %}
 <tr>
-<td>{{ donation.donor.name|title }}
+<td><a href="/campaign-finance/{{ donation.donor.nadcid }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
 {% if donation.cash > 0 %}<td>${{ donation.cash|intcomma }}</td>{% else %}<td>${{ donation.inkind|intcomma }}</td>{% endif %}
 <td>{{ donation.donation_date }}</td>
 </tr>
@@ -80,10 +86,6 @@
 {% endfor %}
 </table>
 
-<h3>Top donors</h3>
-{% for row in topgets %}
-{{ row.donor__standard_name|title }}, ${{ row.totalcash|intcomma }}<br>
-{% endfor %}
 {% endif %}
 
 {% if expenditures %}

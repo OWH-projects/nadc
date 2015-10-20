@@ -8,6 +8,7 @@ import pandas as pd
 import datetime
 from canonical.canonical import *
 import time
+import re
 
 fabric.state.output.status = False
 
@@ -142,22 +143,22 @@ def whoAintWeKnowAbout():
                     for x in files_to_roll_through:
                         if x['filename'] == file:
                             getter_id = r[x['getter_col']]
-                            if not getter_id.startswith("Committee ID") and not getter_id.startswith("form") and not getter_id.startswith("PAC ID") and getter_id.strip() != "":
-                                if getter_id not in done:
-                                    done.append(getter_id)
+                            clean_id = re.sub(r'form[a-zA-Z0-9]+\.txt\:', "", getter_id).strip()
+                            if not clean_id.startswith("Committee ID") and not clean_id.startswith("PAC ID") and clean_id.strip() != "":
+                                if clean_id not in done:
+                                    done.append(clean_id)
                                     try:
                                         getter_name = r[x['getter_name']].split(":")[1].strip()
                                     except:
                                         getter_name = ""
-                                    ls.append([getter_id, getter_name])
+                                    ls.append([clean_id, getter_name])
         
-                
-        #with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
-        #   for q in ls:
-        #      comm_id = q[0]
-        #        comm_name = q[1]
-        #        outlist = [comm_id, comm_name, '', '', '', '', '']
-           #     x.write("|".join(outlist) + "\n")
+        with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
+            for q in ls:
+                comm_id = q[0]
+                comm_name = q[1]
+                outlist = [comm_id, comm_name, '', '', '', '', '']
+                x.write("|".join(outlist) + "\n")
 
     
 """
