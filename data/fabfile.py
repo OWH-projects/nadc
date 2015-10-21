@@ -108,8 +108,10 @@ def dedupeGetters():
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' > toupload/getters.txt', capture=False)
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' -e \'s/$/\|/\' > toupload/getters.txt', capture=False)
         local('rm deduped-getters.txt', capture=False)
+        
+        
 
 
 """
@@ -142,7 +144,7 @@ def whoAintWeKnowAbout():
         done = []
         for i in not_in_a1:
             with hide('running', 'stdout', 'stderr'):
-                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1.txt formb1ab.txt formb2.txt formb2a.txt formb2b.txt formb4.txt formb4a.txt formb4b1.txt formb5.txt formb6 formb7.txt', capture=True)
+                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1.txt formb1ab.txt formb2.txt formb2a.txt formb2b.txt formb4.txt formb4a.txt formb4b1.txt formb5.txt formb6.txt formb7.txt', capture=True)
                 for dude in grepstring.split("\n"):
                     r = dude.split("|")
                     file = r[0].split(":")[0]
@@ -162,7 +164,7 @@ def whoAintWeKnowAbout():
             for q in ls:
                 comm_id = q[0]
                 comm_name = q[1]
-                outlist = [comm_id, comm_name, '', '', '', '', '']
+                outlist = [comm_id, comm_name, '', '', '', '', '','']
                 x.write("|".join(outlist) + "\n")
 
     
@@ -202,6 +204,7 @@ def parseCands():
                     office_title, #office title
                     stance, #support/oppose (0 = support, 1 = oppose)
                     donor_id, #donor ID, if there is one
+                    "", #notes field
                 ]
                 x.write("|".join(r) + "\n")
         x.close()
@@ -232,8 +235,22 @@ def parseLoans():
                 guarantor = row[10]
                 d = validDate(loan_date)
                 if d != "broke":
-                    r = ["", lender_name, lender_addr, loan_date, loan_amount, loan_repaid, loan_forgiven, paid_by_third_party, guarantor, comm_id]
-                    x.write("|".join(r) + "\n")
+                    year = d.split("-")[0]
+                    if int(year) >= 1999:
+                        r = [
+                            "", #DB ID
+                            lender_name, #lender name
+                            lender_addr, #lender address
+                            loan_date, #loan date
+                            loan_amount, #loan amount
+                            loan_repaid, #amount repaid
+                            loan_forgiven, #amount forgiven
+                            paid_by_third_party, #amount covered by 3rd party
+                            guarantor, #guarantor
+                            comm_id, #committee ID
+                            "", #notes field
+                        ]
+                        x.write("|".join(r) + "\n")
     x.close()
     
   
@@ -261,9 +278,21 @@ def parseExp():
                 exp_amount = row[7]
                 in_kind_amount = row[8]
                 d = validDate(exp_date)
-                if d != "broke":                    
-                    r = ["", payee_name, payee_addr, exp_date, exp_purpose, exp_amount, in_kind_amount, comm_id]
-                    x.write("|".join(r) + "\n")
+                if d != "broke":
+                    year = d.split("-")[0]
+                    if int(year) >= 1999:
+                        r = [
+                            "", #DB ID
+                            payee_name, #payee name
+                            payee_addr, #payee address
+                            exp_date, #date of expenditure
+                            exp_purpose, #expenditure purpose
+                            exp_amount, #expenditure amount
+                            in_kind_amount, #in-kind amount
+                            comm_id, #committee ID
+                            "", # notes
+                        ]
+                        x.write("|".join(r) + "\n")
     x.close()
   
   
@@ -275,27 +304,6 @@ This function extracts data on ballot questions from FormA1, the main committee 
 
 def getBallotQ():
     pass
-
-def testComm():
-    a1list = []
-    b4b1list = []
-    with open("formb4b1.txt", "rb") as b4b1, open("forma1.txt", "rb") as a1:
-        b4b1reader = csvkit.reader(b4b1, delimiter="|")
-        a1reader = csvkit.reader(a1, delimiter="|")
-        b4b1reader.next()
-        a1reader.next()
-        for row in b4b1reader:
-            b4b1list.append(row[4])
-        for row in a1reader:
-            a1list.append(row[0])
-    uniquea1 = list(set(a1list))
-    uniqueb4b1 = list(set(b4b1list))
-    not_in_a1 = []
-    for thing in uniqueb4b1:
-        if thing not in uniquea1:
-            not_in_a1.append(thing)
-    print not_in_a1
-    
 
   
 """
@@ -639,7 +647,7 @@ def dedupeDonations():
     deduped = toclean.drop_duplicates(subset=["giver_id", "donation_date", "getter_id", "cash_donation", "inkind_amount", "pledge_amount"])
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > toupload/donations.txt', capture=False)
+        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' -e \'s/$/\|/\' > toupload/donations.txt', capture=False)
 
         
 """
@@ -680,5 +688,5 @@ def dedupeGivers():
             mastergivers.append(master)
     with open("/home/apps/myproject/myproject/nadc/data/toupload/givers.txt", "wb") as f:
         for row in mastergivers:
-            standardrow = "|".join(row) + "\n"
+            standardrow = "|".join(row) + "|\n"
             f.write(standardrow)

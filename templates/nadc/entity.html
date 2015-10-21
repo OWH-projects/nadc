@@ -34,7 +34,7 @@
 		{% for row in topgives %}
 		<tr>
 			<td>{{ row.recipient__name|title }}</td>
-			<td class="r">${{ row.totalcash|intcomma }}<td>
+			<td class="r">${{ row.total|intcomma }}<td>
 		</tr>
 		{% endfor %}
 	</table>
@@ -72,7 +72,7 @@
 	{% for row in topgets %}
 		<tr>
 			<td>{{ row.donor__standard_name|title }}</td>
-			<td class="r">${{ row.totalcash|intcomma }}</td>
+			<td class="r">${{ row.total|intcomma }}</td>
 		</tr>
 	{% endfor %}
 	</table>

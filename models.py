@@ -12,6 +12,7 @@ class Giver(models.Model):
     state = models.CharField(max_length=40, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     contributor_type = models.CharField(max_length=15, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
 
 class Getter(models.Model):
     nadcid = models.CharField(max_length=10, primary_key=True)
@@ -21,6 +22,7 @@ class Getter(models.Model):
     state = models.CharField(max_length=40, null=True, blank=True)
     zip = models.CharField(max_length=20, null=True, blank=True)
     recipient_type = models.CharField(max_length=15, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
 
 class Donation(models.Model):
     donor = models.ForeignKey(Giver)
@@ -31,6 +33,7 @@ class Donation(models.Model):
     inkind_desc = models.TextField(null=True, blank=True)
     donation_date = models.DateField()
     donation_year = models.CharField(max_length=4, default="")
+    notes = models.TextField(null=True, blank=True)
     
 class Candidate(models.Model):
     cand_id = models.CharField(max_length=40, null=False, blank=False)
@@ -40,6 +43,8 @@ class Candidate(models.Model):
     office_sought = models.CharField(max_length=30, null=True, blank=True)
     office_title = models.CharField(max_length=30, null=True, blank=True)
     office_desc = models.CharField(max_length=30, null=True, blank=True)
+    donor_id = models.ForeignKey(Giver, null=True)
+    notes = models.TextField(null=True, blank=True)
 
 class Loan(models.Model):
     committee = models.ForeignKey(Getter)
@@ -51,6 +56,7 @@ class Loan(models.Model):
     loan_forgiven = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     paid_by_third_party = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     guarantor = models.CharField(max_length=70, null=False, blank=True)
+    notes = models.TextField(null=True, blank=True)
     
 class Expenditure(models.Model):
     committee = models.ForeignKey(Getter)
@@ -63,4 +69,4 @@ class Expenditure(models.Model):
     #This may need to change to a ForeignKey to Candidate/Ballot Initiative at some point. For now...
     issue = models.CharField(max_length=75, null=True, blank=True) # Issue expenditure supported/opposed
     stance = models.CharField(max_length=10, null=True, blank=True) #Whether supported/opposed
-    
+    notes = models.TextField(null=True, blank=True)

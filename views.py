@@ -64,7 +64,7 @@ def Entity(request, entity):
     # Get any/all records of donations given by entity
     try:
         gives = Donation.objects.filter(donor__canonical=entity)
-        topgives = gives.values('recipient__name').annotate(totalcash=Sum('cash')).order_by('-totalcash')[:5]
+        topgives =  gives.values('recipient__name').annotate(total=Sum('cash') + Sum('inkind')).order_by('-total')[:5]
         totalcashdonated = gives.aggregate(Sum('cash'))
         totalinkinddonated = gives.aggregate(Sum('inkind'))
     except:
@@ -76,7 +76,7 @@ def Entity(request, entity):
     # Get any/all records of donations received by entity    
     try:
         gets = Donation.objects.filter(recipient__nadcid=entity)
-        topgets = gets.values('donor__standard_name').annotate(totalcash=Sum('cash')).order_by('-totalcash')[:5]
+        topgets =  gets.values('recipient__name').annotate(total=Sum('cash') + Sum('inkind')).order_by('-total')[:5]
         totalcashreceived = gets.aggregate(Sum('cash'))
         totalinkindreceived = gets.aggregate(Sum('inkind'))
     except:
