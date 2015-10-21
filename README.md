@@ -15,7 +15,7 @@ We expect to get regular data dumps from the NADC and overwrite the database in 
 </ol>
 
 ##Overview
-A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `nadc/data/nadc_tables.rtf`). We focus on eight of them:
+A standard data dump from the NADC yields 61 pipe-delimited text files (data dictionary at: `nadc/data/nadc_tables.rtf`). We focus on 11 of them:
 <ul>
 <li><strong>Form A1</strong>: Lookup table for campaign committees</li>
 <li><strong>Form A1CAND</strong>: Candidates tied to campaign committees</li>
@@ -23,18 +23,22 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 <li><strong>Form B1C</strong>: Loans to campaign committees</li>
 <li><strong>Form B1D</strong>: Expenditures by campaign committees</li>
 <li><strong>Form B2A</strong>: Contributions to political party committees</li>
-<li><strong>Form B4A</strong>: PAC contributions</li>
+<li><strong>Form B2B</strong>: Expenditures by political party committees</li>
+<li><strong>Form B4A</strong>: Contributions to independent committees</li>
+<li><strong>Form B4B1</strong>: Expenditures by independent committees</li>
 <li><strong>Form B5</strong>: Late contributions</li>
+<li><strong>Form B72</strong>: Donations by corporations, unions and other associations</li>
+<li><strong>Form B73</strong>: Indirect contributions by corporations, unions and other associations</li>
 </ul>
 
-A shell script, `nadc/data/parser.sh`, makes backups of the raw data, loads a MySQL database with raw data for separate analysis and boils down these eight files (which contain duplicate donations, recipients and donors between tables) into six tables of unique(ish, we'll get to that) entities:
+A shell script, `nadc/data/parser.sh`, makes backups of the raw data, loads a MySQL database with raw data for separate analysis and boils down these 11 files (which contain duplicate donations, recipients and donors between tables) into six tables of unique(ish, we'll get to that) entities:
 <ul>
 <li><code>nadc/data/toupload/getters.txt</code>: Any group or individual who received a donation. These come exclusively from Form A1.</li>
-<li><code>nadc/data/toupload/givers.txt</code>: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A or B5. (Some donations are duplicated among those tables.)</li>
+<li><code>nadc/data/toupload/givers.txt</code>: Any group or individual who gave a donation to a Getter. Could come from B1AB, B2A, B4A, B5, B72 or B73. (Some donations are duplicated among those tables.)</li>
 <li><code>nadc/data/toupload/donations.txt</code>: Money, inkind donations or pledges to getters from givers.</li>
 <li><code>nadc/data/toupload/candidates.txt</code>: Candidates tied to campaign committees.</li>
-<li><code>nadc/data/toupload/loans.txt</code>: Lending to campaign committees.</li>
-<li><code>nadc/data/toupload/expenditures.txt</code>: Expenditures by campaign committees.</li>
+<li><code>nadc/data/toupload/loans.txt</code>: Lending.</li>
+<li><code>nadc/data/toupload/expenditures.txt</code>: Expenditures.</li>
 </ul>
 
 The clean files are then uploaded to the MySQL database that powers our Django app. For now, database credentials are stored as environmental variables. Maybe this should be changed.
@@ -58,15 +62,18 @@ Susan Lorenz at the Nebraska Accountability and Disclosure Commission told us th
 
 ##Known problems
 ###Dates
-Very few records have data entry problems with dates. We added these to a lookup dict in `nadc/data/canonical/canonical.py` and they get fixed on import.
+A few records have invalid dates. We added these to a lookup dict in `nadc/data/canonical/canonical.py` and they get fixed on import.
 
 Since we can't predict the ways dates will be screwed up in the future, we halt `nadc/data/parser.sh` when confronted with an invalid date that doesn't exist in the lookup.
 
 ###Purposeful duplication
 Somehow, about a dozen organizations in Form A1 show up multiple times. We handle these with pandas' [`drop_duplicates`](http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.drop_duplicates.html).
 
+###Missing committees
+Theoretically, every committee is represented in Form A1. In practice, that's not true. We use a <i>fairly involved</i> function (`def whoAintWeKnowAbout()`) to handle.
+
 ###Donor types
-Donors to independent expenditure committees and political party committees don't have a "type" (individual, corporate, etc.) listed. Nearly every one of these donors show up in another table, however, so we extract type data from other tables to round out these records.
+Donors to independent expenditure committees and political party committees don't have a "type" (individual, corporate, etc.) listed. We try to extract "type" data from other tables to round out these records.
 
 ##Data excluded
 <ul>
