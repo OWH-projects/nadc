@@ -35,7 +35,11 @@ class Donation(models.Model):
 class Candidate(models.Model):
     cand_id = models.CharField(max_length=40, null=False, blank=False)
     cand_name = models.CharField(max_length=70, null=False, blank=False)
+    stance = models.CharField(max_length=2, null=True, blank=True)
     committee = models.ForeignKey(Getter)
+    office_sought = models.CharField(max_length=30, null=True, blank=True)
+    office_title = models.CharField(max_length=30, null=True, blank=True)
+    office_desc = models.CharField(max_length=30, null=True, blank=True)
 
 class Loan(models.Model):
     committee = models.ForeignKey(Getter)
@@ -56,5 +60,7 @@ class Expenditure(models.Model):
     exp_purpose = models.CharField(max_length=200)
     amount = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     in_kind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
-    
+    #This may need to change to a ForeignKey to Candidate/Ballot Initiative at some point. For now...
+    issue = models.CharField(max_length=75, null=True, blank=True) # Issue expenditure supported/opposed
+    stance = models.CharField(max_length=10, null=True, blank=True) #Whether supported/opposed
     

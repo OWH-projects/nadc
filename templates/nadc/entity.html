@@ -20,6 +20,9 @@
 {% if gives %}<p>${{ totalcashdonated.cash__sum|intcomma }} in donations</p>{% endif %}
 {% if gets %}<p>${{ totalcashreceived.cash__sum|intcomma }} raised</p>{% endif %}
 
+{% if candidate %}
+<a href="/campaign-finance/candidate/{{ candidate.cand_id }}">{{ candidate.cand_name }}</a>
+{% endif %}
 
 {% if gives %}
 	<h2>GIVES</h2>
@@ -61,82 +64,139 @@
 {% endif %}
 
 {% if gets %}
+	<h2>GETS</h2>
 
-<h3>Top donors</h3>
-{% for row in topgets %}
-{{ row.donor__standard_name|title }}, ${{ row.totalcash|intcomma }}<br>
-{% endfor %}
-
-<br><br>
-<h2>GETS</h2>
-<table>
-<th>
-<td>Donor</td>
-<td>Amount</td>
-<td>Date</td>
-</th>
-{% for donation in gets %}
-{% if donation.pledge = 0 %}
-<tr>
-<td><a href="/campaign-finance/{{ donation.donor.nadcid }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
-{% if donation.cash > 0 %}<td>${{ donation.cash|intcomma }}</td>{% else %}<td>${{ donation.inkind|intcomma }}</td>{% endif %}
-<td>{{ donation.donation_date }}</td>
-</tr>
-{% endif %}
-{% endfor %}
-</table>
+	<h3>Top donors</h3>
+		
+	<table class="table">
+	{% for row in topgets %}
+		<tr>
+			<td>{{ row.donor__standard_name|title }}</td>
+			<td class="r">${{ row.totalcash|intcomma }}</td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Donor</th>
+				<th class="r">Amount</th>
+				<th class="r">Date</th>
+			</tr>
+		</thead>
+		<tbody>
+		
+		{% for donation in gets %}
+		{% if donation.pledge = 0 %}
+			<tr>
+				<td><a href="/campaign-finance/{{ donation.donor.nadcid }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
+				{% if donation.cash > 0 %}<td class="r">${{ donation.cash|intcomma }}</td>{% else %}<td class="r">${{ donation.inkind|intcomma }}</td>{% endif %}
+				<td class="r">{{ donation.donation_date }}</td>
+			</tr>
+		{% endif %}
+		{% endfor %}
+		
+		</tbody>
+	</table>
 
 {% endif %}
 
 {% if expenditures %}
-<br><br>
-<h2>EXPENDITURES</h2>
-<table>
-<th>
-<td>Paid to</td>
-<td>For</td>
-<td>On</td>
-<td>Amount</td>
-</th>
-{% for exp in expenditures %}
-<tr>
-<td>{{ exp.payee|title }}</td>
-<td>{% if exp.exp_purpose %}{{ exp.exp_purpose }}{% else %}Not reported{% endif %}</td>
-<td>{{ exp.exp_date }}</td>
-<td>{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
-</tr>
-{% endfor %}
-</table>
+
+	<h2>EXPENDITURES</h2>
+
+	<table class="table table-condensed">
+		<thead>
+			<th>Paid to</th>
+			<th>For</th>
+			<th class="r">Date</th>
+			<th class="r">Amount</th>
+		</thead>
+		<tbody>
+		
+		{% for exp in expenditures %}
+			<tr>
+				<td>{{ exp.payee|title }}</td>
+				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
+				<td class="r">{{ exp.exp_date }}</td>
+				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
+			</tr>
+		{% endfor %}
+		</tbody>
+	</table>
 {% endif %}
 
 {% if loans %}
-<br><br>
-<h2>LOANS</h2>
-<h3>Loans taken</h3>
-<table>
-<th><td>Lender</td><td>Date borrowed</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_amount > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_amount|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
-<h3>Loans repaid</h3>
-<table>
-<th><td>Lender</td><td>Date repaid</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_repaid > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_repaid|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
-<h3>Loans forgiven</h3>
-<table>
-<th><td>Lender</td><td>Date repaid</td><td>Amount</td></th>
-{% for loan in loans %}
-{% if loan.loan_repaid > 0 %}
-<tr><td>{{ loan.lender_name }}</td><td>${{ loan.loan_date }}</td><td>{{ loan.loan_repaid|intcomma  }}</td></tr>
-{% endif %}
-{% endfor %}
+	<h2>LOANS</h2>
+	
+	<h3>Loans taken</h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date borrowed</th>
+				<th>Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for loan in loans %}
+			{% if loan.loan_amount > 0 %}
+			<tr>
+				<td>{{ loan.lender_name }}</td>
+				<td>{{ loan.loan_date }}</td>
+				<td>${{ loan.loan_amount|intcomma  }}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	<h3>Loans repaid</h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date repaid</th>
+				<th>Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for loan in loans %}
+			{% if loan.loan_repaid > 0 %}
+			<tr>
+				<td>{{ loan.lender_name }}</td>
+				<td>{{ loan.loan_date }}</td>
+				<td>${{ loan.loan_repaid|intcomma  }}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
 
+	<h3>Loans forgiven</h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date repaid</th>
+				<th>Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for loan in loans %}
+			{% if loan.loan_repaid > 0 %}
+			<tr>
+				<td>{{ loan.lender_name }}</td>
+				<td>{{ loan.loan_date }}</td>
+				<td>${{ loan.loan_repaid|intcomma  }}</td>
+			</tr>
+			{% endif %}
+			{% endfor %}
+		</tbody>
+	</table>
+	
 {% endif %}
 
 

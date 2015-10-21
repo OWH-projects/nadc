@@ -13,10 +13,16 @@ import re
 fabric.state.output.status = False
 
 files_to_roll_through = [
+        {'filename': 'formb1.txt', 'getter_col':6, 'getter_name':0},
         {'filename': 'formb1ab.txt', 'giver_col':4, 'getter_col':1, 'getter_name':0},
+        {'filename': 'formb2.txt', 'getter_col':5, 'getter_name':0},
         {'filename': 'formb2a.txt', 'giver_col':2, 'getter_col':0},
+        {'filename': 'formb2b.txt', 'giver_col':0, 'getter_col':2, 'getter_name':9},
+        {'filename': 'formb4.txt', 'getter_col':6, 'getter_name':0},
         {'filename': 'formb4a.txt', 'giver_col':2, 'getter_col':0},
+        {'filename': 'formb4b1.txt', 'giver_col':2, 'getter_col':4, 'getter_name':10},
         {'filename': 'formb5.txt', 'giver_col':7, 'getter_col':1, 'getter_name':0},
+        {'filename': 'formb6.txt', 'getter_col':2, 'getter_name':0},
         {'filename': 'formb7.txt', 'giver_col':1, 'getter_col':8, 'getter_name':11, 'giver_name':0},
     ]
     
@@ -28,13 +34,11 @@ def validDate(datestring):
     try:
         return SHITDATES[datestring]
     except:
-        high = datetime.datetime.now()
-        low = datetime.datetime.strptime("1995-01-01", '%Y-%m-%d')
         try:
-            # does it parse correctly?
+            # is it a valid date?
             x = datetime.datetime.strptime(datestring, '%Y-%m-%d')
-            # is the date between 1995 and today?
-            if x > low and x < high:
+            # is the date before today?
+            if x < datetime.datetime.now():
                 return datestring
             else:
                 return "broke"
@@ -63,8 +67,9 @@ def getUniqueList(data_type, writeout="no"):
                 reader = csvkit.reader(f, delimiter="|")
                 reader.next()
                 for row in reader:
-                    giver_id = row[thing['giver_col']]
-                    ls.append(giver_id)
+                    if row[thing['giver_col']]:
+                        giver_id = row[thing['giver_col']]
+                        ls.append(giver_id)
         uniq_ls = set(ls)
         if writeout == "yes":
             g = open("unique_contributor_ids.txt", "wb")
@@ -78,8 +83,9 @@ def getUniqueList(data_type, writeout="no"):
                 reader = csvkit.reader(f, delimiter="|")
                 reader.next()
                 for row in reader:
-                    getter_id = row[thing['getter_col']]
-                    ls.append(getter_id)
+                    if row[thing['getter_col']]:
+                        getter_id = row[thing['getter_col']]
+                        ls.append(getter_id)
         uniq_ls = set(ls)
         if writeout == "yes":
             g = open("unique_recip_ids.txt", "wb")
@@ -136,7 +142,7 @@ def whoAintWeKnowAbout():
         done = []
         for i in not_in_a1:
             with hide('running', 'stdout', 'stderr'):
-                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1ab.txt formb2a.txt formb4a.txt formb5.txt formb7.txt', capture=True)
+                grepstring = local('cd /home/apps/myproject/myproject/nadc/data && grep -m 1 "' + i + '" formb1.txt formb1ab.txt formb2.txt formb2a.txt formb2b.txt formb4.txt formb4a.txt formb4b1.txt formb5.txt formb6 formb7.txt', capture=True)
                 for dude in grepstring.split("\n"):
                     r = dude.split("|")
                     file = r[0].split(":")[0]
@@ -152,7 +158,6 @@ def whoAintWeKnowAbout():
                                     except:
                                         getter_name = ""
                                     ls.append([clean_id, getter_name])
-        
         with open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "ab") as x:
             for q in ls:
                 comm_id = q[0]
@@ -170,6 +175,7 @@ This function parses the table of candidate information into something our datab
 def parseCands():
     getters = getUniqueList("getter")
     with open("/home/apps/myproject/myproject/nadc/data/forma1cand.txt", "rb") as f:
+        #Form A1 ID Number|Date Received|Candidate ID|Candidate Last Name|Candidate First Name|Candidate Middle Initial|Support/Oppose|Office Sought|Office Title|Office Description
         reader = csvkit.reader(f, delimiter="|")
         reader.next()
         x = open("/home/apps/myproject/myproject/nadc/data/toupload/candidates.txt", "wb")
@@ -177,8 +183,26 @@ def parseCands():
             if row[0] in getters:
                 cand_id = row[2]
                 comm_id = row[0]
+                office_desc = row[9].strip()
+                office_sought = row[7].strip()
+                office_title = row[8].strip()
+                stance = row[6]
+                try:
+                    donor_id = CANDIDATE_DONORS[cand_id]
+                except:
+                    donor_id = ""
                 cand_name = ' '.join((row[4] + " " + row[5] + " " + row[3].strip()).split())
-                r = ["", cand_id, cand_name, comm_id ]
+                r = [
+                    "", #db ID
+                    cand_id, #candidate ID
+                    cand_name, #candidate name
+                    comm_id, #committee ID
+                    office_desc, #office description
+                    office_sought, #office sought
+                    office_title, #office title
+                    stance, #support/oppose (0 = support, 1 = oppose)
+                    donor_id, #donor ID, if there is one
+                ]
                 x.write("|".join(r) + "\n")
         x.close()
     
@@ -241,6 +265,38 @@ def parseExp():
                     r = ["", payee_name, payee_addr, exp_date, exp_purpose, exp_amount, in_kind_amount, comm_id]
                     x.write("|".join(r) + "\n")
     x.close()
+  
+  
+"""
+This function extracts data on ballot questions from FormA1, the main committee table.
+
+--> fab getBallotQ
+"""
+
+def getBallotQ():
+    pass
+
+def testComm():
+    a1list = []
+    b4b1list = []
+    with open("formb4b1.txt", "rb") as b4b1, open("forma1.txt", "rb") as a1:
+        b4b1reader = csvkit.reader(b4b1, delimiter="|")
+        a1reader = csvkit.reader(a1, delimiter="|")
+        b4b1reader.next()
+        a1reader.next()
+        for row in b4b1reader:
+            b4b1list.append(row[4])
+        for row in a1reader:
+            a1list.append(row[0])
+    uniquea1 = list(set(a1list))
+    uniqueb4b1 = list(set(b4b1list))
+    not_in_a1 = []
+    for thing in uniqueb4b1:
+        if thing not in uniquea1:
+            not_in_a1.append(thing)
+    print not_in_a1
+    
+
   
 """
 This guy makes a big ol' master table of donations to mow down.

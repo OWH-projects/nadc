@@ -32,23 +32,23 @@ h3 { margin-top:0px; }
         </div>
         
         <div id="topdonors" class="item">
-            <h3>Top individual donors</h3>
+            <h3>Top donors, by dollars</h3>
             <table class="table">{% for thing in top10ind %}
                 <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
             </table>
         </div>
         
         <div id="topdonors" class="item">
-            <h3>Top organizational donors</h3>
-            <table class="table">{% for thing in top10pac %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+            <h3>Top donors, by number of contributions</h3>
+            <table class="table">{% for thing in topvolumeraw %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: {{ thing.recipient__count }}</td></tr>{% endfor %}
             </table>
         </div>
         
         <div id="topdonors" class="item">
-            <h3>Top business donors</h3>
-            <table class="table">{% for thing in top10cos %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
+            <h3>Top donors, by committees supported</h3>
+            <table class="table">{% for thing in topvolumeunique %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: {{ thing.recipient__count }}</td></tr>{% endfor %}
             </table>
         </div>
         
