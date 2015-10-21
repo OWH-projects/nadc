@@ -346,6 +346,7 @@ def stackItUp():
     
     rows_with_new_bad_dates = []
     alldonations = []
+    new_loans = []
     typecomparison = {}
     
     #get IDs and types from Form A1
@@ -434,6 +435,21 @@ def stackItUp():
                     inkind = ""
                     pledge = row[11]
                     interimlist.append(row)
+                elif row[9] == "L":
+                    loan_row = [
+                        "", #DB ID
+                        row[15].strip(), #lender name
+                        "", #lender address
+                        row[10], #loan date
+                        row[11], #loan amount
+                        "", #amount repaid
+                        "", #amount forgiven
+                        "", #amount covered by 3rd party
+                        "", #guarantor
+                        row[1], #committee ID
+                        "", #notes field
+                    ]
+                    new_loans.append(loan_row)
                 else:
                     cash = row[11]
                     inkind = ""
@@ -616,6 +632,12 @@ def stackItUp():
                 f.write(final)
         f.close()
     
+    # append new loans to toupload/loans.txt
+    if len(new_loans) > 0:
+        with open("/home/apps/myproject/myproject/nadc/data/toupload/loans.txt", "ab") as l:
+            for loan in new_loans:
+                l.write("|".join(loan) + "\n")
+    
 
 """
 Homeboy here kicks out duplicate donations. Pandas!
@@ -651,7 +673,7 @@ def dedupeDonations():
 
         
 """
-This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. Rn it about 18 hours to run, so any performance tips welcome.
+This one checks every donation record to return a unique list of contributors with the most complete and/or latest information. Takes about an hour to run?
 
 --> fab dedupeGivers
 """
