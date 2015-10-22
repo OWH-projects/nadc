@@ -11,9 +11,7 @@
 
 {% block content %}
 
-
 <div class="container">
-
 
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</b></h1>
@@ -25,7 +23,6 @@
 {% if gets %}
 <h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
 <p class="small ital">RAISED</p>
-</div>
 {% endif %}
 
 {% if candidate %}
