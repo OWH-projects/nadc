@@ -15,8 +15,8 @@ printf "~~ parsed \"last updated\" date ~~\n\n"
 
 #make backup copies of everything
 printf "\n~~ making some backup files ~~\n"
-mkdir -p backup
-cp *.txt backup
+mkdir -p /home/apps/myproject/myproject/nadc/data/backup
+cp *.txt /home/apps/myproject/myproject/nadc/data/backup
 printf "~~ made some backup files ~~\n\n"
 
 #fix date formatting
