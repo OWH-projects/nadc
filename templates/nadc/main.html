@@ -19,7 +19,8 @@ h3 { margin-top:0px; }
 		<p class="sf">c</p>
         <h1 class="bold">Nebraska campaign finance</h1>
         <p>{{ DONATION_TOTAL|intcomma }} donations to political causes since <span class="minyear"></span></p>
-       </div>
+        <p class="small">Data updated: {{ LAST_UPDATED|date:"N d, Y" }}</p>
+    </div>
 </div>
 
 <div class="container" style="margin-bottom:50px;">

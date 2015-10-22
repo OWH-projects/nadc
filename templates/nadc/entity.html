@@ -17,20 +17,14 @@
 
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</b></h1>
-{% if gives and gets %}
-<div class="row">
+
 {% if gives %}
-<div class="col-md-6">
-    <h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|intcomma }}</h3>
-    <p class="small ital">DONATED</p>
-</div>
+<h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|intcomma }}</h3>
+<p class="small ital">DONATED</p>
 {% endif %}
 {% if gets %}
-<div class="col-md-6">
-    <h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
-    <p class="small ital">RAISED</p>
-</div>
-{% endif %}
+<h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
+<p class="small ital">RAISED</p>
 </div>
 {% endif %}
 
@@ -45,7 +39,6 @@
 
 {% if gives %}
 	<h2>GIVES</h2>
-	
 	
 	<h3>Top committees supported</h3>
 	

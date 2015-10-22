@@ -27,6 +27,22 @@ files_to_roll_through = [
         {'filename': 'formb7.txt', 'giver_col':1, 'getter_col':8, 'getter_name':11, 'giver_name':0},
     ]
     
+
+"""
+A function to parse the "last updated" date from a file in the NADC data dump.
+"""
+
+def parseDate():
+    q = open("/home/apps/myproject/myproject/nadc/last_updated.py", "wb")
+    with open("/home/apps/myproject/myproject/nadc/data/DATE_UPDATED.TXT", "rb") as d:
+        last_updated = d.readline().split(": ")[1].split(" ")[0].split("-")
+        year = last_updated[0]
+        month = last_updated[1]
+        day = last_updated[2]
+        q.write("import datetime\n\nLAST_UPDATED = datetime.date(" + year + ", " + month + ", " + day + ")")
+    q.close()
+    
+    
 """
 A helper function to test whether a date sucks and is bad, and one to return "0.0" instead of a string.
 """
@@ -73,7 +89,7 @@ def getUniqueList(data_type, writeout="no"):
                         ls.append(giver_id)
         uniq_ls = set(ls)
         if writeout == "yes":
-            g = open("unique_contributor_ids.txt", "wb")
+            g = open("/home/apps/myproject/myproject/nadc/data/unique_contributor_ids.txt", "wb")
             for id in uniq_ls:
                 g.write(id + "\n")
             g.close()
@@ -89,7 +105,7 @@ def getUniqueList(data_type, writeout="no"):
                         ls.append(getter_id)
         uniq_ls = set(ls)
         if writeout == "yes":
-            g = open("unique_recip_ids.txt", "wb")
+            g = open("/home/apps/myproject/myproject/nadc/data/unique_recip_ids.txt", "wb")
             for id in uniq_ls:
                 g.write(id + "\n")
             g.close()
@@ -109,10 +125,8 @@ def dedupeGetters():
     deduped = toclean.drop_duplicates(subset="Committee ID Number")
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-getters.txt', sep="|", header=False)
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' -e \'s/$/\|/\' > toupload/getters.txt', capture=False)
-        local('rm deduped-getters.txt', capture=False)
-        
-        
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8 -x deduped-getters.txt | csvformat -D "|" | tr \'[:lower:]\' \'[:upper:]\' | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' -e \'s/$/\|/\' > /home/apps/myproject/myproject/nadc/data/toupload/getters.txt', capture=False)
+        local('rm /home/apps/myproject/myproject/nadc/data/deduped-getters.txt', capture=False)
 
 
 """
@@ -167,7 +181,7 @@ def whoAintWeKnowAbout():
                 comm_name = q[1]
                 outlist = [comm_id, comm_name, '', '', '', '', '','']
                 x.write("|".join(outlist) + "\n")
-
+                
     
 """
 This function parses the table of candidate information into something our database model can ingest.
@@ -375,7 +389,7 @@ def stackItUp():
             comm_type = row[6]
             typecomparison[comm_id] = comm_type
 
-    with open("formb1ab.txt", "rb") as b1ab, open("formb2a.txt", "rb") as b2a, open("formb4a.txt", "rb") as b4a, open("formb5.txt", "rb") as b5, open("formb72.txt", "rb") as b72:
+    with open("/home/apps/myproject/myproject/nadc/data/formb1ab.txt", "rb") as b1ab, open("/home/apps/myproject/myproject/nadc/data/formb2a.txt", "rb") as b2a, open("/home/apps/myproject/myproject/nadc/data/formb4a.txt", "rb") as b4a, open("/home/apps/myproject/myproject/nadc/data/formb5.txt", "rb") as b5, open("/home/apps/myproject/myproject/nadc/data/formb72.txt", "rb") as b72:
         
         #do b1ab
         reader_b1ab = csvkit.reader(b1ab, delimiter="|")
@@ -687,7 +701,7 @@ def dedupeDonations():
     deduped = toclean.drop_duplicates(subset=["giver_id", "donation_date", "getter_id", "cash_donation", "inkind_amount", "pledge_amount"])
     deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped.csv', sep="|")
     with hide('running', 'stdout', 'stderr'):
-        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' -e \'s/$/\|/\' > toupload/donations.txt', capture=False)
+        local('csvcut -x -d "|" -c id,cash_donation,inkind_amount,pledge_amount,inkind_desc,donation_date,giver_id,getter_id,donation_year deduped.csv | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' -e \'s/$/\|/\' > /home/apps/myproject/myproject/nadc/data/toupload/donations.txt', capture=False)
 
         
 """
@@ -699,10 +713,10 @@ This one checks every donation record to return a unique list of contributors wi
 def dedupeGivers():
     #Make a table of all givers, with dupes
     with hide('running', 'stdout', 'stderr'):
-        local('csvsort -d "|" -c donation_date deduped.csv | csvcut -x -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\'> rawgivers.txt', capture=False)
+        local('csvsort -d "|" -c donation_date deduped.csv | csvcut -x -c giver_id,canonical_id,giver_name,giver_canonical_name,giver_address,giver_city,giver_state,giver_zip,giver_type | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\'> /home/apps/myproject/myproject/nadc/data/rawgivers.txt', capture=False)
     
     #Now let's go through that and get a list of every NADC id
-    rawgivers = csvkit.reader(open("rawgivers.txt", "rb"), delimiter="|")
+    rawgivers = csvkit.reader(open("/home/apps/myproject/myproject/nadc/data/rawgivers.txt", "rb"), delimiter="|")
     nadcids = []
     for row in rawgivers:
         nadcids.append(row[0])
@@ -730,3 +744,34 @@ def dedupeGivers():
         for row in mastergivers:
             standardrow = "|".join(row) + "|\n"
             f.write(standardrow)
+            
+            
+
+            
+def entityTest():
+    with open("/home/apps/myproject/myproject/nadc/data/toupload/givers.txt", "rb") as giver, open("/home/apps/myproject/myproject/nadc/data/toupload/getters.txt", "rb") as getter, open("/home/apps/myproject/myproject/nadc/data/toupload/entity-masher.txt", "wb") as entity:
+        givereader = csvkit.reader(giver, delimiter="|")
+        getreader = csvkit.reader(getter, delimiter="|")
+        entity_headers = ["nadc_id", "canonical_id", "name", "standard_name", "address", "city", "state", "zip", "entity_type", "notes"]
+        entity.write("|".join(entity_headers) + "\n")
+        for row in givereader:
+            entity.write("|".join(row) + "|\n")
+        for row in getreader:
+            r = [
+                row[0],
+                row[0],
+                row[1],
+                "",
+                row[2],
+                row[3],
+                row[4],
+                row[5],
+                row[6]
+            ]
+            entity.write("|".join(r) + "\n")
+    toclean = pd.read_csv("/home/apps/myproject/myproject/nadc/data/toupload/entity-masher.txt", delimiter="|", low_memory=False)
+    deduped = toclean.drop_duplicates(subset="canonical_id")
+    deduped.to_csv('/home/apps/myproject/myproject/nadc/data/deduped-entities.txt', sep="|", header=False)
+    with hide('running', 'stdout', 'stderr'):
+        local('csvcut -d "|" -c 2,3,4,5,6,7,8,9,10 -x entity-masher.txt | csvformat -D "|" | sed -e \'s/,//g\' -e \'s/\&AMP;/\&/g\' -e "s/\&#39;/\'/g" -e \'s/\&QUOT;/"/g\' > /home/apps/myproject/myproject/nadc/data/toupload/entities.txt', capture=False)
+        local('rm /home/apps/myproject/myproject/nadc/data/toupload/entity-masher.txt', capture=False)

@@ -5,9 +5,9 @@ from myproject.nadc.models import *
 from django.http import HttpResponse
 from django.db.models import F
 import datetime
+from last_updated import LAST_UPDATED
 
 DONATION_TOTAL = Donation.objects.count()
-CURRENT_THROUGH = datetime.date(2015, 8, 21)
 
 def Main(request):
     donations = Donation.objects.all()
@@ -15,7 +15,7 @@ def Main(request):
     topvolumeraw = Donation.objects.filter(donor_id__contributor_type="I").values('donor_id__standard_name', 'donor_id__canonical').annotate(Count('recipient')).order_by('-recipient__count')[:10]
     topvolumeunique = Donation.objects.filter(donor_id__contributor_type="I").values('donor_id__standard_name', 'donor_id__canonical').annotate(Count('recipient', distinct=True)).order_by('-recipient__count')[:10]
     byyear = donations.values('donation_year').annotate(sum=Sum('cash'))
-    dictionaries = {'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear,}
+    dictionaries = {'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear, 'LAST_UPDATED': LAST_UPDATED,}
     return render_to_response('nadc/main.html', dictionaries)
     
 def About(request):

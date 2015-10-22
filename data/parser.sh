@@ -1,5 +1,18 @@
 #!/bin/bash
 
+#fetch the files, yo
+printf "\n~~ fetching new data ~~\n"
+cd /home/apps/myproject/myproject/nadc/data
+wget http://www.nebraska.gov/nadc_data/nadc_data.zip
+unzip -j nadc_data.zip
+rm nadc_data.zip
+printf "~~ fetched 'at data ~~\n\n"
+
+#parse the "last updated" date
+printf "\n~~ parsing \"last updated\" date ~~\n"
+fab parseDate
+printf "~~ parsed \"last updated\" date ~~\n\n"
+
 #make backup copies of everything
 printf "\n~~ making some backup files ~~\n"
 mkdir -p backup
