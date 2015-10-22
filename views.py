@@ -4,8 +4,10 @@ from django.db.models import *
 from myproject.nadc.models import *
 from django.http import HttpResponse
 from django.db.models import F
+import datetime
 
 DONATION_TOTAL = Donation.objects.count()
+CURRENT_THROUGH = datetime.date(2015, 8, 21)
 
 def Main(request):
     donations = Donation.objects.all()
@@ -52,7 +54,7 @@ def Search(request):
 def Entity(request, entity):
 
     try:
-        candidate = Candidate.objects.get(committee=entity)
+        candidate = Candidate.objects.filter(committee=entity)
     except:
         candidate = []
 

@@ -9,6 +9,7 @@ import datetime
 from canonical.canonical import *
 import time
 import re
+import HTMLParser
 
 fabric.state.output.status = False
 
@@ -303,8 +304,25 @@ This function extracts data on ballot questions from FormA1, the main committee 
 """
 
 def getBallotQ():
-    pass
-
+    x = open("/home/apps/myproject/myproject/nadc/data/toupload/ballot.txt", "wb")
+    with open("/home/apps/myproject/myproject/nadc/data/forma1.txt", "rb") as a1:
+        reader = csvkit.reader(a1, delimiter="|")
+        for row in reader:
+            if row[6].upper().strip() == "B":
+                nadc_id = row[0]
+                ballotq = ' '.join((row[10].upper().strip()).split())
+                stance = row[11]
+                ballot_type = row[12]
+                r = [
+                    "", #DB ID
+                    ballotq, #name of ballot question
+                    ballot_type, #type of ballot question: I=Initiative, R=Recall, F=Referendum, C=Constitutional Amendment
+                    stance, #0=support, 1=oppose
+                    nadc_id, #committee ID
+                    "", #notes
+                ]
+                x.write("|".join(r) + "\n")    
+    x.close()
   
 """
 This guy makes a big ol' master table of donations to mow down.
@@ -378,7 +396,7 @@ def stackItUp():
             else:
                 year = d.split("-")[0]
                 if int(year) >= 1999:
-                    name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())                
+                    name = ' '.join((row[10] + " " + row[11] + " " + row[9] + " " + row[12].strip()).split())
                     r = [
                     "", #id
                     row[4], #giver_id 

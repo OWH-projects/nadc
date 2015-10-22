@@ -17,11 +17,30 @@
 
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</b></h1>
-{% if gives %}<p>${{ totalcashdonated.cash__sum|intcomma }} in donations</p>{% endif %}
-{% if gets %}<p>${{ totalcashreceived.cash__sum|intcomma }} raised</p>{% endif %}
+{% if gives and gets %}
+<div class="row">
+{% if gives %}
+<div class="col-md-6">
+    <h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|intcomma }}</h3>
+    <p class="small ital">DONATED</p>
+</div>
+{% endif %}
+{% if gets %}
+<div class="col-md-6">
+    <h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
+    <p class="small ital">RAISED</p>
+</div>
+{% endif %}
+</div>
+{% endif %}
 
 {% if candidate %}
-<a href="/campaign-finance/candidate/{{ candidate.cand_id }}">{{ candidate.cand_name }}</a>
+    <h4>Candidate{{ candidate|pluralize }} supported</h4>
+    <ul>
+    {% for can in candidate %}
+        <li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name }}</a></li>
+    {% endfor %}
+    </ul>
 {% endif %}
 
 {% if gives %}

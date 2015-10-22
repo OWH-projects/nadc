@@ -70,3 +70,22 @@ class Expenditure(models.Model):
     issue = models.CharField(max_length=75, null=True, blank=True) # Issue expenditure supported/opposed
     stance = models.CharField(max_length=10, null=True, blank=True) #Whether supported/opposed
     notes = models.TextField(null=True, blank=True)
+    
+class Entity(models.Model):
+    nadcid = models.CharField(max_length=10, primary_key=True)
+    canonical = models.CharField(max_length=10, null=True, blank=True)
+    name = models.CharField(max_length=80)
+    standard_name = models.CharField(max_length=80)
+    address = models.CharField(max_length=75, null=True, blank=True)
+    city = models.CharField(max_length=40, null=True, blank=True)
+    state = models.CharField(max_length=40, null=True, blank=True)
+    zip = models.CharField(max_length=20, null=True, blank=True)
+    entity_type = models.CharField(max_length=15, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    
+class Ballot(models.Model):
+    nadcid = models.ForeignKey(Getter)
+    ballot = models.CharField(max_length=80)
+    ballot_type = models.CharField(max_length=5)
+    stance = models.CharField(max_length=10, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
