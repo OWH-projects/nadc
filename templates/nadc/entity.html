@@ -16,6 +16,7 @@
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.name }}{% endif %}</b></h1>
 
+
 {% if gives %}
 <h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|intcomma }}</h3>
 <p class="small ital">DONATED</p>
@@ -24,15 +25,56 @@
 <h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
 <p class="small ital">RAISED</p>
 {% endif %}
+{% if expenditures %}
+<h3 class="bold" style="margin-bottom:0;">${{ totalspent.amount__sum|intcomma }}</h3>
+<p class="small ital">SPENT</p>
+{% endif %}
+{% if loans %}
+<h3 class="bold" style="margin-bottom:0;">${{ totalborrowed.loan_amount__sum|intcomma }}</h3>
+<p class="small ital">BORROWED</p>
+{% endif %}
 
-{% if candidate %}
-    <h4>Candidate{{ candidate|pluralize }} supported</h4>
+
+
+
+
+
+
+{% comment %}
+{% if comm_candidates %}
+    <h4>Candidate{{ comm_candidates|pluralize }} supported</h4>
     <ul>
-    {% for can in candidate %}
-        <li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name }}</a></li>
+    {% for can in comm_candidates %}
+    {% if can.stance == "0" %}
+        <li>{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</li>
+    {% endif %}
     {% endfor %}
     </ul>
+    {% if comm_candidates.count > 1 %}
+    <h4>Candidate{{ comm_candidates|pluralize }} opposed</h4>
+    <ul>
+    {% for can in comm_candidates %}
+    {% if can.stance == "1" %}
+        <li>{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</li>
+    {% endif %}
+    {% endfor %}
+    </ul>
+    {% endif %}
+
 {% endif %}
+{% endcomment %}
+
+{% if person_candidates %}
+    <h4>{% for can in person_candidates %}{% if forloop.first %}{{ can.cand_name|title }}{% endif %}{% endfor %} ran for office {{ person_candidates.count|apnumber }} times.</h4>
+    {% for can in person_candidates %}
+        <li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
+    {% endfor %}
+{% endif %}
+{% with comm_candidates|first as candidate %}    
+<p>{{ name.standard_name|title }} {% if name.entity_type = "C" %}is a candidate committee that{% elif name.entity_type = "I" %} is an individual who{% elif name.entity_type = "B" %}is a ballot question committee that{% endif %} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donations{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contributions between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}It backed {{ candidate.cand_name|title }} for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}.{% endif %}</p>
+{% endwith %}
+
+
 
 {% if gives %}
 	<h2>GIVES</h2>
@@ -47,8 +89,10 @@
 		</tr>
 		{% endfor %}
 	</table>
+    
+	<div id="timeline" style="width:100%;height:300px"></div>
 	
-	<table class="table table-condensed">
+    <table class="table table-condensed">
 		<thead>
 			<tr>
 				<th>Recipient</th>
@@ -80,7 +124,7 @@
 	<table class="table">
 	{% for row in topgets %}
 		<tr>
-			<td>{{ row.donor__standard_name|title }}</td>
+			<td>{{ row.donor__name|title }}</td>
 			<td class="r">${{ row.total|intcomma }}</td>
 		</tr>
 	{% endfor %}
@@ -100,7 +144,7 @@
 		{% for donation in gets %}
 		{% if donation.pledge = 0 %}
 			<tr>
-				<td><a href="/campaign-finance/{{ donation.donor.nadcid }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
+				<td><a href="/campaign-finance/{{ donation.donor.canonical }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
 				{% if donation.cash > 0 %}<td class="r">${{ donation.cash|intcomma }}</td>{% else %}<td class="r">${{ donation.inkind|intcomma }}</td>{% endif %}
 				<td class="r">{{ donation.donation_date }}</td>
 			</tr>
@@ -115,7 +159,6 @@
 {% if expenditures %}
 
 	<h2>EXPENDITURES</h2>
-
 	<table class="table table-condensed">
 		<thead>
 			<th>Paid to</th>
@@ -217,3 +260,37 @@
 {% endblock %}
 
 </div>
+
+{% block scripts %}
+<script type="text/javascript">
+var timelinegives = [
+{% for row in allgives %}
+    [{{ forloop.counter }}, {{ row.total }}]{% if not forloop.last %},{% endif %}
+{% endfor %}
+];
+var dataset = [{ data: timelinegives, color: "#5482FF" }];
+var ticks = [ {% for row in allgives %}
+    [{{ forloop.counter }}, "{{ row.donation_date }}"]{% if not forloop.last %},{% endif %}
+    {% endfor %}];
+    
+var options = {
+xaxis: {
+  ticks: ticks
+},
+series: {
+    bars: {
+        show: true
+    }
+},
+bars: {
+    align: "center",
+    barWidth: 0.5
+}}
+
+ $(document).ready(function () {
+            $.plot($("#timeline"), dataset, options);
+
+        });
+
+</script>
+{% endblock %}

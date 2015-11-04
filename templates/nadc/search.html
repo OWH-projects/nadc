@@ -6,21 +6,66 @@
 
 {% block content %}
 <div class="container" style="margin-bottom:50px;">
+
 <div class="row">
         <div class="col-md-8">
+        
 <div id="topdonors" class="item">
 <br><br><br>
+<form action="/campaign-finance/search/" method="post">
+    {% csrf_token %}
+    {{ mainform }}
+    <input type="submit" value="Submit" />
+</form>
 
-<h2>DONORS</h2>
-{% for giver in giver_results %}
-<a href="/campaign-finance/{{ giver.canonical }}">{{ giver.name }}</a><br>
+<p>You searched for donations that met the following requirements:
+<ul>
+{% if donor_name %}<li>From "{{ donor_name }}"</li>{% endif %}
+{% if recipient %}<li>To "{{ recipient }}"</li>{% endif %}
+</ul>
+{% if donations %}
+<h1>Donations</h1>
+<table>
+{% for match in donations %}
+<tr>
+<td>{% if match.donor %}{{ match.donor.standard_name|title }}{% else %}{{ match.donor_name|title }}{% endif %}</td>
+<td>{{ match.recipient.standard_name|title }}</td>
+<td>{% if match.cash %}${{ match.cash|intcomma }}{% elif match.inkind %}${{ match.inkind|intcomma }}{% endif %}</td>
+<td>{{ match.donation_date }}</td>
+</tr>
 {% endfor %}
-<br><br>
+</table>
+{% endif %}
 
-<h2>RECIPIENTS</h2>
-{% for getter in getter_results %}
-<a href="/campaign-finance/{{ getter.nadcid }}">{{ getter.name }}</a><br>
+{% if loans %}
+<h1>Loans</h1>
+<table>
+{% for loan in loans %}
+<tr>
+<td>{{ loan.committee.standard_name|title }}</td>
+<td>{{ loan.lender_name|title }}</td>
+<td>{{ loan.lender_addr|title }}</td>
+<td>${{ loan.loan_amount|intcomma }}</td>
+<td>${{ loan.loan_date }}</td>
 {% endfor %}
+</table>
+{% endif %}
+
+{% if expenditures %}
+<h1>Expenditures</h1>
+<table>
+{% for exp in expenditures %}
+<tr>
+<td>{{ exp.committee.standard_name|title }}</td>
+<td>{{ exp.payee|title }}</td>
+<td>{{ exp.payee_addr|title }}</td>
+<td>{{ exp.exp_purpose|title }}</td>
+<td>${{ exp.amount|intcomma }}</td>
+<td>{{ exp.exp_date }}</td>
+{% endfor %}
+</table>
+{% endif %}
+
 
 
 
@@ -31,6 +76,9 @@
 
 </div>
 </div>
+
 </div>
+{% returnsearch %}
 </div>
 {% endblock%}
+
