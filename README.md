@@ -18,7 +18,7 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 <ul>
 <li><strong>Form A1</strong>: Lookup table for most committees</li>
 <li><strong>Form A1CAND</strong>: Candidates tied to campaign committees</li>
-<li><strong>B1</strong>: Campaign statements for candidate or ballot question committees</li>
+<li><strong>Form B1</strong>: Campaign statements for candidate or ballot question committees</li>
 
 <li><strong>Form B1AB</strong>: Main table of individual/other contributions</li>
 <li><strong>Form B1C</strong>: Loans to campaign committees</li>
@@ -43,7 +43,7 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 <li><strong>Form B11</strong>: Report of late independent expenditure</li>
 </ul>
 
-A shell script, `nadc/data/parser.sh`, makes backups of the raw data and boils down these 24 files (which contain errors and duplicate transactions) into six data tables:
+A shell script, `nadc/data/parser.sh`, makes backups of the raw data and boils down these 24 files (which contain some duplicate transactions) into six data tables:
 <ul>
 <li><code>nadc/data/toupload/entity.txt</code>: Any group, committee, donor, lender or other entity that has been assigned a unique ID by the NADC. This is the parent table.</li>
 <li><code>nadc/data/toupload/ballot.txt</code>: Ballot question committees.</li>
