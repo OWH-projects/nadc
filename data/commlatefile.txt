@@ -2884,7 +2884,6 @@ ID|Committee Name|Statement Due|Due Date|Date Filed|Amount|Status|Reduced|Order 
 3458|Gwenn Aspen for Legislature|2014 1st General Election Campaign Statement|2014-10-06|2014-10-07|25.00|PAID|||2014-12-05|Aspen|Gwenn|
 3460|NE Action Committee for Rural Electrification|2014 2nd General Campaign Statement|2014-10-27|2014-11-04|200.00|PAID|||2014-11-25|||
 3461|NE Dental Hygienists PAC|2014 1st General Campaign Statement|2014-10-06|2014-11-02|675.00|REDUCED|0.00|2015-01-28||||
-3480|Team Chadron|2014 2nd General Campaign Statement|2014-10-27|2014-11-21|625.00|PENDING||||||
 3485|Lux for OPPD|Report of Late Contribution|2014-10-29|2014-10-31|200.00|PAID|||2015-01-06|Lux|Jeff|
 3492|Todd Weidemann|Report of Earmarked Contribution|2014-06-15|2014-11-10|750.00|REDUCED|0.00|2014-12-19||||
 3494|Todd Weidemann|Report of Earmarked Contribution|2014-05-16|2014-11-10|750.00|REDUCED|0.00|2014-12-19||||
@@ -3009,7 +3008,7 @@ ID|Committee Name|Statement Due|Due Date|Date Filed|Amount|Status|Reduced|Order 
 2993|Citizens to Elect Scott Price|12 Post Primary Campaign Statement|2012-06-25|2012-06-26|25.00|REDUCED|0.00|2012-09-10||Price|Scott|
 3018|Groesser for Mayor|2012 Statement of Exemption|2012-10-09|2012-10-22|325.00|REDUCED|0.00|2012-10-24||Groesser|Donald|
 2998|Patrick Bourne for School Board|12 Post Primary Campaign Statement|2012-06-25|2012-06-26|25.00|PAID|||2012-08-29|Bourne|Patrick|
-3035|Nebraskans for Fiscal Accountability|Report of Late Independent Expenditure|2012-10-25|2012-10-26|100.00|PENDING||||||
+3035|Nebraskans for Fiscal Accountability|Report of Late Independent Expenditure|2012-10-25|2012-10-26|100.00|PAID|||2015-10-13|||
 3053|Josiah Woodward for Legislature|Statement of Organization|2012-04-23|2012-10-01|750.00|REDUCED|0.00|2013-01-17||Woodward|Josiah|
 3055|Scheer for State Legislature|Report of Late Contribution|2012-10-29|2012-11-07|900.00|REDUCED|0.00|2012-12-11||Scheer|James|
 3058|Kenneth West|Report of Earmarked Contribution|2012-10-10|2012-11-21|750.00|REDUCED|0.00|2012-12-12||West|Kenneth|
@@ -3124,7 +3123,7 @@ ID|Committee Name|Statement Due|Due Date|Date Filed|Amount|Status|Reduced|Order 
 3080|Jim Begley for MUD Board|2012 Post General Campaign Statement|2013-01-15|2013-01-18|75.00|PAID|||2013-04-05|Begley|Jim|
 3011|Josiah Woodward for Legislature #37|12 Post Primary Campaign Statement|2012-06-25|2012-09-28|750.00|REDUCED|0.00|2013-01-17||Woodward|Josiah|
 3030|Associated Builders & Contractors PAC|2012 1st General Campaign Statement|2012-10-09|2012-10-12|75.00|PAID|||2012-12-04|||
-3036|Nebraskans for Fiscal Accountability|Report of Late Independent Expenditure|2012-11-01|2012-11-02|100.00|PENDING||||||
+3036|Nebraskans for Fiscal Accountability|Report of Late Independent Expenditure|2012-11-01|2012-11-02|100.00|PAID|||2015-10-13|||
 3038|Grand Island Fire PAC|2012 2nd General Campaign Statement|2012-10-29|2012-11-13|375.00|REDUCED|0.00|2012-11-27||||
 3042|Nebraskans for Responsible Government|Report of Late Independent Expenditure|2012-10-25|2012-10-30|500.00|PAID|||2013-01-09|||
 3044|Nebraskans for Responsible Government|Report of Late Independent Expenditure|2012-10-25|2012-10-30|500.00|PAID|||2013-01-09|||
@@ -3222,7 +3221,7 @@ ID|Committee Name|Statement Due|Due Date|Date Filed|Amount|Status|Reduced|Order 
 3457|Vote Yes for BCS|2014 1st General Campaign Statement|2014-10-06|2014-10-14|200.00|REDUCED|0.00|2014-12-02||||
 3476|Friends of Charlie Janssen|Report of Late Contribution|2014-11-05|2014-11-10|500.00|REDUCED|0.00|2014-12-01||Janssen|Charlie|
 3478|O'Hara 2014 Treasurer|2014 1st General Campaign Statement|2014-10-06|2014-10-21|375.00|PAID|0.00|2014-12-02|2014-12-05|O'Hara|Michael|
-3479|Team Chadron|Statement of Organization|2014-10-22|2014-11-21|1000.00|PENDING||||||
+3479|Team Chadron|Statement of Organization|2014-10-22|2014-11-21|1000.00|RED/PAID|375.00|2015-09-08|2015-09-08|||
 3490|Bob Tiemann for Legislature|Report of Late Contribution|2014-10-27|2014-11-03|700.00|RED/PAID|25.00|2015-04-08|2015-04-08|Tiemann|Bob|
 3497|ANR Pipeline Company|Report of Earmarked Contribution|2014-09-15|2014-12-31|750.00|REDUCED|0.00|2015-01-29||||
 3498|ANR Pipeline Company|Report of Earmarked Contribution|2014-09-15|2014-09-04|750.00|REDUCED|0.00|2015-01-29||||
@@ -3370,18 +3369,24 @@ ID|Committee Name|Statement Due|Due Date|Date Filed|Amount|Status|Reduced|Order 
 3577|Patti Lindgren for County Clerk|14 2nd General Campaign Statement|2014-10-27|2015-01-15|750.00|RED/PAID|25.00|2015-04-02|2015-04-02|Lindgren|Patti|
 3583|NE Democratic Party|14 2nd Primary Campaign Statement|2014-05-05|2015-01-18|750.00|PAID|||2015-04-06|||
 3585|Roethemeyer for County Commissioner|14 Annual Campaign Statement|0215-02-02|2015-03-11|750.00|REDUCED|0.00|2015-03-26||Roethemeyer|Willis|
-3604|NE Realtors PAC|Report of Late Contribution|2015-03-30|2015-04-27|1100.00|PENDING||||||
+3604|NE Realtors PAC|Report of Late Contribution|2015-03-30|2015-04-27|1100.00|RED/PAID|550.00|2015-10-16|2015-10-27|||
 3580|Burt County Democrats|14 Annual Campaign Statement|2015-02-02|2015-03-05|750.00|REDUCED|0.00|2015-03-27||||
 3589|Sam Clark for Douglas County Board|Report of Late Contribution|2014-10-24|2015-01-12|1136.40|REDUCED|0.00|2015-05-05||Clark|Sam|
 3590|Kurt Geschwender for Legislature|12 Annual Campaign Statement|2013-01-31|2015-04-13|750.00|REDUCED|0.00|2015-04-30||Geschwender|Kurt|
 3593|Nebraskans for Nabity|14 Annual Campaign Statement|2015-02-02|2015-02-03|25.00|PAID|||2015-04-27|Nabity|Dave|
 3598|State Troopers Association of NE PAC|14 Post General Campaign Statement|2015-01-13|2015-01-20|175.00|PAID|||2015-04-30|||
 3609|Ron Hug for Metro Board|14 2nd General Campaign Statement|2014-10-27|2014-10-31|100.00|PENDING||||Hug|Ron|
-3615|Planned Parenthood Voters of NE PAC|15 2nd General Campaign Statement|2015-04-27|2015-06-15|750.00|PENDING||||||
+3615|Planned Parenthood Voters of NE PAC|15 2nd General Campaign Statement|2015-04-27|2015-06-15|750.00|PAID|||2015-09-03|||
+3617|Nebraskans for Fiscal Accountability|14 Annual Campaign Statement|2015-02-02|2015-08-27|750.00|PAID|||2015-10-13|||
+3618|Save Our University|14 Post General Election Campaign Statement|2015-01-13|2015-08-28|750.00|PENDING||||||
 3608|Ron Hug for Metro Board|14 1st General Campaign Statement|2014-10-06|2014-10-07|25.00|PENDING||||Hug|Ron|
-3610|Lancaster County Democrats|15 Post General Campaign Statement|2015-06-15|2015-06-18|75.00|PENDING||||||
+3610|Lancaster County Democrats|15 Post General Campaign Statement|2015-06-15|2015-06-18|75.00|PAID|||2015-08-25|||
 3613|Jeffrey D. Miller for OPS|14 Annual Campaign Statement|2015-02-02|2015-07-06|750.00|PENDING||||Miller|Jeffrey|
 3614|NE Republican Party|Report of Late Contribution|2015-04-29|2015-06-15|1250.00|PENDING|25.00|||||
+3616|Citizens for Restoring Resonsible Government|14 Annual Campaign Statement|2015-02-02|2015-07-29|750.00|REDUCED|0.00|2015-09-25||||
+3619|Michels for Legislature|Statement of Organization|2015-10-13|2015-10-15|50.00|PENDING||||Michels|Dale|
 3607|Ron Hug for Metro Board|14 Post General Campaign Statement|2015-01-13|2015-05-05|750.00|PENDING||||Hug|Ron|
 3611|Friends for Adam Morfeld|14 Post General Campaign Statement|2015-01-13|2015-01-26|325.00|REDUCED|0.00|2015-06-23||Morfeld|Adam|
+3480|Team Chadron|2014 2nd General Campaign Statement|2014-10-27|2014-11-21|625|PAID|||2015-09-08|||
 3612|Darl Naumann for Lancaster County Board|14 Annual Campaign Statement|2015-02-02|2015-05-21|750.00|REDUCED|0.00|2015-06-30||Naumann|Darl|
+3620|The Plain Talk|15 1st Special Election Campaign Statement|2015-10-13|2015-10-16|75.00|REDUCED|0.00|2015-10-19||||

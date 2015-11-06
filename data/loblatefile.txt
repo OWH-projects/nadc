@@ -2492,7 +2492,7 @@ ID|Lobbyist Last Name|Lobbyist First Name|Principal Name|Statement Due|Due Date|
 2561|Hyden|Marc|Equal Justice USA|Statement of Activity|2015-07-13|2015-07-20|175.00|REDUCED|0.00|2015-07-21||
 2562|Junge|Jolanda|We Support Agriculture|Statement of Activity|2015-07-13|2015-07-23|250.00|RED/PAID|25.00|2015-08-17|2015-08-17|
 2563|Neeman|Gary|ABATE of Nebraska, Inc.|Statement of Activity|2015-07-13|2015-07-20|175.00|RED/PAID|25.00|2015-08-05|2015-08-05|
-2564|Salvati|Katie|TR Hepburn, Inc.|Statement of Activity|2015-07-13|2015-07-17|100.00|PENDING||||
+2564|Salvati|Katie|TR Hepburn, Inc.|Statement of Activity|2015-07-13|2015-07-17|100.00|RED/PAID|25.00|2015-09-23|2015-09-18|
 2565|Sankey|Harvey|Printing Industries Midwest|Statement of Activity|2015-07-13|2015-07-17|100.00|REDUCED|0.00|2015-07-31||
 2566|Schuller|Lynne|NE Horsemen's Belevolent & Protective Assn.|Statement of Activity|2015-07-13|2015-07-16|75.00|REDUCED|0.00|2015-08-11||
 2567|Schuller|Lynne|NE Propane Gas Association|Statement of Activity|2015-07-13|2015-07-16|75.00|REDUCED|0.00|2015-08-11||
@@ -2501,10 +2501,10 @@ ID|Lobbyist Last Name|Lobbyist First Name|Principal Name|Statement Due|Due Date|
 2570|Mahlman|Dale|NE Medical Association|Statement of Activity|2015-07-13|2015-07-24|275.00|RED/PAID|25.00|2015-08-05|2015-08-05|
 2571|Ragland|Jina|NE Medical Association|Statement of Activity|2015-07-13|2015-07-24|275.00|PAID|||2015-08-05|
 2572|Reiman|Charlene|SourceGas Distribution LLC|Statement of Activity|2015-07-13|2015-07-21|200.00|REDUCED|0.00|2015-07-30||
-2573|Lautenbaugh|Scott|Heartland Strategy Group|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PENDING||||
-2574|Lautenbaugh|Scott|Convention of States Action|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PENDING||||
-2575|Lautenbaugh|Scott|NE Premium Tobacco|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PENDING||||
-2576|Lautenbaugh|Scott|Smart-TD|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PENDING||||
+2573|Lautenbaugh|Scott|Heartland Strategy Group|2nd Quarter Report|2015-07-30|2015-07-31|25.00|REDUCED|0.00|2015-10-23||
+2574|Lautenbaugh|Scott|Convention of States Action|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PAID|||2015-10-23|
+2575|Lautenbaugh|Scott|NE Premium Tobacco|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PAID|||2015-10-23|
+2576|Lautenbaugh|Scott|Smart-TD|2nd Quarter Report|2015-07-30|2015-07-31|25.00|PAID|||2015-10-23|
 2577|Litt|Matthew|Americans for Prosperity|Statement of Activity|2015-07-13|2015-07-31|450.00|REDUCED|0.00|2015-08-20||
 2578|Mach|Coby|Lincoln Independent Business Association|2nd Quarter Report|2015-07-30|2015-08-03|100.00|REDUCED|0.00|2015-08-11||
 2579|Jones|Johnny|Little Priest Tribal College|1st Quarter Report|2015-04-30|2015-08-10|750.00|REDUCED|0.00|2015-08-11||

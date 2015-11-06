@@ -21,7 +21,7 @@ class Entity(models.Model):
 
 class Donation(models.Model):
     donor = models.ForeignKey(Entity, related_name="giver", null=True, blank=True)
-    recipient = models.ForeignKey(Entity, related_name="getter")
+    recipient = models.ForeignKey(Entity, related_name="getter", null=True, blank=True)
     cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     pledge = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
@@ -34,7 +34,7 @@ class Donation(models.Model):
     
 class Candidate(models.Model):
     cand_id = models.CharField(max_length=40, null=False, blank=False)
-    cand_name = models.CharField(max_length=70, null=False, blank=False)
+    cand_name = models.CharField(max_length=70, null=True, blank=True)
     stance = models.CharField(max_length=2, null=True, blank=True)
     committee = models.ForeignKey(Entity, related_name="candidate_detail")
     office_sought = models.CharField(max_length=30, null=True, blank=True)
@@ -44,7 +44,7 @@ class Candidate(models.Model):
     notes = models.TextField(null=True, blank=True)
 
 class Loan(models.Model):
-    committee = models.ForeignKey(Entity, related_name="committee_lendee")
+    committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lendee")
     lending_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lender")
     lender_name = models.CharField(max_length=70, null=False, blank=False)
     lender_addr = models.CharField(max_length=70)
@@ -53,15 +53,14 @@ class Loan(models.Model):
     loan_repaid = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     loan_forgiven = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     paid_by_third_party = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
-    guarantor = models.CharField(max_length=70, null=False, blank=True)
+    guarantor = models.CharField(max_length=70, null=True, blank=True)
     stance = models.CharField(max_length=10, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     
 class Expenditure(models.Model):
     committee = models.ForeignKey(Entity, related_name="committee_exp", null=True, blank=True) # (optional) committee doing the expending
     payee_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_payee") # (optional) committee receiving the expenditure
-    committee = models.ForeignKey(Entity)
-    payee = models.CharField(max_length=70, null=False, blank=False)
+    payee = models.CharField(max_length=70, null=True, blank=True)
     payee_addr = models.CharField(max_length=70)
     exp_date = models.DateField()
     exp_purpose = models.CharField(max_length=200)
@@ -90,9 +89,13 @@ class AdvancedSearchForm(forms.Form):
     to_date = forms.DateField(label="To date", required=False)
     donor_city = forms.CharField(label="Donor city", max_length=75, required=False)
     recipient_city = forms.CharField(label="Recipient city", max_length=75, required=False)
+    donor_state = forms.CharField(label="Donor state", max_length=75, required=False)
     giver_zip = forms.CharField(label="Donor ZIP code", max_length=75, required=False)
     recipient_zip = forms.CharField(label="Recipient ZIP code", max_length=75, required=False)
     expenditure_description = forms.CharField(label="Expenditure description", max_length=75, required=False)
     donations = forms.BooleanField(label="Search donations?", required=False, initial=True)
     loans = forms.BooleanField(label="Search loans?", required=False, initial=True)
     expenditures = forms.BooleanField(label="Search campaign expenditures?", required=False, initial=True)
+    from_amount = forms.IntegerField(label="Minimum $", required=False, initial=0)
+    to_amount = forms.IntegerField(label="Maxamim $", required=False, initial=2000000)
+

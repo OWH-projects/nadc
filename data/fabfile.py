@@ -46,16 +46,16 @@ def getFloat(i):
         return i
 
         
-def lookItUp(str, param, namefield):
+def lookItUp(input, param, namefield):
     try:
-        return str(CANON[str][param])
+        return str(CANON[input][param])
     except:
         if param == "canonicalid":
-            return str
+            return input
         else:
             return namefield
-        
 
+        
 def getDate():
     """
     Parse the "last updated" date from a file in the NADC data dump.
@@ -72,12 +72,12 @@ def getDate():
 
 def parseErrything():
     """
-    Kicks out ready- or nearly-ready-to-upload files:
-        toupload/entities-raw.txt
-        toupload/candidates.txt
-        toupload/donations-raw.txt
-        toupload/loans.txt
-        toupload/expenditures.txt
+    Kicks out ready-to-upload data files:
+        toupload/entity.txt
+        toupload/candidate.txt
+        toupload/donation.txt
+        toupload/loan.txt
+        toupload/expenditure.txt
         toupload/ballot.txt
     
     Forms we care about:
@@ -104,7 +104,7 @@ def parseErrything():
         B73: Indirect contributions by corporations, unions and other associations
         B9: Out of state expenditures/donations
         B9B: Out of state expenditures
-        B11: Report of Late Independent Expenditure    
+        B11: Report of late independent expenditure    
     """
     
     delim = "|"
@@ -112,11 +112,18 @@ def parseErrything():
     rows_with_new_bad_dates = []
     
     entities = open("/home/apps/myproject/myproject/nadc/data/toupload/entity-raw.txt", "wb")
-    ballotq = open("/home/apps/myproject/myproject/nadc/data/toupload/ballotq.txt", "wb")
+    ballotq = open("/home/apps/myproject/myproject/nadc/data/toupload/ballot.txt", "wb")
     candidates = open("/home/apps/myproject/myproject/nadc/data/toupload/candidate.txt", "wb")
     donations = open("/home/apps/myproject/myproject/nadc/data/toupload/donations-raw.txt", "wb")
-    loans = open("/home/apps/myproject/myproject/nadc/data/toupload/loans.txt", "wb")
-    expenditures = open("/home/apps/myproject/myproject/nadc/data/toupload/expenditures.txt", "wb")
+    loans = open("/home/apps/myproject/myproject/nadc/data/toupload/loan.txt", "wb")
+    expenditures = open("/home/apps/myproject/myproject/nadc/data/toupload/expenditure.txt", "wb")
+    
+    #write headers to files that get deduped by pandas or whatever
+    donations_headers = ["db_id", "cash", "inkind", "pledge", "inkind_desc", "donation_date", "donor_id", "recipient_id", "donation_year", "notes", "stance", "donor_name"]
+    donations.write("|".join(donations_headers) + "\n")
+    
+    entities_headers = ["nadcid", "name", "address", "city", "state", "zip", "entity_type", "notes", "employer", "occupation", "place_of_business", "dissolved_date", "date_we_care_about"]
+    entities.write("|".join(entities_headers) + "\n")
     
     with open('forma1.txt', 'rb') as a1:
         """
@@ -149,22 +156,18 @@ def parseErrything():
                 a1_entity_type = row[6].strip().upper() #Committee type
                 a1_entity_dissolved = row[21] #Date dissolved
                 a1_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
-                a1_canonical_id = lookItUp(a1_entity_id, "canonicalid", a1_entity_name) #Canonical ID
-                a1_canonical_name = lookItUp(a1_entity_id, "canonicalname", a1_entity_name) #Canonical name
                
                 """
                 DB fields
                 =========== 
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding a1_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 a1_entity_list = [
                     a1_entity_id,
-                    a1_canonical_id,
                     a1_entity_name,
-                    a1_canonical_name,
                     a1_address.upper(),
                     a1_city.upper(),
                     a1_state.upper(),
@@ -194,14 +197,10 @@ def parseErrything():
                         a1_sspf_zip = row[20] #ZIP
                         a1_sspf_type = row[21] #Committee type
                         a1_sspf_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
-                        a1_sspf_canonical_id = lookItUp(a1_sspf_id, "canonicalid", a1_sspf_name) #Canonical ID
-                        a1_sspf_canonical_name = lookItUp(a1_sspf_id, "canonicalname", a1_sspf_name) #Canonical name
                         
                         a1_sspf_list = [
                             a1_sspf_id,
-                            a1_sspf_canonical_id,
                             a1_sspf_name,
-                            a1_sspf_canonical_name,
                             a1_sspf_address,
                             a1_sspf_city,
                             a1_sspf_state,
@@ -259,8 +258,7 @@ def parseErrything():
                 id_master_list.append(a1cand_committee_id)
                 
                 #Add to Entity
-                
-                #Form A1 ID Number|Date Received|Candidate ID|Candidate Last Name|Candidate First Name|Candidate Middle Initial|Support/Oppose|Office Sought|Office Title|Office Description
+
                 a1cand_entity_name = ""
                 a1cand_address = ""
                 a1cand_city = ""
@@ -269,22 +267,18 @@ def parseErrything():
                 a1cand_entity_type = ""
                 a1cand_entity_dissolved = ""
                 a1cand_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                a1cand_canonical_id = lookItUp(a1cand_committee_id, "canonicalid", a1cand_entity_name) #Canonical ID
-                a1cand_canonical_name = lookItUp(a1cand_committee_id, "canonicalname", a1cand_entity_name) #Canonical name
                
                 """
                 DB fields
                 =========== 
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding a1cand_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 a1cand_entity_list = [
                     a1cand_committee_id,
-                    a1cand_canonical_id,
                     a1cand_entity_name,
-                    a1cand_canonical_name,
                     a1cand_address,
                     a1cand_city,
                     a1cand_state,
@@ -300,9 +294,6 @@ def parseErrything():
                 entities.write("|".join(a1cand_entity_list) + "\n")
             
             if a1cand_committee_id not in SHITCOMMITTEES and a1cand_id not in SHITCOMMITTEES:
-                #Append ID to master list
-                id_master_list.append(a1cand_id)
-                
                 #Append to Candidate
                 a1cand_cand_last = row[3] #Last name
                 a1cand_cand_first = row[4] #First name
@@ -365,21 +356,17 @@ def parseErrything():
                 b1_zip = row[5].strip() #ZIP
                 b1_entity_type = row[2].strip().upper() #Committee type
                 b1_entity_date_of_thing_happening = row[9] #Date used to eval recency on dedupe
-                b1_canonical_id = lookItUp(b1_entity_id, "canonicalid", b1_entity_name) #Canonical ID
-                b1_canonical_name = lookItUp(b1_entity_id, "canonicalname", b1_entity_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b1_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 b1_entity_list = [
-                    b1_entity_id,
-                    b1_canonical_id,
+                    b1_entity_id,                    
                     b1_entity_name,
-                    b1_canonical_name,
                     b1_address,
                     b1_city,
                     b1_state,
@@ -428,22 +415,18 @@ def parseErrything():
                 b1ab_committee_zip = "" #ZIP
                 b1ab_committee_type = "" #Committee type
                 b1ab_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b1ab_committee_canonical_id = b1ab_committee_id #Canonical ID
-                b1ab_committee_canonical_name = b1ab_committee_name #Canonical name
                 
                 """
                 DB fields
                 ===========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b1ab_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b1ab_committee_list = [
                     b1ab_committee_id,
-                    b1ab_committee_canonical_id,
                     b1ab_committee_name,
-                    b1ab_committee_canonical_name,
                     b1ab_committee_address,
                     b1ab_committee_city,
                     b1ab_committee_state,
@@ -475,22 +458,18 @@ def parseErrything():
                 b1ab_contributor_zip = row[16] #ZIP
                 b1ab_contributor_type = row[3].upper().strip() #Contributor type
                 b1ab_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b1ab_contributor_canonical_id = lookItUp(b1ab_contributor_id, "canonicalid", b1ab_contributor_name) #Canonical ID
-                b1ab_contributor_canonical_name = lookItUp(b1ab_contributor_id, "canonicalname", b1ab_contributor_name) #Canonical name
                 
                 """
                DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b1ab_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b1ab_contributor_list = [
                     b1ab_contributor_id,
-                    b1ab_contributor_canonical_id,
                     b1ab_contributor_name,
-                    b1ab_contributor_canonical_name,
                     b1ab_contributor_address,
                     b1ab_contributor_city,
                     b1ab_contributor_state,
@@ -514,6 +493,7 @@ def parseErrything():
                     b1ab_dict = {}
                     b1ab_dict["donor_id"] = row[10]
                     b1ab_dict["recipient_id"] = row[1]
+                    b1ab_dict["lookup_name"] = ' '.join((row[0].upper().strip()).split()).replace('"',"")
                     b1ab_dict["source_table"] = "b1ab"
                     b1ab_dict["destination_table"] = "donation"
                     b1ab_dict["donation_date"] = b1ab_donation_date
@@ -579,22 +559,18 @@ def parseErrything():
                 b1c_committee_zip = "" #ZIP
                 b1c_committee_type = "" #Committee type
                 b1c_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b1c_committee_canonical_id = lookItUp(b1c_committee_id, "canonicalid", b1c_committee_name) #Canonical ID
-                b1c_committee_canonical_name = lookItUp(b1c_committee_id, "canonicalname", b1c_committee_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b1c_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b1c_committee_list = [
                     b1c_committee_id,
-                    b1c_committee_canonical_id,
                     b1c_committee_name,
-                    b1c_committee_canonical_name,
                     b1c_committee_address,
                     b1c_committee_city,
                     b1c_committee_state,
@@ -623,6 +599,7 @@ def parseErrything():
                     b1c_dict = {}
                     b1c_dict["donor_id"] = ""
                     b1c_dict["recipient_id"] = row[1]
+                    b1c_dict["lookup_name"] = ' '.join((row[0].upper().strip()).split()).replace('"',"")
                     b1c_dict["source_table"] = "b1c"
                     b1c_dict["destination_table"] = "loans"
                     b1c_dict["donation_date"] = b1c_loan_date
@@ -686,13 +663,11 @@ def parseErrything():
                 b1d_committee_zip = "" #ZIP
                 b1d_committee_type = "" #Committee type
                 b1d_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b1d_committee_canonical_id = lookItUp(b1d_committee_id, "canonicalid", b1d_committee_name) #Canonical ID
-                b1d_committee_canonical_name = lookItUp(b1d_committee_id, "canonicalname", b1d_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b1d_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
@@ -700,9 +675,7 @@ def parseErrything():
                 
                 b1d_committee_list = [
                     b1d_committee_id,
-                    b1d_committee_canonical_id,
                     b1d_committee_name,
-                    b1d_committee_canonical_name,
                     b1d_committee_address,
                     b1d_committee_city,
                     b1d_committee_state,
@@ -724,6 +697,7 @@ def parseErrything():
                     b1d_dict = {}
                     b1d_dict["donor_id"] = ""
                     b1d_dict["recipient_id"] = row[1]
+                    b1d_dict["lookup_name"] = ' '.join((row[0].upper().strip()).split()).replace('"',"")
                     b1d_dict["source_table"] = "b1d"
                     b1d_dict["destination_table"] = "expenditures"
                     b1d_dict["donation_date"] = b1d_exp_date
@@ -790,22 +764,18 @@ def parseErrything():
                 b2_committee_zip = row[4] #ZIP
                 b2_committee_type = "" #Committee type
                 b2_entity_date_of_thing_happening = row[6] #Date used to eval recency on dedupe
-                b2_committee_canonical_id = lookItUp(b2_committee_id, "canonicalid", b2_committee_name) #Canonical ID
-                b2_committee_canonical_name = lookItUp(b2_committee_id, "canonicalname", b2_committee_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b2_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b2_committee_list = [
                     b2_committee_id,
-                    b2_committee_canonical_id,
                     b2_committee_name,
-                    b2_committee_canonical_name,
                     b2_committee_address,
                     b2_committee_city,
                     b2_committee_state,
@@ -856,22 +826,18 @@ def parseErrything():
                 b2a_committee_zip = "" #ZIP
                 b2a_committee_type = "" #Committee type
                 b2a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b2a_committee_canonical_id = lookItUp(b2a_committee_id, "canonicalid", b2a_committee_name) #Canonical ID
-                b2a_committee_canonical_name = lookItUp(b2a_committee_id, "canonicalname", b2a_committee_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b2a_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b2a_committee_list = [
                     b2a_committee_id,
-                    b2a_committee_canonical_id,
                     b2a_committee_name,
-                    b2a_committee_canonical_name,
                     b2a_committee_address,
                     b2a_committee_city,
                     b2a_committee_state,
@@ -898,22 +864,18 @@ def parseErrything():
                 b2a_contributor_zip = "" #ZIP
                 b2a_contributor_type = "" #Contributor type
                 b2a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b2a_contributor_canonical_id = lookItUp(b2a_contributor_id, "canonicalid", b2a_contributor_name) #Canonical ID
-                b2a_contributor_canonical_name = lookItUp(b2a_contributor_id, "canonicalname", b2a_contributor_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b2a_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b2a_contributor_list = [
                     b2a_contributor_id,
-                    b2a_contributor_canonical_id,
                     b2a_contributor_name,
-                    b2a_contributor_canonical_name,
                     b2a_contributor_address,
                     b2a_contributor_city,
                     b2a_contributor_state,
@@ -964,22 +926,18 @@ def parseErrything():
                 b2b_committee_zip = "" #ZIP
                 b2b_committee_type = "" #Committee type
                 b2b_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b2b_committee_canonical_id = lookItUp(b2b_committee_id, "canonicalid", b2b_committee_name) #Canonical ID
-                b2b_committee_canonical_name = lookItUp(b2b_committee_id, "canonicalname", b2b_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b2b_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b2b_committee_list = [
                     b2b_committee_id,
-                    b2b_committee_canonical_id,
                     b2b_committee_name,
-                    b2b_committee_canonical_name,
                     b2b_committee_address,
                     b2b_committee_city,
                     b2b_committee_state,
@@ -1006,22 +964,18 @@ def parseErrything():
                 b2b_beneficiary_zip = "" #ZIP
                 b2b_beneficiary_type = "" #Committee type
                 b2b_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b2b_beneficiary_canonical_id = lookItUp(b2b_beneficiary_id, "canonicalid", b2b_beneficiary_name) #Canonical ID
-                b2b_beneficiary_canonical_name = lookItUp(b2b_beneficiary_id, "canonicalname", b2b_beneficiary_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b2b_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b2b_beneficiary_list = [
                     b2b_beneficiary_id,
-                    b2b_beneficiary_canonical_id,
                     b2b_beneficiary_name,
-                    b2b_beneficiary_canonical_name,
                     b2b_beneficiary_address,
                     b2b_beneficiary_city,
                     b2b_beneficiary_state,
@@ -1044,6 +998,7 @@ def parseErrything():
                     b2b_dict = {}
                     b2b_dict["donor_id"] = row[0]
                     b2b_dict["recipient_id"] = row[2]
+                    b2b_dict["lookup_name"] = ' '.join((row[9].upper().strip()).split()).replace('"',"")
                     b2b_dict["source_table"] = "b2b"
                     b2b_dict["destination_table"] = "expenditures"
                     b2b_dict["donation_date"] = b2b_exp_date
@@ -1118,22 +1073,18 @@ def parseErrything():
                 b4_committee_zip = row[5] #ZIP
                 b4_committee_type = row[2].upper().strip() #Committee type
                 b4_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
-                b4_committee_canonical_id = lookItUp(b4_committee_id, "canonicalid", b4_committee_name) #Canonical ID
-                b4_committee_canonical_name = lookItUp(b4_committee_id, "canonicalname", b4_committee_name) #Canonical name
 
                 """
                 DB fields
                 ==========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b4_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4_committee_list = [
                     b4_committee_id,
-                    b4_committee_canonical_id,
                     b4_committee_name,
-                    b4_committee_canonical_name,
                     b4_committee_address,
                     b4_committee_city,
                     b4_committee_state,
@@ -1184,22 +1135,18 @@ def parseErrything():
                 b4a_committee_zip = "" #ZIP
                 b4a_committee_type = "" #Committee type
                 b4a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b4a_committee_canonical_id = lookItUp(b4a_committee_id, "canonicalid", b4a_committee_name) #Canonical ID
-                b4a_committee_canonical_name = lookItUp(b4a_committee_id, "canonicalname", b4a_committee_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b4a_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4a_committee_list = [
                     b4a_committee_id,
-                    b4a_committee_canonical_id,
                     b4a_committee_name,
-                    b4a_committee_canonical_name,
                     b4a_committee_address,
                     b4a_committee_city,
                     b4a_committee_state,
@@ -1226,22 +1173,18 @@ def parseErrything():
                 b4a_contributor_zip = "" #ZIP
                 b4a_contributor_type = "" #Contributor type
                 b4a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
-                b4a_contributor_canonical_id = lookItUp(b4a_contributor_id, "canonicalid", b4a_contributor_name) #Canonical ID
-                b4a_contributor_canonical_name = lookItUp(b4a_contributor_id, "canonicalname", b4a_contributor_name) #Canonical name
 
                 """
                 DB fields
                 =========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b4a_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4a_contributor_list = [
                     b4a_contributor_id,
-                    b4a_contributor_canonical_id,
                     b4a_contributor_name,
-                    b4a_contributor_canonical_name,
                     b4a_contributor_address,
                     b4a_contributor_city,
                     b4a_contributor_state,
@@ -1265,6 +1208,7 @@ def parseErrything():
                     b4a_dict = {}
                     b4a_dict["donor_id"] = row[2]
                     b4a_dict["recipient_id"] = row[0]
+                    b4a_dict["lookup_name"] = ' '.join((row[7].strip().upper()).split()).replace('"',"")
                     b4a_dict["source_table"] = "b4a"
                     b4a_dict["destination_table"] = "donation"
                     b4a_dict["donation_date"] = b4a_donation_date
@@ -1334,22 +1278,18 @@ def parseErrything():
                 b4b1_committee_zip = "" #ZIP
                 b4b1_committee_type = "" #Committee type
                 b4b1_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b4b1_committee_canonical_id = lookItUp(b4b1_committee_id, "canonicalid", b4b1_committee_name) #Canonical ID
-                b4b1_committee_canonical_name = lookItUp(b4b1_committee_id, "canonicalname", b4b1_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid|canonical_id|name|canonical_name|address|city|state|zip|entity_type|notes|employer|occupation|place_of_business
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business
                 
                 We're adding b4b1_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4b1_committee_list = [
                     b4b1_committee_id,
-                    b4b1_committee_canonical_id,
                     b4b1_committee_name,
-                    b4b1_committee_canonical_name,
                     b4b1_committee_address,
                     b4b1_committee_city,
                     b4b1_committee_state,
@@ -1376,22 +1316,18 @@ def parseErrything():
                 b4b1_beneficiary_zip = "" #ZIP
                 b4b1_beneficiary_type = "" #Beneficiary type
                 b4b1_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b4b1_beneficiary_canonical_id = lookItUp(b4b1_beneficiary_id, "canonicalid", b4b1_beneficiary_name) #Canonical ID
-                b4b1_beneficiary_canonical_name = lookItUp(b4b1_beneficiary_id, "canonicalname", b4b1_beneficiary_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid|canonical_id|name|canonical_name|address|city|state|zip|entity_type|notes|employer|occupation|place_of_business
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business
                 
                 We're adding b4b1_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4b1_beneficiary_list = [
                     b4b1_beneficiary_id,
-                    b4b1_beneficiary_canonical_id,
                     b4b1_beneficiary_name,
-                    b4b1_beneficiary_canonical_name,
                     b4b1_beneficiary_address,
                     b4b1_beneficiary_city,
                     b4b1_beneficiary_state,
@@ -1414,6 +1350,7 @@ def parseErrything():
                     b4b1_dict = {}
                     b4b1_dict["donor_id"] = row[1]
                     b4b1_dict["recipient_id"] = row[3]
+                    b4b1_dict["lookup_name"] = ' '.join((row[9].strip().upper()).split()).replace('"',"")
                     b4b1_dict["source_table"] = "b4b1"
                     b4b1_dict["destination_table"] = "expenditure_or_loan"
                     b4b1_dict["donation_date"] = b4b1_transaction_date
@@ -1422,6 +1359,7 @@ def parseErrything():
                     b4b1_year = b4b1_date_test.split("-")[0]
                     if int(b4b1_year) >= 1999:
                         b4b1_transaction_type = row[5].upper().strip()
+                        
                         #Is it a loan?
                         if b4b1_transaction_type == "L":
                             b4b1_lender_name = ' '.join((row[9].strip().upper()).split()).replace('"',"") #lending committee name
@@ -1456,9 +1394,9 @@ def parseErrything():
                                 b4b1_lending_committee_id, #lending committee ID
                             ]
                             loans.write("|".join(b4b1_loan_list) + "\n")
-                        #Is it an in-kind expendture?
+                        
+                        #Is it an expendture?
                         else:
-                            #it's an expenditure of some sort
                             b4b1_payee = ' '.join((row[9].strip().upper()).split()).replace('"',"")
                             b4b1_address = ""
                             b4b1_exp_purpose = row[5].strip()
@@ -1529,13 +1467,11 @@ def parseErrything():
                 b4b2_committee_zip = "" #ZIP
                 b4b2_committee_type = "" #Committee type
                 b4b2_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b4b2_committee_canonical_id = lookItUp(b4b2_committee_id, "canonicalid", b4b2_committee_name) #Canonical ID
-                b4b2_committee_canonical_name = lookItUp(b4b2_committee_id, "canonicalname", b4b2_committee_name) #Canonical name
 
                 """
                 DB fields
                 ==========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b4b2_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
@@ -1543,9 +1479,7 @@ def parseErrything():
                 
                 b4b2_committee_list = [
                     b4b2_committee_id,
-                    b4b2_committee_canonical_id,
                     b4b2_committee_name,
-                    b4b2_committee_canonical_name,
                     b4b2_committee_address,
                     b4b2_committee_city,
                     b4b2_committee_state,
@@ -1567,6 +1501,7 @@ def parseErrything():
                     b4b2_dict = {}
                     b4b2_dict["donor_id"] = row[1]
                     b4b2_dict["recipient_id"] = ""
+                    b4b2_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b4b2_dict["source_table"] = "b4b2"
                     b4b2_dict["destination_table"] = "expenditure"
                     b4b2_dict["donation_date"] = b4b2_transaction_date
@@ -1637,22 +1572,18 @@ def parseErrything():
                 b4b3_committee_zip = "" #ZIP
                 b4b3_committee_type = "" #Committee type
                 b4b2_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b4b3_committee_canonical_id = lookItUp(b4b3_committee_id, "canonicalid", b4b3_committee_name) #Canonical ID
-                b4b3_committee_canonical_name = lookItUp(b4b3_committee_id, "canonicalname", b4b3_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b4b3_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b4b3_committee_list = [
                     b4b3_committee_id,
-                    b4b3_committee_canonical_id,
                     b4b3_committee_name,
-                    b4b3_committee_canonical_name,
                     b4b3_committee_address,
                     b4b3_committee_city,
                     b4b3_committee_state,
@@ -1674,6 +1605,7 @@ def parseErrything():
                     b4b3_dict = {}
                     b4b3_dict["donor_id"] = row[1]
                     b4b3_dict["recipient_id"] = row[3]
+                    b4b3_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b4b3_dict["source_table"] = "b4b3"
                     b4b3_dict["destination_table"] = "expenditure"
                     b4b3_dict["donation_date"] = b4b3_transaction_date
@@ -1743,22 +1675,18 @@ def parseErrything():
                 b5_committee_zip = "" #ZIP
                 b5_committee_type = "" #Committee type
                 b5_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b5_committee_canonical_id = lookItUp(b5_committee_id, "canonicalid", b5_committee_name) #Canonical ID
-                b5_committee_canonical_name = lookItUp(b5_committee_id, "canonicalname", b5_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b5_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b5_committee_list = [
                     b5_committee_id,
-                    b5_committee_canonical_id,
                     b5_committee_name,
-                    b5_committee_canonical_name,
                     b5_committee_address,
                     b5_committee_city,
                     b5_committee_state,
@@ -1788,22 +1716,18 @@ def parseErrything():
                 b5_contributor_occupation = row[12].strip()
                 b5_contributor_employer = row[13].strip()
                 b5_contributor_place_of_business = row[14].strip()
-                b5_contributor_canonical_id = lookItUp(b5_contributor_id, "canonicalid", b5_contributor_name) #Canonical ID
-                b5_contributor_canonical_name = lookItUp(b5_contributor_id, "canonicalname", b5_contributor_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b5_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b5_contributor_list = [
                     b5_contributor_id,
-                    b5_contributor_canonical_id,
                     b5_contributor_name,
-                    b5_contributor_canonical_name,
                     b5_contributor_address,
                     b5_contributor_city,
                     b5_contributor_state,
@@ -1832,7 +1756,7 @@ def parseErrything():
     Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Date Received|Form ID|Expenditure Date|Amount|Description|Recipient Name|Recipient Address
     """
     
-    print "rollin' thru formb6expend"
+    print "rollin' thru formb6expend ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b6exp = local('csvjoin -d "|" -c "Form ID Number,Form B6 ID" --right formb6.txt formb6expend.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -1855,13 +1779,11 @@ def parseErrything():
                 b6_committee_zip = "" #ZIP
                 b6_committee_type = "" #Committee type
                 b6_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b6_committee_canonical_id = lookItUp(b6_committee_id, "canonicalid", b6_committee_name) #Canonical ID
-                b6_committee_canonical_name = lookItUp(b6_committee_id, "canonicalname", b6_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b6_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
@@ -1869,9 +1791,7 @@ def parseErrything():
                 
                 b6_committee_list = [
                     b6_committee_id,
-                    b6_committee_canonical_id,
                     b6_committee_name,
-                    b6_committee_canonical_name,
                     b6_committee_address,
                     b6_committee_city,
                     b6_committee_state,
@@ -1894,7 +1814,8 @@ def parseErrything():
                     b6_dict = {}
                     b6_dict["donor_id"] = row[6]
                     b6_dict["recipient_id"] = row[2]
-                    b6_dict["source_table"] = "b6"
+                    b6_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
+                    b6_dict["source_table"] = "b6expend"
                     b6_dict["destination_table"] = "expenditure"
                     b6_dict["donation_date"] = b6_transaction_date
                     rows_with_new_bad_dates.append(b6_dict)
@@ -1946,7 +1867,7 @@ def parseErrything():
     Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Form ID|Contributor Name|Contributor Address|Occupation|Place Of Business|Employer
     """
     
-    print "rollin' thru formb6cont"
+    print "rollin' thru formb6cont ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b6don = local('csvjoin -d "|" -c "Form ID Number,Form B6 ID" --right formb6.txt formb6cont.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -1969,13 +1890,11 @@ def parseErrything():
                 b6_don_committee_zip = "" #ZIP
                 b6_don_committee_type = "" #Committee type
                 b6_don_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b6_don_committee_canonical_id = lookItUp(b6_don_committee_id, "canonicalid", b6_don_committee_name) #Canonical ID
-                b6_don_committee_canonical_name = lookItUp(b6_don_committee_id, "canonicalname", b6_don_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b6_don_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
@@ -1983,9 +1902,7 @@ def parseErrything():
                 
                 b6_don_committee_list = [
                     b6_don_committee_id,
-                    b6_don_committee_canonical_id,
                     b6_don_committee_name,
-                    b6_don_committee_canonical_name,
                     b6_don_committee_address,
                     b6_don_committee_city,
                     b6_don_committee_state,
@@ -2008,6 +1925,7 @@ def parseErrything():
                     b6_don_dict = {}
                     b6_don_dict["donor_id"] = row[10]
                     b6_don_dict["recipient_id"] = row[6]
+                    b6_don_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b6_don_dict["source_table"] = "b6cont"
                     b6_don_dict["destination_table"] = "donation"
                     b6_don_dict["donation_date"] = b6_don_donation_date
@@ -2076,22 +1994,18 @@ def parseErrything():
                 b7_committee_zip = "" #ZIP
                 b7_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b7_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b7_committee_canonical_id = lookItUp(b7_committee_id, "canonicalid", b7_committee_name) #Canonical ID
-                b7_committee_canonical_name = lookItUp(b7_committee_id, "canonicalname", b7_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b7_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b7_committee_list = [
                     b7_committee_id,
-                    b7_committee_canonical_id,
                     b7_committee_name,
-                    b7_committee_canonical_name,
                     b7_committee_address,
                     b7_committee_city,
                     b7_committee_state,
@@ -2119,22 +2033,18 @@ def parseErrything():
                 b7_sspf_committee_descrip = ' '.join((row[9].strip().upper()).split()).replace('"',"")  #description
                 b7_sspf_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b7_sspf_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b7_sspf_committee_canonical_id = lookItUp(b7_sspf_committee_id, "canonicalid", b7_sspf_committee_name) #Canonical ID
-                b7_sspf_committee_canonical_name = lookItUp(b7_sspf_committee_id, "canonicalname", b7_sspf_committee_name) #Canonical name
 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b7_sspf_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b7_sspf_committee_list = [
                     b7_sspf_committee_id,
-                    b7_sspf_committee_canonical_id,
                     b7_sspf_committee_name,
-                    b7_sspf_committee_canonical_name,
                     b7_sspf_committee_address,
                     b7_sspf_committee_city,
                     b7_sspf_committee_state,
@@ -2185,22 +2095,18 @@ def parseErrything():
                 b72_committee_zip = "" #ZIP
                 b72_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b72_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b72_committee_canonical_id = lookItUp(b72_committee_id, "canonicalid", b72_committee_name) #Canonical ID
-                b72_committee_canonical_name = lookItUp(b72_committee_id, "canonicalname", b72_committee_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b72_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b72_committee_list = [
                     b72_committee_id,
-                    b72_committee_canonical_id,
                     b72_committee_name,
-                    b72_committee_canonical_name,
                     b72_committee_address,
                     b72_committee_city,
                     b72_committee_state,
@@ -2227,21 +2133,17 @@ def parseErrything():
                 b72_contributor_zip = "" #ZIP
                 b72_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b72_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b72_contributor_canonical_id = lookItUp(b72_contributor_id, "canonicalid", b72_contributor_name) #Canonical ID
-                b72_contributor_canonical_name = lookItUp(b72_contributor_id, "canonicalname", b72_contributor_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b72_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 b72_contributor_list = [
                     b72_contributor_id,
-                    b72_contributor_canonical_id,
                     b72_contributor_name,
-                    b72_contributor_canonical_name,
                     b72_contributor_address,
                     b72_contributor_city,
                     b72_contributor_state,
@@ -2265,6 +2167,7 @@ def parseErrything():
                     b72_dict = {}
                     b72_dict["donor_id"] = row[1]
                     b72_dict["recipient_id"] = row[3]
+                    b72_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b72_dict["source_table"] = "b72"
                     b72_dict["destination_table"] = "donation"
                     b72_dict["donation_date"] = b72_donation_date
@@ -2337,22 +2240,18 @@ def parseErrything():
                 b73_committee_zip = "" #ZIP
                 b73_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b73_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b73_committee_canonical_id = lookItUp(b73_committee_id, "canonicalid", b73_committee_name) #Canonical ID
-                b73_committee_canonical_name = lookItUp(b73_committee_id, "canonicalname", b73_committee_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b73_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b73_committee_list = [
                     b73_committee_id,
-                    b73_committee_canonical_id,
                     b73_committee_name,
-                    b73_committee_canonical_name,
                     b73_committee_address,
                     b73_committee_city,
                     b73_committee_state,
@@ -2379,22 +2278,18 @@ def parseErrything():
                 b73_contributor_zip = "" #ZIP
                 b73_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
                 b73_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
-                b73_contributor_canonical_id = lookItUp(b73_contributor_id, "canonicalid", b73_contributor_name) #Canonical ID
-                b73_contributor_canonical_name = lookItUp(b73_contributor_id, "canonicalname", b73_contributor_name) #Canonical name
                  
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b73_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b73_contributor_list = [
                     b73_contributor_id,
-                    b73_contributor_canonical_id,
                     b73_contributor_name,
-                    b73_contributor_canonical_name,
                     b73_contributor_address,
                     b73_contributor_city,
                     b73_contributor_state,
@@ -2416,6 +2311,7 @@ def parseErrything():
                     b73_dict = {}
                     b73_dict["donor_id"] = ""
                     b73_dict["recipient_id"] = row[3]
+                    b73_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b73_dict["source_table"] = "b73"
                     b73_dict["destination_table"] = "expenditures_or_donations"
                     b73_dict["donation_date"] = b73_exp_date
@@ -2472,7 +2368,7 @@ def parseErrything():
         Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone
         """
         
-        print "rollin' thru b9"
+        print "rollin' thru b9 ..."
         
         b9reader = csvkit.reader(b9, delimiter = delim)
         b9reader.next()
@@ -2491,22 +2387,18 @@ def parseErrything():
                 b9_committee_zip = "" #ZIP
                 b9_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
                 b9_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b9_committee_canonical_id = lookItUp(b9_committee_id, "canonicalid", b9_committee_name) #Canonical ID
-                b9_committee_canonical_name = lookItUp(b9_committee_id, "canonicalname", b9_committee_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b9_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b9_committee_list = [
                     b9_committee_id,
-                    b9_committee_canonical_id,
                     b9_committee_name,
-                    b9_committee_canonical_name,
                     b9_committee_address,
                     b9_committee_city,
                     b9_committee_state,
@@ -2535,7 +2427,7 @@ def parseErrything():
     Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone|Contributor Name|Form B9 ID|Form ID|Recipient ID|Support/Oppose|Nature of Expenditure|Expenditure Date|Previous Total|Amount|Total|Description|Entry Date|Recipient Name
     """
     
-    print "rollin' thru formb9b"
+    print "rollin' thru formb9b ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b9exp = local('csvjoin -d "|" -c "Form ID,Form B9 ID" --right formb9.txt formb9b.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -2559,22 +2451,18 @@ def parseErrything():
                 b9_exp_committee_zip = "" #ZIP
                 b9_exp_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
                 b9_exp_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b9_exp_committee_canonical_id = lookItUp(b9_exp_committee_id, "canonicalid", b9_exp_committee_name) #Canonical ID
-                b9_exp_committee_canonical_name = lookItUp(b9_exp_committee_id, "canonicalname", b9_exp_committee_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b9_exp_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 
                 b9_exp_committee_list = [
                     b9_exp_committee_id,
-                    b9_exp_committee_canonical_id,
                     b9_exp_committee_name,
-                    b9_exp_committee_canonical_name,
                     b9_exp_committee_address,
                     b9_exp_committee_state,
                     b9_exp_committee_zip,
@@ -2600,20 +2488,16 @@ def parseErrything():
                 b9_exp_recipient_zip = "" #ZIP
                 b9_exp_recipient_type = "" #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
                 b9_exp_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b9_exp_recipient_canonical_id = lookItUp(b9_exp_recipient_id, "canonicalid", b9_exp_recipient_name) #Canonical ID
-                b9_exp_recipient_canonical_name = lookItUp(b9_exp_recipient_id, "canonicalname", b9_exp_recipient_name) #Canonical name
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b9_exp_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
                 b9_exp_recipient_list = [
                     b9_exp_recipient_id,
-                    b9_exp_recipient_canonical_id,
                     b9_exp_recipient_name,
-                    b9_exp_recipient_canonical_name,
                     b9_exp_recipient_address,
                     b9_exp_recipient_city,
                     b9_exp_recipient_state,
@@ -2636,6 +2520,7 @@ def parseErrything():
                     b9_dict = {}
                     b9_dict["donor_id"] = row[2]
                     b9_dict["recipient_id"] = row[13]
+                    b9_dict["lookup_name"] = ' '.join((row[22].strip().upper()).split()).replace('"',"")
                     b9_dict["source_table"] = "b9b"
                     b9_dict["destination_table"] = "expenditures_loans_donations"
                     b9_dict["donation_date"] = b9_exp_date
@@ -2793,7 +2678,7 @@ def parseErrything():
         Committee Name|Form ID|Committee ID|Postmark Date|Date Received|Microfilm Number|Recipient Name|Recipient Address|Recipient City|Recipient State|Recipient Zip|Recipient Phone|Expenditure Date|Amount|Candidate ID|Candidate Support/Oppose|Ballot Question ID|Ballot Support/Oppose|Date Last Revised|Last Revised By|Candidate/Ballot Name
         """
         
-        print "rollin' thru formb11"
+        print "rollin' thru formb11 ..."
         
         b11reader = csvkit.reader(b11, delimiter = delim)
         b11reader.next()
@@ -2815,22 +2700,18 @@ def parseErrything():
                 b11_committee_zip = "" #ZIP
                 b11_committee_type = ""
                 b11_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-                b11_committee_canonical_id = lookItUp(b11_committee_id, "canonicalid", b11_committee_name) #Canonical ID
-                b11_committee_canonical_name = lookItUp(b11_committee_id, "canonicalname", b11_committee_name) #Canonical name
                 
                 """
                 DB fields
                 ========
-                nadcid, canonical_id, name, canonical_name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
+                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
                 
                 We're adding b11_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
                 b11_committee_list = [
                     b11_committee_id,
-                    b11_committee_canonical_id,
                     b11_committee_name,
-                    b11_committee_canonical_name,
                     b11_committee_address,
                     b11_committee_city,
                     b11_committee_state,
@@ -2852,6 +2733,7 @@ def parseErrything():
                     b11_exp_dict = {}
                     b11_exp_dict["donor_id"] = row[2]
                     b11_exp_dict["recipient_id"] = ' '.join((row[6].upper().strip()).split()).replace('"',"")
+                    b11_exp_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b11_exp_dict["source_table"] = "b11"
                     b11_exp_dict["destination_table"] = "expenditures"
                     b11_exp_dict["donation_date"] = b11_exp_date
@@ -2923,11 +2805,202 @@ def parseErrything():
             print thing
         #local("killall parser.sh", capture=False)
     
-    #dedupe entity - grep is ~1 million times faster than Python here
-    #unique_ids = list(set(id_master_list))
+    """
+    Dedupe entity file
+    =========
+    - csvsort entities.txt by date_we_care_about
+    - loop over unique entity IDs (having taken the set of id_master_list)
+    - grep for each ID in the sorted entity file (~1 million times faster than python)
+    - loop over the results, compiling a dict with the most recent, non-empty values, if available
+    - in the process, kill out variants of "(DISSOLVED)"
+    - punch that record into a list
+    - write that list to file
+    """
     
-    #dedupe donations
+    print "preparing entity file ..."
+    
+    #get list of unique entity IDs
+    uniques = list(set(id_master_list))
+        
+    print "   pre-duping ..."
+    
+    #dedupe sorted file
+    clean_entity = pd.read_csv("/home/apps/myproject/myproject/nadc/data/toupload/entity-raw.txt", delimiter="|", dtype={
+        "nadcid": object,
+        "name": object,
+        "address": object,
+        "city": object,
+        "state": object,
+        "zip": object,
+        "entity_type": object,
+        "notes": object,
+        "employer": object,
+        "occupation": object,
+        "place_of_business": object,
+        "dissolved_date": object,
+        "date_we_care_about": object,
+        }
+    )
+    
+    deduped_entities = clean_entity.drop_duplicates(subset=["nadcid", "name", "address", "city", "state", "zip", "entity_type", "notes", "employer", "occupation", "place_of_business", "dissolved_date"])
+    
+    deduped_entities.to_csv('/home/apps/myproject/myproject/nadc/data/toupload/entities_deduped.txt', sep="|")
+    
+    print "   sorting ..."
+    
+    #sort input file by date
+    with hide('running', 'stdout', 'stderr'):
+        local('csvsort -d "|" -c 14 /home/apps/myproject/myproject/nadc/data/toupload/entities_deduped.txt | csvformat -D "|" | sed -e \'s/\"//g\' -e \'s/\&AMP;//g\' -e \'1d\' > /home/apps/myproject/myproject/nadc/data/toupload/entities_sorted_and_deduped.txt', capture=False)
+    
+    #get most current, complete data
+    
+    #list with variants of "(DISSOLVED)"
+    KILLOUT = [
+        "(D",
+        "(DI",
+        "(DIS",
+        "(DISS",
+        "(DISSO",
+        "(DISSOL",
+        "(DISSOLV",
+        "(DISSOLVE",
+        "(DISSOLVED",
+        "(DISSOLVED)",
+    ]
+    
+    print "   grepping pre-duped, sorted file and deduping for recency and completeness ..."
+    
+    entity_final = open("/home/apps/myproject/myproject/nadc/data/toupload/entity.txt", "wb")
+    
+    for idx, i in enumerate(uniques):
+        #print str(idx)
+        with hide('running', 'stdout', 'stderr'):
+            grepstring = local('grep "' + i + '" /home/apps/myproject/myproject/nadc/data/toupload/entities_sorted_and_deduped.txt', capture=True)
+            g = grepstring.split("\n") #list of records that match
+            interimdict = {}
+            
+            #set default values
+            interimdict['id'] = ""
+            interimdict['canonical_id'] = ""
+            interimdict['name'] = ""
+            interimdict['canon_name'] = ""
+            interimdict['address'] = ""
+            interimdict['city'] = ""
+            interimdict['state'] = ""
+            interimdict['zip'] = ""
+            interimdict['entity_type'] = ""
+            interimdict['employer'] = ""
+            interimdict['occupation'] = ""
+            interimdict['place_of_business'] = ""
+            interimdict['dissolved_date'] = ""
+            
+            for dude in g:
+                row = dude.split("|") #actual record
+                nadcid = row[1]
+                name = row[2]
+                canonical_id = lookItUp(nadcid, "canonicalid", name)
+                canonical_name = lookItUp(nadcid, "canonicalname", name)
+                
+                interimdict['id'] = nadcid
+                interimdict['canonical_id'] = canonical_id
+                
+                if nadcid == "99CON05435":
+                    print nadcid, lookItUp(nadcid, "canonicalid", name)
+                
+                #Fix "(DISSOLVED)" ish
+                for item in reversed(KILLOUT):
+                    name = name.replace(item, "").strip().upper()
+                    canonical_name = canonical_name.replace(item, "").strip().upper()
+                
+                #check for complete names
+                if len(name) > 1:
+                    interimdict['name'] = name
+                if len(canonical_name) > 1:
+                    interimdict['canon_name'] = canonical_name
+                
+                #check for complete address
+                if len(row[3]) > 1 and len(row[4]) > 1 and len(row[5]) > 1 and len(row[6]) > 1:
+                    interimdict['address'] = row[3]
+                    interimdict['city'] = row[4]
+                    interimdict['state'] = row[5]
+                    interimdict['zip'] = row[6]
 
+                #check for complete entity type
+                if len(row[7]) > 1:
+                    interimdict['entity_type'] = row[7]
+
+                #check for complete employer
+                if len(row[9]) > 1:
+                    interimdict['employer'] = row[9]
+                    
+                #check for complete occupation
+                if len(row[10]) > 1:
+                    interimdict['occupation'] = row[10]
+                    
+                #check for complete place of business
+                if len(row[11]) > 1:
+                    interimdict['place_of_business'] = row[11]
+                
+                #check for complete dissolved date
+                if len(row[12]) > 1:
+                    interimdict['dissolved_date'] = row[12]
+
+            #append dict items to list
+            outlist = [
+                interimdict['id'],
+                interimdict['canonical_id'],
+                interimdict['name'],
+                interimdict['canon_name'],
+                interimdict['address'],
+                interimdict['city'],
+                interimdict['state'],
+                interimdict['zip'],
+                interimdict['entity_type'],
+                "",
+                interimdict['employer'],
+                interimdict['occupation'],
+                interimdict['place_of_business'],
+                interimdict['dissolved_date']
+            ]
+            entity_final.write("|".join(outlist) + "\n")
+    
+    entity_final.close()
+    
+    print "done"
+    
+    """
+    Dedupe donations file
+    =========
+    - call pandas drop_duplicates on a subset of fields
+    - csvcut the columns we need out of this one
+    - chop the header row and kill stray quotes
+    """
+
+    print "deduping donations ..."
+    
+    clean_donations = pd.read_csv("/home/apps/myproject/myproject/nadc/data/toupload/donations-raw.txt", delimiter="|", dtype={
+        "db_id": object,
+        "cash": object,
+        "inkind": object,
+        "pledge": object,
+        "inkind_desc": object,
+        "donation_date": object,
+        "donor_id": object,
+        "recipient_id": object,
+        "donation_year": object,
+        "notes": object,
+        "stance": object,
+        "donor_name": object
+        }
+    )
+    deduped_donations = clean_donations.drop_duplicates(subset=["donor_id", "donation_date", "recipient_id", "cash", "inkind", "pledge"])
+    deduped_donations.to_csv('/home/apps/myproject/myproject/nadc/data/toupload/donations_almost_there.txt', sep="|")
+    with hide('running', 'stdout', 'stderr'):
+        local('csvcut -x -d "|" -c db_id,cash,inkind,pledge,inkind_desc,donation_date,donor_id,recipient_id,donation_year,notes,stance,donor_name /home/apps/myproject/myproject/nadc/data/toupload/donations_almost_there.txt | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > /home/apps/myproject/myproject/nadc/data/toupload/donations.txt', capture=False)
+    
+    print "done"
+
+    
 def tweetIt():
     pass
     # Do a thing here to tweet biggest donation in past week
@@ -2936,4 +3009,6 @@ def tweetIt():
     string = "New campaign finance data at dataomaha.com/campaign-finance"
     
     
-    
+def emailNewShiz():
+    pass
+    # Do a thing here to email summary tables to interested reporters
