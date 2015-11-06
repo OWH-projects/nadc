@@ -31,9 +31,9 @@ fab parseErrything
 printf "~~ did all the things ~~\n\n"
 
 #pick up after yourself
-#printf "~~ cleaning up ~~\n"
-#cd /home/apps/myproject/myproject/nadc/data/toupload/ && rm donations-raw.txt entity-raw.txt entity-sorted.txt donations_almost_there.txt entities_sorted_and_deduped.txt
-#printf "~~ cleaned up ~~\n\n"
+printf "~~ cleaning up ~~\n"
+cd /home/apps/myproject/myproject/nadc/data/toupload/ && rm donations-raw.txt entity-raw.txt entity-sorted.txt donations_almost_there.txt entities_sorted_and_deduped.txt ballot_deduped.txt ballot_sorted.txt
+printf "~~ cleaned up ~~\n\n"
 
 # kill 'n' fill data
 printf "~~ killing and filling new data ~~\n"

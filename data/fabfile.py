@@ -112,18 +112,58 @@ def parseErrything():
     rows_with_new_bad_dates = []
     
     entities = open("/home/apps/myproject/myproject/nadc/data/toupload/entity-raw.txt", "wb")
-    ballotq = open("/home/apps/myproject/myproject/nadc/data/toupload/ballot.txt", "wb")
+    ballotq = open("/home/apps/myproject/myproject/nadc/data/toupload/ballot-raw.txt", "wb")
     candidates = open("/home/apps/myproject/myproject/nadc/data/toupload/candidate.txt", "wb")
     donations = open("/home/apps/myproject/myproject/nadc/data/toupload/donations-raw.txt", "wb")
     loans = open("/home/apps/myproject/myproject/nadc/data/toupload/loan.txt", "wb")
     expenditures = open("/home/apps/myproject/myproject/nadc/data/toupload/expenditure.txt", "wb")
     
     #write headers to files that get deduped by pandas or whatever
-    donations_headers = ["db_id", "cash", "inkind", "pledge", "inkind_desc", "donation_date", "donor_id", "recipient_id", "donation_year", "notes", "stance", "donor_name"]
+    donations_headers = [
+        "db_id",
+        "cash",
+        "inkind",
+        "pledge",
+        "inkind_desc",
+        "donation_date",
+        "donor_id",
+        "recipient_id",
+        "donation_year",
+        "notes",
+        "stance",
+        "donor_name"
+        ]
     donations.write("|".join(donations_headers) + "\n")
     
-    entities_headers = ["nadcid", "name", "address", "city", "state", "zip", "entity_type", "notes", "employer", "occupation", "place_of_business", "dissolved_date", "date_we_care_about"]
+    entities_headers = [
+        "nadcid",
+        "name",
+        "address",
+        "city",
+        "state",
+        "zip",
+        "entity_type",
+        "notes",
+        "employer",
+        "occupation",
+        "place_of_business",
+        "dissolved_date",
+        "date_we_care_about"
+        ]
     entities.write("|".join(entities_headers) + "\n")
+
+    ballot_headers = [
+        "db_id",
+        "name",
+        "ballot_type",
+        "stance",
+        "nadc_id",
+        "notes",
+        "date_we_care_about"
+        ]
+    ballotq.write("|".join(ballot_headers) + "\n")
+    
+    print "\nPARSING RAW FILES"
     
     with open('forma1.txt', 'rb') as a1:
         """
@@ -136,7 +176,7 @@ def parseErrything():
         Committee ID Number|Committee Name|Committee Address|Committee City|Committee State|Committee Zip|Committee Type|Date Received|Postmark Date|Nature Of Filing|Ballot Question|Oppose Ballot Question|Ballot Type|Date over Theshold|Acronym|Separate Seg Political Fund ID|Separate Segregated Political Fund Name|SSPF Address|SSPF City|SSPF State|SSPF Zip|SSPF Type|Date Dissolved|Date of Next Election|Election Type|Won General|Won Primary
         """
         
-        print "rollin' through forma1 ..."
+        print "    forma1 ..."
         
         a1reader = csvkit.reader(a1, delimiter = delim)
         a1reader.next()
@@ -221,18 +261,19 @@ def parseErrything():
                         a1_ballot = ' '.join((row[10].upper().strip()).split()).replace('"',"")
                         a1_ballot_type = row[12]
                         a1_ballot_stance = row[11]
-                        #ballotq: db_id|ballot|ballot_type|stance|nadc_id|notes
+                        a1_ballot_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
+                        
                         ballotq_list = [
                             "",
                             a1_ballot,
                             a1_ballot_type,
                             a1_ballot_stance,
                             a1_nadc_id,
-                            ""
+                            "",
+                            a1_ballot_date_of_thing_happening,
                         ]
                         ballotq.write("|".join(ballotq_list) + "\n")
 
-    print "done"
     
     with open('forma1cand.txt', 'rb') as a1cand:
         """
@@ -245,7 +286,7 @@ def parseErrything():
         Form A1 ID Number|Date Received|Candidate ID|Candidate Last Name|Candidate First Name|Candidate Middle Initial|Support/Oppose|Office Sought|Office Title|Office Description
         """
         
-        print "rollin' through forma1cand ..."
+        print "    forma1cand ..."
         
         a1candreader = csvkit.reader(a1cand, delimiter = delim)
         a1candreader.next()
@@ -283,7 +324,7 @@ def parseErrything():
                     a1cand_city,
                     a1cand_state,
                     a1cand_zip,
-                    a1cand_entity_type.upper(),
+                    a1cand_entity_type,
                     "",
                     "",
                     "",
@@ -324,7 +365,6 @@ def parseErrything():
                 ]
                 candidates.write("|".join(a1cand_list) + "\n")
     
-    print "done"
     
     with open('formb1.txt', 'rb') as b1:
         """
@@ -337,7 +377,7 @@ def parseErrything():
         Committee Name|Committee Address|Committee Type|Committee City|Committee State|Committee Zip|Committee ID Number|Date Last Revised|Last Revised By|Date Received|Postmark Date|Microfilm Number|Election Date|Type of Filing|Nature of Filing|Additional Ballot Question|Report Start Date|Report End Date|Field 1|Field 2A|Field 2B|Field 2C|Field 3|Field 4A|Field 4B|Field 5|Field 6|Field 7A|Field 7B|Field 7C|Field 7D|Field 8A|Field 8B|Field 8C|Field 8D|Field 9|Field 10|Field 11|Field 12|Field 13|Field 14|Field 15|Field 16|Field 17|Field 18|Field 19|Field 20|Field 21|Field 22|Field 23|Field 23|Field 24|Field 25|Field 26|Field 27|Adjustment|Total Unitemized Bills|Total Unpaid Bills|Total All Bills
         """
         
-        print "rollin' through formb1 ..."
+        print "    formb1 ..."
         
         b1reader = csvkit.reader(b1, delimiter = delim)
         b1reader.next()
@@ -380,8 +420,7 @@ def parseErrything():
                     b1_entity_date_of_thing_happening,
                 ]
                 entities.write("|".join(b1_entity_list) + "\n")
-    
-    print "done"
+
     
     with open('formb1ab.txt', 'rb') as b1ab:
         """
@@ -394,7 +433,7 @@ def parseErrything():
         Committee Name|Committee ID|Date Received|Type of Contributor|Contributor ID|Contribution Date|Cash Contribution|In-Kind Contribution|Unpaid Pledges|Contributor Last Name|Contributor First Name|Contributor Middle Initial|Contributor Organization Name|Contributor Address|Contributor City|Contributor State|Contributor Zipcode
         """
         
-        print "rollin' through formb1ab ..."
+        print "    formb1ab ..."
         
         b1abreader = csvkit.reader(b1ab, delimiter = delim)
         b1abreader.next()
@@ -527,7 +566,6 @@ def parseErrything():
                         ]
                         donations.write("|".join(b1ab_donation_list) + "\n")
     
-    print "done"
     
     with open('formb1c.txt', 'rb') as b1c:
         """
@@ -540,7 +578,7 @@ def parseErrything():
         Committee Name|Committee ID|Date Received|Lender Name|Lender Address|Loan Date|Amount Received|Amount Repaid|Amount Forgiven|Paid by 3rd Party|Guarantor
         """
         
-        print "rollin' through formb1c ..."
+        print "    formb1c ..."
         
         b1creader = csvkit.reader(b1c, delimiter = delim)
         b1creader.next()
@@ -631,7 +669,6 @@ def parseErrything():
                         ]
                         loans.write("|".join(b1c_loan_list) + "\n")
     
-    print "done"
     
     with open('formb1d.txt', 'rb') as b1d:
         """
@@ -644,7 +681,7 @@ def parseErrything():
         Committee Name|Committee ID|Date Received|Payee Name|Payee Address|Expenditure Purpose|Expenditure Date|Amount|In-Kind
         """
         
-        print "rollin' through formb1d ..."
+        print "    formb1d ..."
         
         b1dreader = csvkit.reader(b1d, delimiter = delim)
         b1dreader.next()
@@ -731,8 +768,7 @@ def parseErrything():
                             "",
                         ]
                         expenditures.write("|".join(b1d_exp_list) + "\n")
-        
-    print "done"
+
     
     with open('formb2.txt', 'rb') as b2:
         """
@@ -745,7 +781,7 @@ def parseErrything():
         Committee Name|Committee Address|Committee City|Committee State|Committee Zip|Committee ID|Date Received|Date Last Revised|Last Revised By|Postmark Date|Microfilm Number|Election Date|Type of Filing|Nature Of Filing|Report Start Date|Report End Date|Financial Activity|Report ID
         """
         
-        print "rollin' through formb2 ..."
+        print "    formb2 ..."
         
         b2reader = csvkit.reader(b2, delimiter = delim)
         b2reader.next()
@@ -790,7 +826,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b2_committee_list) + "\n")
     
-    print "done"
     
     with open('formb2a.txt', 'rb') as b2a:
         """
@@ -805,7 +840,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb2a ..."
+        print "    formb2a ..."
         
         b2areader = csvkit.reader(b2a, delimiter = delim)
         b2areader.next()
@@ -890,7 +925,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b2a_contributor_list) + "\n")
     
-    print "done"
     
     with open('formb2b.txt', 'rb') as b2b:
         """
@@ -905,7 +939,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb2b ..."
+        print "    formb2b ..."
         
         b2breader = csvkit.reader(b2b, delimiter = delim)
         b2breader.next()
@@ -1041,7 +1075,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b2b_exp_list) + "\n")
             
-    print "done"
             
     with open('formb4.txt', 'rb') as b4:
         """
@@ -1054,7 +1087,7 @@ def parseErrything():
         Committee Name|Committee Address|Committee Type|Committee City|Committee State|Committee Zip|Committee ID|Date Recevied|Date Last Revised|Last Revised By|Postmark Date|Microfilm Number|Election Date|Type of Filing|Nature of Filing|Report Start Date|Report End Date|Nature of Committee|Field 1|Field 2A|Field 2B|Field 2C|Field 2D|Field 3|Field 4|Field 5|Field 6|Field 7|Field 8|Field 9|Field 10|Field 11A|Field 11B|Field 11C|Field 11D|Field 12|Field 13|Field 14|Field 15|Field 16|Field 17|Field 18|Field 19|Field 20|Field 21|Field 22|Field 23|Field 24|Field 25|Field 26|Description|Report ID        
         """
         
-        print "rollin' through formb4 ..."
+        print "    formb4 ..."
         
         b4reader = csvkit.reader(b4, delimiter = delim)
         b4reader.next()
@@ -1071,7 +1104,7 @@ def parseErrything():
                 b4_committee_city = ' '.join((row[3].strip().upper()).split()).replace('"',"") #City
                 b4_committee_state = ' '.join((row[4].strip().upper()).split()).replace('"',"") #State
                 b4_committee_zip = row[5] #ZIP
-                b4_committee_type = row[2].upper().strip() #Committee type
+                b4_committee_type = row[2].upper().strip() #Committee type (C=Candidate Committee, B=Ballot Question, P=Political Action Committee, T=Political Party Committee, I or R = Independent Reporting Committee, S=Separate Segregated Political Fund Committee)
                 b4_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
 
                 """
@@ -1099,7 +1132,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b4_committee_list) + "\n")
         
-    print "done"
      
     with open('formb4a.txt', 'rb') as b4a:
         """
@@ -1114,7 +1146,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb4a ..."
+        print "    formb4a ..."
         
         b4areader = csvkit.reader(b4a, delimiter = delim)
         b4areader.next()
@@ -1242,7 +1274,6 @@ def parseErrything():
                         ]
                         donations.write("|".join(b4a_donation_list) + "\n")
       
-    print "done"
       
     with open('formb4b1.txt', 'rb') as b4b1:
         """
@@ -1257,7 +1288,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb4b1 ..."
+        print "    formb4b1 ..."
         
         b4b1reader = csvkit.reader(b4b1, delimiter = delim)
         b4b1reader.next()
@@ -1432,7 +1463,6 @@ def parseErrything():
                             ]
                             expenditures.write("|".join(b4b1_exp_list) + "\n")
     
-    print "done"
     
     with open('formb4b2.txt', 'rb') as b4b2:
         """
@@ -1447,7 +1477,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb4b2 ..."
+        print "    formb4b2 ..."
         
         b4b2reader = csvkit.reader(b4b2, delimiter = delim)
         b4b2reader.next()
@@ -1537,7 +1567,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b4b2_exp_list) + "\n")
                 
-    print "done"
                 
     with open('formb4b3.txt', 'rb') as b4b3:
         """
@@ -1552,7 +1581,7 @@ def parseErrything():
         *** n.b. The column headings in the file include "Report ID", but it doesn't exist in the data ***
         """
         
-        print "rollin' through formb4b3 ..."
+        print "    formb4b3 ..."
         
         b4b3reader = csvkit.reader(b4b3, delimiter = delim)
         b4b3reader.next()
@@ -1641,7 +1670,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b4b3_exp_list) + "\n")
        
-    print "done"
     
     with open('formb5.txt', 'rb') as b5:
         """
@@ -1654,7 +1682,7 @@ def parseErrything():
         Committee Name|Committee ID|Date Received|Date Last Revised|Last Revised By|Postmark Date|Microfilm Number|Contributor ID|Type of Contributor|Nature of Contribution|Date of Contribution|Amount|Occupation|Employer|Place of Business|Contributor Name
         """
         
-        print "rollin' through formb5 ..."
+        print "    formb5 ..."
         
         b5reader = csvkit.reader(b5, delimiter = delim)
         b5reader.next()
@@ -1742,7 +1770,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b5_contributor_list) + "\n")
        
-    print "done"
     
     #now we do the b6 tables with some fly csvjoin ish
     
@@ -1756,7 +1783,7 @@ def parseErrything():
     Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Date Received|Form ID|Expenditure Date|Amount|Description|Recipient Name|Recipient Address
     """
     
-    print "rollin' thru formb6expend ..."
+    print "    formb6expend ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b6exp = local('csvjoin -d "|" -c "Form ID Number,Form B6 ID" --right formb6.txt formb6expend.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -1854,7 +1881,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b6_exp_list) + "\n")
     
-    print "done"
     
     
     """
@@ -1867,7 +1893,7 @@ def parseErrything():
     Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Form ID|Contributor Name|Contributor Address|Occupation|Place Of Business|Employer
     """
     
-    print "rollin' thru formb6cont ..."
+    print "    formb6cont ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b6don = local('csvjoin -d "|" -c "Form ID Number,Form B6 ID" --right formb6.txt formb6cont.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -1960,7 +1986,6 @@ def parseErrything():
                         ]
                         donations.write("|".join(b6_don_donation_list) + "\n")
     
-    print "done"
     
     with open('formb7.txt', 'rb') as b7:
         """
@@ -1973,7 +1998,7 @@ def parseErrything():
         Committee Name|Committee ID|Date Last Revised|Last Revised By|Date Received|Postmark Date|Microfilm Number|Type of Contributor|PAC ID|Description Of Services|Report ID|PAC Name
         """
         
-        print "rollin' through formb7 ..."
+        print "    formb7 ..."
         
         b7reader = csvkit.reader(b7, delimiter = delim)
         b7reader.next()
@@ -2059,7 +2084,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b7_sspf_committee_list) + "\n")
                 
-    print "done"
     
     with open('formb72.txt', 'rb') as b72:
         """
@@ -2074,7 +2098,7 @@ def parseErrything():
         *** n.b. committee ID/name and contributor ID/name headers are swapped in the raw data , also there is no Report ID, contrary to headers ***
         """
         
-        print "rollin' through formb72 ..."
+        print "    formb72 ..."
         
         b72reader = csvkit.reader(b72, delimiter = delim)
         b72reader.next()
@@ -2201,7 +2225,6 @@ def parseErrything():
                         ]
                         donations.write("|".join(b72_donation_list) + "\n")
     
-    print "done"
     
     with open('formb73.txt', 'rb') as b73:
         """
@@ -2219,7 +2242,7 @@ def parseErrything():
         
         """
         
-        print "rollin' through formb73 ..."
+        print "    formb73 ..."
         
         b73reader = csvkit.reader(b73, delimiter = delim)
         b73reader.next()
@@ -2355,7 +2378,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b73_exp_list) + "\n")
     
-    print "done"
     
     with open('formb9.txt', 'rb') as b9:
         """
@@ -2368,7 +2390,7 @@ def parseErrything():
         Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone
         """
         
-        print "rollin' thru b9 ..."
+        print "    b9 ..."
         
         b9reader = csvkit.reader(b9, delimiter = delim)
         b9reader.next()
@@ -2413,7 +2435,6 @@ def parseErrything():
                 ]
                 entities.write("|".join(b9_committee_list) + "\n")
         
-    print "done"
     
     #use csvjoin on b9b, yo
     
@@ -2427,7 +2448,7 @@ def parseErrything():
     Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone|Contributor Name|Form B9 ID|Form ID|Recipient ID|Support/Oppose|Nature of Expenditure|Expenditure Date|Previous Total|Amount|Total|Description|Entry Date|Recipient Name
     """
     
-    print "rollin' thru formb9b ..."
+    print "    formb9b ..."
     
     with hide('running', 'stdout', 'stderr'):
         stitched_b9exp = local('csvjoin -d "|" -c "Form ID,Form B9 ID" --right formb9.txt formb9b.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
@@ -2665,7 +2686,6 @@ def parseErrything():
                             ]
                             donations.write("|".join(b9_donation_list) + "\n")
 
-    print "done"
     
     with open('formb11.txt', 'rb') as b11:
         """
@@ -2678,7 +2698,7 @@ def parseErrything():
         Committee Name|Form ID|Committee ID|Postmark Date|Date Received|Microfilm Number|Recipient Name|Recipient Address|Recipient City|Recipient State|Recipient Zip|Recipient Phone|Expenditure Date|Amount|Candidate ID|Candidate Support/Oppose|Ballot Question ID|Ballot Support/Oppose|Date Last Revised|Last Revised By|Candidate/Ballot Name
         """
         
-        print "rollin' thru formb11 ..."
+        print "    formb11 ..."
         
         b11reader = csvkit.reader(b11, delimiter = delim)
         b11reader.next()
@@ -2789,7 +2809,6 @@ def parseErrything():
                         ]
                         expenditures.write("|".join(b11_exp_list) + "\n")
                 
-    print "done"
             
     entities.close()
     candidates.close()
@@ -2800,15 +2819,47 @@ def parseErrything():
     
     #check for len() of new bad dates
     if len(rows_with_new_bad_dates) > 0:
-        print "Got some records with bad dates. Go fix this in canonical.py and rerun parser.sh:"
+        print "\n\nGot some records with bad dates. Go fix this in canonical.py and rerun parser.sh:"
         for thing in rows_with_new_bad_dates:
             print thing
         #local("killall parser.sh", capture=False)
     
+    
+    """
+    Dedupe ballot question file
+    =========
+    - csvsort ballot-raw.txt by date_we_care_about descending (--reverse)
+    - pandas drop_duplicates, keep first record, export
+    """
+    
+    print "\n\nPREPPING BALLOT QUESTION FILE"
+    print "    sorting ..."
+    
+    #sort input file by date
+    with hide('running', 'stdout', 'stderr'):
+        local('csvsort -d "|" -c 7 --reverse /home/apps/myproject/myproject/nadc/data/toupload/ballot-raw.txt | csvformat -D "|" | sed -e \'s/\"//g\' -e \'s/\&AMP;//g\' > /home/apps/myproject/myproject/nadc/data/toupload/ballot_sorted.txt', capture=False)
+    
+    print "    deduping ..."
+    #dedupe sorted file
+    clean_ballot = pd.read_csv("/home/apps/myproject/myproject/nadc/data/toupload/ballot-raw.txt", delimiter="|", dtype={
+        "dbid": object,
+        "name": object,
+        "ballot_type": object,
+        "stance": object,
+        "nadc_id": object,
+        "notes": object,
+        "date_we_care_about": object,
+        }
+    )
+    
+    deduped_ballot = clean_ballot.drop_duplicates(subset=["name", "nadc_id"])
+    deduped_ballot.to_csv('/home/apps/myproject/myproject/nadc/data/toupload/ballot.txt', sep="|", header=False, index=False)
+
+    
     """
     Dedupe entity file
     =========
-    - csvsort entities.txt by date_we_care_about
+    - csvsort entity-raw.txt by date_we_care_about
     - loop over unique entity IDs (having taken the set of id_master_list)
     - grep for each ID in the sorted entity file (~1 million times faster than python)
     - loop over the results, compiling a dict with the most recent, non-empty values, if available
@@ -2817,7 +2868,7 @@ def parseErrything():
     - write that list to file
     """
     
-    print "preparing entity file ..."
+    print "\n\nPREPPING ENTITY FILE"
     
     #get list of unique entity IDs
     uniques = list(set(id_master_list))
@@ -2866,6 +2917,8 @@ def parseErrything():
         "(DISSOLVE",
         "(DISSOLVED",
         "(DISSOLVED)",
+        "(Now-Mccoy For Gov)",
+         "- Now Legislature)"
     ]
     
     print "   grepping pre-duped, sorted file and deduping for recency and completeness ..."
@@ -2896,6 +2949,7 @@ def parseErrything():
             
             for dude in g:
                 row = dude.split("|") #actual record
+                
                 nadcid = row[1]
                 name = row[2]
                 canonical_id = lookItUp(nadcid, "canonicalid", name)
@@ -2904,13 +2958,10 @@ def parseErrything():
                 interimdict['id'] = nadcid
                 interimdict['canonical_id'] = canonical_id
                 
-                if nadcid == "99CON05435":
-                    print nadcid, lookItUp(nadcid, "canonicalid", name)
-                
                 #Fix "(DISSOLVED)" ish
                 for item in reversed(KILLOUT):
-                    name = name.replace(item, "").strip().upper()
-                    canonical_name = canonical_name.replace(item, "").strip().upper()
+                    name = name.upper().replace(item.upper(), "").strip()
+                    canonical_name = canonical_name.upper().replace(item.upper(), "").strip()
                 
                 #check for complete names
                 if len(name) > 1:
@@ -2926,7 +2977,7 @@ def parseErrything():
                     interimdict['zip'] = row[6]
 
                 #check for complete entity type
-                if len(row[7]) > 1:
+                if len(row[7]) >= 1:
                     interimdict['entity_type'] = row[7]
 
                 #check for complete employer
@@ -2962,11 +3013,11 @@ def parseErrything():
                 interimdict['place_of_business'],
                 interimdict['dissolved_date']
             ]
+            
             entity_final.write("|".join(outlist) + "\n")
     
     entity_final.close()
     
-    print "done"
     
     """
     Dedupe donations file
@@ -2976,7 +3027,8 @@ def parseErrything():
     - chop the header row and kill stray quotes
     """
 
-    print "deduping donations ..."
+    print "\n\nPREPPING DONATIONS FILE"
+    print "    deduping ..."
     
     clean_donations = pd.read_csv("/home/apps/myproject/myproject/nadc/data/toupload/donations-raw.txt", delimiter="|", dtype={
         "db_id": object,
@@ -2998,7 +3050,7 @@ def parseErrything():
     with hide('running', 'stdout', 'stderr'):
         local('csvcut -x -d "|" -c db_id,cash,inkind,pledge,inkind_desc,donation_date,donor_id,recipient_id,donation_year,notes,stance,donor_name /home/apps/myproject/myproject/nadc/data/toupload/donations_almost_there.txt | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > /home/apps/myproject/myproject/nadc/data/toupload/donations.txt', capture=False)
     
-    print "done"
+    print "\n\nDONE."
 
     
 def tweetIt():

@@ -12,66 +12,18 @@
         
 <div id="topdonors" class="item">
 <br><br><br>
-<form action="/campaign-finance/search/" method="post">
-    {% csrf_token %}
-    {{ mainform }}
-    <input type="submit" value="Submit" />
-</form>
+{% if candidate_results or entity_results %}
+<h3>Search results for '{{ query }}'</h3>
 
-<p>You searched for donations that met the following requirements:
 <ul>
-{% if donor_name %}<li>From "{{ donor_name }}"</li>{% endif %}
-{% if recipient %}<li>To "{{ recipient }}"</li>{% endif %}
+{% for match in candidate_results %}
+<li><a href="/campaign-finance/{{ match.cand_id }}/{{ match.cand_name|slugify }}">{{ match.cand_name|title }} (Candidate for {{ match.office_sought|title }} {{ match.office_desc|title }})</a>
+{% endfor %}
+{% for match in entity_results %}
+<li><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></li>
+{% endfor %}
 </ul>
-{% if donations %}
-<h1>Donations</h1>
-<table>
-{% for match in donations %}
-<tr>
-<td>{% if match.donor %}{{ match.donor.standard_name|title }}{% else %}{{ match.donor_name|title }}{% endif %}</td>
-<td>{{ match.recipient.standard_name|title }}</td>
-<td>{% if match.cash %}${{ match.cash|intcomma }}{% elif match.inkind %}${{ match.inkind|intcomma }}{% endif %}</td>
-<td>{{ match.donation_date }}</td>
-</tr>
-{% endfor %}
-</table>
 {% endif %}
-
-{% if loans %}
-<h1>Loans</h1>
-<table>
-{% for loan in loans %}
-<tr>
-<td>{{ loan.committee.standard_name|title }}</td>
-<td>{{ loan.lender_name|title }}</td>
-<td>{{ loan.lender_addr|title }}</td>
-<td>${{ loan.loan_amount|intcomma }}</td>
-<td>${{ loan.loan_date }}</td>
-{% endfor %}
-</table>
-{% endif %}
-
-{% if expenditures %}
-<h1>Expenditures</h1>
-<table>
-{% for exp in expenditures %}
-<tr>
-<td>{{ exp.committee.standard_name|title }}</td>
-<td>{{ exp.payee|title }}</td>
-<td>{{ exp.payee_addr|title }}</td>
-<td>{{ exp.exp_purpose|title }}</td>
-<td>${{ exp.amount|intcomma }}</td>
-<td>{{ exp.exp_date }}</td>
-{% endfor %}
-</table>
-{% endif %}
-
-
-
-
-
-
-
 
 
 </div>

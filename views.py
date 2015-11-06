@@ -56,6 +56,7 @@ def AdvancedSearch(request):
                     donation_qs &= Q(donor__standard_name__icontains=term) | Q(donor__candidate_detail__cand_name__icontains=term) | Q(donor__name__icontains=term)
                 for term in recipient_exploded:
                     donation_qs &= Q(recipient__standard_name__icontains=term) | Q(recipient__candidate_detail__cand_name__icontains=term) | Q(recipient__name__icontains=term)
+                
 
             if expenditures_check == True:
                 expenditure_qs = Q()
@@ -83,7 +84,10 @@ def AdvancedSearch(request):
                 to_date = '2015-12-01'
 
             if donations_check == True:
-                donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date).filter(donor__city__icontains=donor_city).filter(recipient__city__icontains=recipient_city).filter(donor__zip__icontains=giver_zip).filter(recipient__zip__icontains=recipient_zip).filter(Q(cash__gte=from_amount) | Q(inkind__gte=from_amount))
+                if donor or recipient:
+                    donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date).filter(donor__city__icontains=donor_city).filter(recipient__city__icontains=recipient_city).filter(donor__zip__icontains=giver_zip).filter(recipient__zip__icontains=recipient_zip).filter(Q(cash__gte=from_amount) | Q(inkind__gte=from_amount))
+                else:
+                    donations = Donation.objects.filter(donation_date__gte=from_date).filter(donation_date__lte=to_date).filter(donor__city__icontains=donor_city).filter(recipient__city__icontains=recipient_city).filter(donor__zip__icontains=giver_zip).filter(recipient__zip__icontains=recipient_zip).filter(Q(cash__gte=from_amount) | Q(inkind__gte=from_amount))
             else:
                 donations = []
             
@@ -107,52 +111,75 @@ def AdvancedSearch(request):
         return render(request, 'nadc/advancedsearch.html', dictionaries)
 
 def Search(request):
-    if request.method == 'POST':
-        mainform = SearchForm(request.POST)
-        if mainform.is_valid():
-            rawsearch = mainform.cleaned_data['searchterm']
-            rawsearch_exploded = rawsearch.split(" ")
+    query = request.GET.get('q', '')
+    exploded = query.split(" ")
+    entity_qset = Q()
+    candidate_qset = Q()
+    for term in exploded:
+        entity_qset &= Q(standard_name__icontains=term) | Q(candidate_detail__cand_name__icontains=term)
 
-            expenditure_qs = Q()
-            for term in rawsearch_exploded:
-                expenditure_qs.add((
-                Q(payee__icontains=term) |
-                Q(committee__standard_name__icontains=term) |
-                Q(payee_committee__standard_name__icontains=term)),
-                expenditure_qs.connector)                
+    for term in exploded:
+        candidate_qset &= Q(cand_name__icontains=term)
 
-            loan_qs = Q()
-            for term in rawsearch_exploded:    
-                loan_qs.add((
-                Q(lender_name__icontains=term) |
-                Q(committee__standard_name__icontains=term)),
-                loan_qs.connector)
-
-            donation_qs = Q()
-            for term in rawsearch_exploded:
-                donation_qs.add((
-                Q(donor__standard_name__icontains=term) | 
-                Q(recipient__standard_name__icontains=term)), 
-                donation_qs.connector)
-
-            if mainform.cleaned_data['from_date']:
-                from_date = mainform.cleaned_data['from_date']
-            else:
-                from_date = '1995-01-01'
-            if mainform.cleaned_data['to_date']:
-                to_date = mainform.cleaned_data['to_date']
-            else:
-                to_date = '2015-12-01'
-
-            donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date)
-            expenditures = Expenditure.objects.filter(expenditure_qs).filter(exp_date__gte=from_date).filter(exp_date__lte=to_date)
-            loans = Loan.objects.filter(loan_qs).filter(loan_date__gte=from_date).filter(loan_date__lte=to_date)
-            dictionaries = {'loans': loans, 'expenditures': expenditures, 'donations':donations, 'rawsearch':rawsearch, 'mainform':mainform,}
-            return render(request, 'nadc/advancedsearch.html', dictionaries)
+    if query:
+        entity_results = Entity.objects.filter(entity_qset)
+        candidate_results = Candidate.objects.filter(candidate_qset)
     else:
-        mainform = SearchForm()
-    dictionaries = { 'mainform':mainform }
-    return render(request, 'nadc/search.html', dictionaries)
+        entity_results = []
+        candidate_results = []
+
+    dictionaries = { 'entity_results': entity_results, 'candidate_results': candidate_results, 'query': query, }
+    return render_to_response('nadc/search.html', dictionaries)    
+
+
+
+#def Search(request):
+#    if request.method == 'POST':
+#        mainform = SearchForm(request.POST)
+#        if mainform.is_valid():
+#            rawsearch = mainform.cleaned_data['searchterm']
+#            rawsearch_exploded = rawsearch.split(" ")
+#
+#            expenditure_qs = Q()
+#            for term in rawsearch_exploded:
+#                expenditure_qs.add((
+#                Q(payee__icontains=term) |
+#                Q(committee__standard_name__icontains=term) |
+#                Q(payee_committee__standard_name__icontains=term)),
+#                expenditure_qs.connector)                
+#
+#            loan_qs = Q()
+#            for term in rawsearch_exploded:    
+#                loan_qs.add((
+#                Q(lender_name__icontains=term) |
+#                Q(committee__standard_name__icontains=term)),
+#                loan_qs.connector)
+#
+#            donation_qs = Q()
+#            for term in rawsearch_exploded:
+#                donation_qs.add((
+#                Q(donor__standard_name__icontains=term) | 
+#                Q(recipient__standard_name__icontains=term)), 
+#                donation_qs.connector)
+#
+#            if mainform.cleaned_data['from_date']:
+#                from_date = mainform.cleaned_data['from_date']
+#            else:
+#                from_date = '1995-01-01'
+#            if mainform.cleaned_data['to_date']:
+#                to_date = mainform.cleaned_data['to_date']
+#            else:
+#                to_date = '2015-12-01'
+#
+#            donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date)
+#            expenditures = Expenditure.objects.filter(expenditure_qs).filter(exp_date__gte=from_date).filter(exp_date__lte=to_date)
+#            loans = Loan.objects.filter(loan_qs).filter(loan_date__gte=from_date).filter(loan_date__lte=to_date)
+#            dictionaries = {'loans': loans, 'expenditures': expenditures, 'donations':donations, 'rawsearch':rawsearch, 'mainform':mainform,}
+#            return render(request, 'nadc/advancedsearch.html', dictionaries)
+#    else:
+#        mainform = SearchForm()
+#    dictionaries = { 'mainform':mainform }
+#    return render(request, 'nadc/search.html', dictionaries)
 
     
 def EntityPage(request, id):
@@ -163,12 +190,18 @@ def EntityPage(request, id):
         comm_candidates = []
 
     alldonations = Donation.objects.filter(Q(recipient__nadcid=id)|Q(donor__canonical=id)).order_by('donation_date')
-    first = alldonations[0].donation_date
-    mostrecent = alldonations.reverse()[0].donation_date
+    try:
+        first = alldonations[0].donation_date
+        mostrecent = alldonations.reverse()[0].donation_date
+    except:
+        first = []
+        mostrecent = []
     truncate_date = connection.ops.date_trunc_sql('month', 'donation_date')
     
-
-    name = Entity.objects.filter(canonical=id)[0]
+    try:
+        name = Entity.objects.filter(canonical=id)[0]
+    except:
+        name = Candidate.objects.filter(cand_id=id)[0]
 
     # Get any/all records of donations given by entity
     try:

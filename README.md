@@ -7,7 +7,7 @@ A Django app to import, standardize and display political contribution data from
 - [pandas!](http://pandas.pydata.org/pandas-docs/stable/)  
 - [fabric](http://www.fabfile.org/)
 
-The NADC now offers weekly updates of campaign finance data. Our script, which takes about 10 minutes to run, fetches new data, parses it and overwrites the database in full. The update process:
+The NADC now offers weekly updates of campaign finance data. Our script, which takes ~6 minutes to run, fetches new data, parses it and overwrites the database in full. The update process:
 <ol>
 <li>Run <code>nadc/data/parser.sh</code></li>
 <li>If there are new, invalid dates that we haven't encountered in the past, you'll be prompted to add those to a dict in <code>nadc/data/canonical/canonical.py</code></li>
@@ -61,7 +61,7 @@ NADC has unique identifiers for each donor, but they identify only the address a
 
 This is wrong.
 
-Our solution was to create a lookup dictionary (`nadc/data/canonical/canonical.py`) for any "large" donors, whether in terms of total donations or the number of donations. Super fellow [Daniel Wheaton](https://twitter.com/theheroofthyme) assigned new, real unique identifiers for any of the top 100 donors by both measures. Those lists overlapped a bit, so we wound up deduplicating around 70 donors on the first pass. This is why each entity has two ids, with canonical_id representing our assignment of an identity.
+We can't deduplicate every donor, so our solution was to create a lookup dictionary (`nadc/data/canonical/canonical.py`) for any "large" donors, whether in terms of total donations or the number of donations. Super fellow [Daniel Wheaton](https://twitter.com/theheroofthyme) assigned new, real unique identifiers for any of the top 100 donors by both measures. Those lists overlapped a bit, so we wound up deduplicating around 70 donors on the first pass. This is why each entity has two ids, with canonical_id representing our assignment of an identity.
 
 The NADC ID is copied to canonical_id for records that are not deduplicated; same with the name.
 
