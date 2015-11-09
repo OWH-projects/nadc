@@ -64,8 +64,8 @@ def getDate():
     with open("/home/apps/myproject/myproject/nadc/data/DATE_UPDATED.TXT", "rb") as d:
         last_updated = d.readline().split(": ")[1].split(" ")[0].split("-")
         year = last_updated[0]
-        month = last_updated[1]
-        day = last_updated[2]
+        month = last_updated[1].lstrip("0")
+        day = last_updated[2].lstrip("0")
         q.write("import datetime\n\nLAST_UPDATED = datetime.date(" + year + ", " + month + ", " + day + ")")
     q.close()
         
@@ -2390,7 +2390,7 @@ def parseErrything():
         Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone
         """
         
-        print "    b9 ..."
+        print "    formb9 ..."
         
         b9reader = csvkit.reader(b9, delimiter = delim)
         b9reader.next()
@@ -2904,23 +2904,6 @@ def parseErrything():
         local('csvsort -d "|" -c 14 /home/apps/myproject/myproject/nadc/data/toupload/entities_deduped.txt | csvformat -D "|" | sed -e \'s/\"//g\' -e \'s/\&AMP;//g\' -e \'1d\' > /home/apps/myproject/myproject/nadc/data/toupload/entities_sorted_and_deduped.txt', capture=False)
     
     #get most current, complete data
-    
-    #list with variants of "(DISSOLVED)"
-    KILLOUT = [
-        "(D",
-        "(DI",
-        "(DIS",
-        "(DISS",
-        "(DISSO",
-        "(DISSOL",
-        "(DISSOLV",
-        "(DISSOLVE",
-        "(DISSOLVED",
-        "(DISSOLVED)",
-        "(Now-Mccoy For Gov)",
-         "- Now Legislature)"
-    ]
-    
     print "   grepping pre-duped, sorted file and deduping for recency and completeness ..."
     
     entity_final = open("/home/apps/myproject/myproject/nadc/data/toupload/entity.txt", "wb")
@@ -2958,10 +2941,10 @@ def parseErrything():
                 interimdict['id'] = nadcid
                 interimdict['canonical_id'] = canonical_id
                 
-                #Fix "(DISSOLVED)" ish
-                for item in reversed(KILLOUT):
-                    name = name.upper().replace(item.upper(), "").strip()
-                    canonical_name = canonical_name.upper().replace(item.upper(), "").strip()
+                #Unpack lookup to replace known bad strings
+                for item in SHITSTRINGS:
+                    name = name.upper().replace(*item).strip()
+                    canonical_name = canonical_name.upper().replace(*item).strip()
                 
                 #check for complete names
                 if len(name) > 1:
@@ -3055,12 +3038,4 @@ def parseErrything():
     
 def tweetIt():
     pass
-    # Do a thing here to tweet biggest donation in past week
     
-    biggest_donation = ""
-    string = "New campaign finance data at dataomaha.com/campaign-finance"
-    
-    
-def emailNewShiz():
-    pass
-    # Do a thing here to email summary tables to interested reporters

@@ -223,7 +223,6 @@ CANON = {
     "15CON24177": {"rawgivername":"","origfirst":"","origlast":"","canonicalid":205,"canonicalname":"James Harris"}
 }
 
-
 SHITDATES = {
     "2021-09-26": "2012-09-26",
     "2096-05-09": "1996-05-09",
@@ -273,3 +272,10 @@ SHITDATES = {
 }
 
 SHITCOMMITTEES = ["99IRC00020", "08PAC00154"]
+
+SHITSTRINGS = [
+    ("(DISSOLVED)", ""),
+    ("(NOW-MCCOY FOR GOV)", ""),
+    ("- NOW LEGISLATURE)", ""),
+    ("T #37)", ""),
+]

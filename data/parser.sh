@@ -6,7 +6,7 @@ cd /home/apps/myproject/myproject/nadc/data
 wget http://www.nebraska.gov/nadc_data/nadc_data.zip
 unzip -j -o nadc_data.zip
 rm nadc_data.zip
-chmod 777 *.txt
+chmod 777 *.txt *.TXT *.rtf
 printf "~~ fetched 'at data ~~\n\n"
 
 #parse the "last updated" date
@@ -32,7 +32,7 @@ printf "~~ did all the things ~~\n\n"
 
 #pick up after yourself
 printf "~~ cleaning up ~~\n"
-cd /home/apps/myproject/myproject/nadc/data/toupload/ && rm donations-raw.txt entity-raw.txt entity-sorted.txt donations_almost_there.txt entities_sorted_and_deduped.txt ballot_deduped.txt ballot_sorted.txt
+cd /home/apps/myproject/myproject/nadc/data/toupload/ && rm donations-raw.txt entity-raw.txt ballot-raw.txt donations_almost_there.txt entities_sorted_and_deduped.txt entities_deduped.txt ballot_sorted.txt
 printf "~~ cleaned up ~~\n\n"
 
 # kill 'n' fill data
