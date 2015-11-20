@@ -1,0 +1,25 @@
+{% extends 'nadc/base.html' %}
+{% load humanize %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="container">
+
+{% with candidates|first as singlecandidate %}
+
+
+<br><br><br>
+<h3>{{ singlecandidate.cand_name|title }}</h3>
+<p>{{ singlecandidate.cand_name|title }} ran for {% for office in candidates %}{{ office.office_desc|title }} {{ office.office_title|title }}{% if not forloop.last %}{% if candidates.count > 1 %}, {% else %} and {% endif %}{% endif %}{% endfor %} and has {{ committees.count|apnumber }} associated committee{{ committees.count|pluralize }}:</p>
+<ul>
+{% for committee in committees %}
+<li><a href="/campaign-finance/{{ committee.committee }}/{{ committee.committee__standard_name|slugify }}">{{ committee.committee__standard_name|title }}</a></li>
+{% endfor %}
+</ul>
+
+
+{% endwith %}
+
+</div>
+{% endblock %}

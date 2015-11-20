@@ -15,19 +15,27 @@
 
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.cand_name }}{% endif %}</b></h1>
+{% if name.city and name.state %}<h4>{{ name.city|title }}, {{ name.state }} {{ name.zip }}</h4>{% endif %}
+{% if name.dissolved_date %}<h4>(Committee dissolved in {{ name.dissolved_date|date:"o" }}</h4>{% endif %}
+{% if name.employer or name.occupation or name.place_of_business %}<h4>{{ name.occupation|title }} at {{ name.employer|title }}, {{ name.place_of_business|title }}</h4>{% endif %}
+{% if gets %}<h4><a href="http://www.nadc.nebraska.gov/ccdb/search.cgi?page=details&type=committee&IDNO={{ name.nadcid }}" target="_blank">Official NADC listings</a></h4>{% endif %}
 
 
 {% if gives %}
-<h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|intcomma }}</h3>
+<h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|add:totalinkinddonated.inkind__sum|intcomma }}</h3>
 <p class="small ital">DONATED</p>
 {% endif %}
 {% if gets %}
-<h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|intcomma }}</h3>
+<h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|add:totalinkindreceived.inkind__sum|intcomma }}</h3>
 <p class="small ital">RAISED</p>
 {% endif %}
-{% if expenditures %}
-<h3 class="bold" style="margin-bottom:0;">${{ totalspent.amount__sum|intcomma }}</h3>
+{% if normal_expenditures %}
+<h3 class="bold" style="margin-bottom:0;">${{ normal_spent.amount__sum|intcomma }}</h3>
 <p class="small ital">SPENT</p>
+{% endif %}
+{% if ind_expenditures %}
+<h3 class="bold" style="margin-bottom:0;">${{ ind_spent.amount__sum|intcomma }}</h3>
+<p class="small ital">SPENT DIRECTLY IN OTHER POLITICAL RACES</p>
 {% endif %}
 {% if loans %}
 <h3 class="bold" style="margin-bottom:0;">${{ totalborrowed.loan_amount__sum|intcomma }}</h3>
@@ -70,65 +78,15 @@
         <li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
     {% endfor %}
 {% endif %}
-{% with comm_candidates|first as candidate %}    
-<p>{{ name.standard_name|title }} {% if name.entity_type = "C" %}is a candidate committee that{% elif name.entity_type = "I" %} is an individual who{% elif name.entity_type = "B" %}is a ballot question committee that{% endif %} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donations{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contributions between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}It backed {{ candidate.cand_name|title }} for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}.{% endif %}</p>
-{% endwith %}
-
-
-
-{% if gives %}
-	<h2>GIVES</h2>
-	
-	<h3>Top committees supported</h3>
-	
-	<table class="table table-condensed">
-		{% for row in topgives %}
-		<tr>
-			<td>{{ row.recipient__name|title }}</td>
-			<td class="r">${{ row.total|intcomma }}<td>
-		</tr>
-		{% endfor %}
-	</table>
-    
-	<div id="timeline" style="width:100%;height:300px"></div>
-	
-    <table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Recipient</th>
-				<th class="r">Amount</th>
-				<th class="r">Date</th>
-			</tr>
-		</thead>
-		
-		<tbody>
-		{% for gift in gives %}
-			<tr>
-				<td><a href="/campaign-finance/{{ gift.recipient.nadcid }}/{{ gift.recipient.name|slugify }}">{{ gift.recipient.name|title }}</a></td>
-				{% if gift.pledge = 0 %}{% if gift.cash > 0 %}<td class="r">${{ gift.cash|intcomma }}</td>{% else %}<td class="r">${{ gift.inkind|intcomma }}</td>{% endif %}{% endif %}
-				<td class="r">{{ gift.donation_date }}</td>
-			<tr>
-		{% endfor %}
-
-		</tbody>
-	</table>
-
-	
-{% endif %}
+   
+<p>{{ name.standard_name|title }} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donation{{ gives.count|pluralize }}{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contribution{{ gets.count|pluralize }} between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}It backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}<a href="/campaign-finance/{{ candidate.cand_id }}/{{ candidate.cand_name|slugify }}">{{ candidate.cand_name|title }}</a> for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}{% endif %}</p>
 
 {% if gets %}
 	<h2>GETS</h2>
 
 	<h3>Top donors</h3>
 		
-	<table class="table">
-	{% for row in topgets %}
-		<tr>
-			<td>{{ row.donor__name|title }}</td>
-			<td class="r">${{ row.total|intcomma }}</td>
-		</tr>
-	{% endfor %}
-	</table>
+    {% if groupedgets.count > 5 %}<div id="getspiechart" style="width: 900px; height: 500px;"></div>{% endif %}
 	
 	
 	<table class="table table-condensed">
@@ -136,19 +94,15 @@
 			<tr>
 				<th>Donor</th>
 				<th class="r">Amount</th>
-				<th class="r">Date</th>
 			</tr>
 		</thead>
 		<tbody>
-		
-		{% for donation in gets %}
-		{% if donation.pledge = 0 %}
+
+		{% for donation in groupedgets %}
 			<tr>
-				<td><a href="/campaign-finance/{{ donation.donor.canonical }}/{{ donation.donor.name|slugify }}">{{ donation.donor.name|title }}</a></td>
-				{% if donation.cash > 0 %}<td class="r">${{ donation.cash|intcomma }}</td>{% else %}<td class="r">${{ donation.inkind|intcomma }}</td>{% endif %}
-				<td class="r">{{ donation.donation_date }}</td>
+				<td><a href="/campaign-finance/{{ donation.donor__nadcid }}/{{ donation.donor__name|slugify }}">{{ donation.donor__name|title }}</a></td>
+				<td class="r">${{ donation.total|intcomma }}</td>
 			</tr>
-		{% endif %}
 		{% endfor %}
 		
 		</tbody>
@@ -156,7 +110,32 @@
 
 {% endif %}
 
-{% if expenditures %}
+
+{% if gives %}
+	<h2>GIVES</h2>
+	
+	<h3>Top committees supported</h3>
+	
+    {% if groupedgives.count > 5 %}<div id="givespiechart" style="width: 900px; height: 500px;"></div>{% endif %}
+    
+	<div id="timeline" style="width:100%;height:300px"></div>
+
+    <table>
+		<tbody>
+		{% for gift in groupedgives %}
+			<tr>
+				<td><a href="/campaign-finance/{{ gift.recipient__nadcid }}/{{ gift.recipient__name|slugify }}">{{ gift.recipient__name|title }}</a></td>
+				<td class="r">${{ gift.total|intcomma }}</td>
+			<tr>
+		{% endfor %}
+
+		</tbody>
+	</table>
+
+	
+{% endif %}
+
+{% if normal_expenditures %}
 
 	<h2>EXPENDITURES</h2>
 	<table class="table table-condensed">
@@ -168,7 +147,7 @@
 		</thead>
 		<tbody>
 		
-		{% for exp in expenditures %}
+		{% for exp in normal_expenditures %}
 			<tr>
 				<td>{{ exp.payee|title }}</td>
 				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
@@ -176,6 +155,33 @@
 				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
 			</tr>
 		{% endfor %}
+		</tbody>
+	</table>
+{% endif %}
+
+{% if ind_expenditures %}
+
+	<h2>POLITICAL SPENDING</h2>
+	<table class="table table-condensed">
+		<thead>
+			<th>Paid to</th>
+			<th>For</th>
+			<th class="r">Date</th>
+			<th class="r">Amount</th>
+		</thead>
+		<tbody>
+		{% regroup ind_expenditures by stance as stance_list %}
+		{% for stance in stance_list %}
+        <tr>{{ stance.grouper }}</tr>
+        {% for exp in stance.list %}
+			<tr>
+				<td>{{ exp.payee|title }}</td>
+				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
+				<td class="r">{{ exp.exp_date }}</td>
+				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
+			</tr>
+		{% endfor %}
+        {% endfor %}
 		</tbody>
 	</table>
 {% endif %}
@@ -262,6 +268,60 @@
 </div>
 
 {% block scripts %}
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+
+    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Recipient', 'Dollars'],
+          {% for recipient in topgives %}
+          ['{{ recipient.recipient__name }}', {{ recipient.total }}]{% if othergivestotal > 0 %},{% endif %}
+          {% endfor %}{% if othergivestotal > 0 %}
+          ['{{ groupedgives.count|add:-5 }} other committees', {{ othergivestotal }}]
+          {% endif %}
+        ]);
+
+        var options = {
+          title: 'Top committees supported'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('givespiechart'));
+
+        chart.draw(data, options);
+      }
+</script>
+<script type="text/javascript">
+      var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.nadcid }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['Donor', 'Dollars'],
+          {% for donor in topgets %}
+          ['{{ donor.donor__standard_name }}', {{ donor.total }}]{% if othergetstotal > 0 %},{% endif %}
+          {% endfor %}
+          {% if othergetstotal > 0 %}
+          ['{{ groupedgets.count|add:-5 }} other donors', {{ othergetstotal }}]
+          {% endif %}
+        ]);
+
+        var options = {
+          title: 'Top donors'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('getspiechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
+
+
+
 <script type="text/javascript">
 var timelinegives = [
 {% for row in allgives %}
@@ -294,3 +354,5 @@ bars: {
 
 </script>
 {% endblock %}
+
+

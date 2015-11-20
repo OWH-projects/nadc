@@ -56,6 +56,15 @@ def lookItUp(input, param, namefield):
             return namefield
 
         
+def canonFlag(input):
+    try:
+        x = CANON[input]
+        return "I"
+    except:
+        return ""
+
+        
+        
 def getDate():
     """
     Parse the "last updated" date from a file in the NADC data dump.
@@ -105,6 +114,10 @@ def parseErrything():
         B9: Out of state expenditures/donations
         B9B: Out of state expenditures
         B11: Report of late independent expenditure    
+        
+    Assumptions:
+        A "direct expenditure" or "cash disbursement" to a candidate or registered committee is equivalent to a donation and will be treated as such.
+        
     """
     
     delim = "|"
@@ -173,7 +186,33 @@ def parseErrything():
         
         COLUMNS
         =======
-        Committee ID Number|Committee Name|Committee Address|Committee City|Committee State|Committee Zip|Committee Type|Date Received|Postmark Date|Nature Of Filing|Ballot Question|Oppose Ballot Question|Ballot Type|Date over Theshold|Acronym|Separate Seg Political Fund ID|Separate Segregated Political Fund Name|SSPF Address|SSPF City|SSPF State|SSPF Zip|SSPF Type|Date Dissolved|Date of Next Election|Election Type|Won General|Won Primary
+        0: Committee ID Number
+        1: Committee Name
+        2: Committee Address
+        3: Committee City
+        4: Committee State
+        5: Committee Zip
+        6: Committee Type
+        7: Date Received
+        8: Postmark Date
+        9: Nature Of Filing
+        10: Ballot Question
+        11: Oppose Ballot Question
+        12: Ballot Type
+        13: Date over Theshold
+        14: Acronym
+        15: Separate Seg Political Fund ID
+        16: Separate Segregated Political Fund Name
+        17: SSPF Address
+        18: SSPF City
+        19: SSPF State
+        20: SSPF Zip
+        21: SSPF Type
+        22: Date Dissolved
+        23: Date of Next Election
+        24: Election Type
+        25: Won General
+        26: Won Primary
         """
         
         print "    forma1 ..."
@@ -193,7 +232,8 @@ def parseErrything():
                 a1_city = row[3] #City
                 a1_state = row[4] #State
                 a1_zip = row[5] #ZIP
-                a1_entity_type = row[6].strip().upper() #Committee type
+                #a1_entity_type = row[6].strip().upper() #Committee type
+                a1_entity_type = canonFlag(a1_entity_id) # canonical flag                
                 a1_entity_dissolved = row[21] #Date dissolved
                 a1_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
                
@@ -212,7 +252,7 @@ def parseErrything():
                     a1_city.upper(),
                     a1_state.upper(),
                     a1_zip,
-                    a1_entity_type.upper(),
+                    a1_entity_type,
                     "",
                     "",
                     "",
@@ -235,7 +275,8 @@ def parseErrything():
                         a1_sspf_city = row[18] #City
                         a1_sspf_state = row[19] #State
                         a1_sspf_zip = row[20] #ZIP
-                        a1_sspf_type = row[21] #Committee type
+                        #a1_sspf_type = row[21] #Committee type
+                        a1_sspf_type = canonFlag(a1_sspf_id) # canonical flag
                         a1_sspf_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
                         
                         a1_sspf_list = [
@@ -305,7 +346,8 @@ def parseErrything():
                 a1cand_city = ""
                 a1cand_state = ""
                 a1cand_zip = ""
-                a1cand_entity_type = ""
+                #a1cand_entity_type = ""
+                a1cand_entity_type = canonFlag(a1cand_committee_id) # canonical flag
                 a1cand_entity_dissolved = ""
                 a1cand_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
                
@@ -394,7 +436,8 @@ def parseErrything():
                 b1_city = ' '.join((row[3].upper().strip()).split()).replace('"',"") #City
                 b1_state = ' '.join((row[4].upper().strip()).split()).replace('"',"") #State
                 b1_zip = row[5].strip() #ZIP
-                b1_entity_type = row[2].strip().upper() #Committee type
+                #b1_entity_type = row[2].strip().upper() #Committee type
+                b1_entity_type = canonFlag(b1_entity_id) # canonical flag
                 b1_entity_date_of_thing_happening = row[9] #Date used to eval recency on dedupe
                 
                 """
@@ -452,7 +495,8 @@ def parseErrything():
                 b1ab_committee_city = "" #City
                 b1ab_committee_state = "" #State
                 b1ab_committee_zip = "" #ZIP
-                b1ab_committee_type = "" #Committee type
+                #b1ab_committee_type = "" #Committee type
+                b1ab_committee_type = canonFlag(b1ab_committee_id) # canonical flag
                 b1ab_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
                 
                 """
@@ -495,7 +539,8 @@ def parseErrything():
                 b1ab_contributor_city = row[14].upper().strip() #City
                 b1ab_contributor_state = row[15].upper().strip() #State
                 b1ab_contributor_zip = row[16] #ZIP
-                b1ab_contributor_type = row[3].upper().strip() #Contributor type
+                #b1ab_contributor_type = row[3].upper().strip() #Contributor type
+                b1ab_contributor_type = canonFlag(b1ab_contributor_id) # canonical flag
                 b1ab_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
                 
                 """
@@ -595,7 +640,8 @@ def parseErrything():
                 b1c_committee_city = "" #City
                 b1c_committee_state = "" #State
                 b1c_committee_zip = "" #ZIP
-                b1c_committee_type = "" #Committee type
+                #b1c_committee_type = "" #Committee type
+                b1c_committee_type = canonFlag(b1c_committee_id) # canonical flag
                 b1c_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -698,7 +744,8 @@ def parseErrything():
                 b1d_committee_city = "" #City
                 b1d_committee_state = "" #State
                 b1d_committee_zip = "" #ZIP
-                b1d_committee_type = "" #Committee type
+                #b1d_committee_type = "" #Committee type
+                b1d_committee_type = canonFlag(b1d_committee_id) # canonical flag
                 b1d_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -744,28 +791,31 @@ def parseErrything():
                     if int(b1d_year) >= 1999:
                         b1d_payee = ' '.join((row[3].upper().strip()).split()).replace('"',"")
                         b1d_address = ' '.join((row[4].upper().strip()).split()).replace('"',"")
-                        b1d_purpose = ' '.join((row[5].strip()).split()).replace('"',"")
+                        b1d_exp_purpose = ' '.join((row[5].strip()).split()).replace('"',"")
                         b1d_amount = row[7]
                         b1d_inkind = row[8]
                         
                         """
                         DB fields
                         =========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                         """
                         b1d_exp_list = [
                             "",
                             b1d_payee,
                             b1d_address,
                             b1d_exp_date_test,
-                            b1d_purpose,
+                            b1d_exp_purpose,
                             b1d_amount,
                             b1d_inkind,
                             b1d_committee_id,
-                            "",
-                            "",
-                            "",
-                            "",
+                            "", #stance
+                            "", #notes
+                            "", #payee committee ID
+                            b1d_committee_name, #name of committee doing the expending,
+                            "", #raw target
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b1d_exp_list) + "\n")
 
@@ -798,7 +848,8 @@ def parseErrything():
                 b2_committee_city = ' '.join((row[2].upper().strip()).split()).replace('"',"") #City
                 b2_committee_state = ' '.join((row[3].upper().strip()).split()).replace('"',"") #State
                 b2_committee_zip = row[4] #ZIP
-                b2_committee_type = "" #Committee type
+                #b2_committee_type = "" #Committee type
+                b2_committee_type = canonFlag(b2_committee_id) # canonical flag
                 b2_entity_date_of_thing_happening = row[6] #Date used to eval recency on dedupe
 
                 """
@@ -859,7 +910,8 @@ def parseErrything():
                 b2a_committee_city = "" #City
                 b2a_committee_state = "" #State
                 b2a_committee_zip = "" #ZIP
-                b2a_committee_type = "" #Committee type
+                #b2a_committee_type = "" #Committee type
+                b2a_committee_type = canonFlag(b2a_committee_id) # canonical flag
                 b2a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -897,7 +949,8 @@ def parseErrything():
                 b2a_contributor_city = "" #City
                 b2a_contributor_state = "" #State
                 b2a_contributor_zip = "" #ZIP
-                b2a_contributor_type = "" #Contributor type
+                #b2a_contributor_type = "" #Contributor type
+                b2a_contributor_type = canonFlag(b2a_contributor_id) # canonical flag
                 b2a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -930,7 +983,9 @@ def parseErrything():
         """
         FormB2B: Expenditures by party committees on behalf of other committees
 
-        Data is added to Entity and Expenditure
+        Data is added to Entity, Donation and Expenditure
+        
+        We are treating a "direct expenditure" to a committee ("currency, check, money order, etc. given directly to the committee which the committee deposits into its bank account," per the NADC) as a donation
         
         COLUMNS
         =======
@@ -946,7 +1001,7 @@ def parseErrything():
         
         for row in b2breader:
             b2b_committee_id = row[0]
-            b2b_beneficiary_id = row[2]
+            b2b_target_id = row[2]
             
             if b2b_committee_id not in SHITCOMMITTEES:
                 #Append ID to master list
@@ -958,7 +1013,8 @@ def parseErrything():
                 b2b_committee_city = "" #City
                 b2b_committee_state = "" #State
                 b2b_committee_zip = "" #ZIP
-                b2b_committee_type = "" #Committee type
+                #b2b_committee_type = "" #Committee type
+                b2b_committee_type = canonFlag(b2b_committee_id) # canonical flag
                 b2b_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -986,17 +1042,18 @@ def parseErrything():
                 ]
                 entities.write("|".join(b2b_committee_list) + "\n")
             
-            if b2b_beneficiary_id not in SHITCOMMITTEES:
+            if b2b_target_id not in SHITCOMMITTEES:
                 #Append ID to master list
-                id_master_list.append(b2b_beneficiary_id)
+                id_master_list.append(b2b_target_id)
                 
-                #Add beneficiary to Entity
-                b2b_beneficiary_name = ' '.join((row[9].upper().strip()).split()).replace('"',"") #Beneficiary name
-                b2b_beneficiary_address = "" #Address
-                b2b_beneficiary_city = "" #City
-                b2b_beneficiary_state = "" #State
-                b2b_beneficiary_zip = "" #ZIP
-                b2b_beneficiary_type = "" #Committee type
+                #Add target to Entity
+                b2b_target_name = ' '.join((row[9].upper().strip()).split()).replace('"',"") #target name
+                b2b_target_address = "" #Address
+                b2b_target_city = "" #City
+                b2b_target_state = "" #State
+                b2b_target_zip = "" #ZIP
+                #b2b_target_type = "" #Committee type
+                b2b_target_type = canonFlag(b2b_target_id) # canonical flag
                 b2b_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -1007,14 +1064,14 @@ def parseErrything():
                 We're adding b2b_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
-                b2b_beneficiary_list = [
-                    b2b_beneficiary_id,
-                    b2b_beneficiary_name,
-                    b2b_beneficiary_address,
-                    b2b_beneficiary_city,
-                    b2b_beneficiary_state,
-                    b2b_beneficiary_zip,
-                    b2b_beneficiary_type,
+                b2b_target_list = [
+                    b2b_target_id,
+                    b2b_target_name,
+                    b2b_target_address,
+                    b2b_target_city,
+                    b2b_target_state,
+                    b2b_target_zip,
+                    b2b_target_type,
                     "",
                     "",
                     "",
@@ -1022,10 +1079,10 @@ def parseErrything():
                     "",
                     b2b_entity_date_of_thing_happening,
                 ]
-                entities.write("|".join(b2b_beneficiary_list) + "\n")
+                entities.write("|".join(b2b_target_list) + "\n")
     
-            if b2b_committee_id not in SHITCOMMITTEES and b2b_beneficiary_id not in SHITCOMMITTEES:
-                # womp expenditures in there
+            if b2b_committee_id not in SHITCOMMITTEES and b2b_target_id not in SHITCOMMITTEES:
+                # womp expenditures into Donation or Expenditure
                 b2b_exp_date = row[5]
                 b2b_exp_date_test = validDate(b2b_exp_date)
                 if b2b_exp_date_test == "broke":
@@ -1044,20 +1101,51 @@ def parseErrything():
                         b2b_address = ""
                         b2b_purpose = ' '.join((row[7].strip()).split()).replace('"',"")
                         b2b_stance = row[3].strip().upper()
-                        b2b_recipient_committee_id = row[2]
+                        b2b_target_committee_id = row[2]
                         
                         #What type of expenditure was it? D=Direct, K=In-kind, I=Independent Expenditure
-                        if row[4].upper().strip() == "K":
-                            b2b_amount = ""
-                            b2b_inkind = row[6]
+                        
+                        #if direct expenditure, treat as donation
+                        if row[4].upper().strip() == "D":
+                            b2b_cash = getFloat(str(row[6])) #cash                        
+                            b2b_inkind_amount = ""
+                            b2b_pledge_amount = ""
+                            b2b_inkind_desc = ""
+                            
+                            """
+                            DB fields
+                            =========
+                            db_id, cash, inkind, pledge, inkind_desc, donation_date, donor_id, recipient_id, donation_year, notes, stance, donor_name
+                            """
+                            b2b_donation_list = [                        
+                                "",
+                                b2b_cash,
+                                b2b_inkind_amount,
+                                b2b_pledge_amount,
+                                b2b_inkind_desc,
+                                b2b_exp_date_test,
+                                b2b_committee_id,
+                                b2b_target_id,
+                                b2b_year,
+                                "",
+                                b2b_stance,
+                                "",
+                            ]
+                            donations.write("|".join(b2b_donation_list) + "\n")
+                        
+                        #else it's a true expenditure
                         else:
-                            b2b_amount = row[6]
-                            b2b_inkind = ""
+                            if row[4].upper().strip() == "K":
+                                b2b_amount = ""
+                                b2b_inkind = getFloat(str(row[6]))
+                            else:
+                                b2b_amount = getFloat(str(row[6]))
+                                b2b_inkind = ""
                         
                         """
                         DB fields
                         =========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                         """
                         b2b_exp_list = [
                             "",
@@ -1069,9 +1157,12 @@ def parseErrything():
                             b2b_inkind,
                             b2b_committee_id,
                             b2b_stance,
-                            "",
-                            b2b_beneficiary_id,
-                            "",
+                            "", #notes
+                            "", #payee committee
+                            "", #name of committee doing the expending
+                            b2b_target_committee_id, #raw target ID
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b2b_exp_list) + "\n")
             
@@ -1104,7 +1195,8 @@ def parseErrything():
                 b4_committee_city = ' '.join((row[3].strip().upper()).split()).replace('"',"") #City
                 b4_committee_state = ' '.join((row[4].strip().upper()).split()).replace('"',"") #State
                 b4_committee_zip = row[5] #ZIP
-                b4_committee_type = row[2].upper().strip() #Committee type (C=Candidate Committee, B=Ballot Question, P=Political Action Committee, T=Political Party Committee, I or R = Independent Reporting Committee, S=Separate Segregated Political Fund Committee)
+                #b4_committee_type = row[2].upper().strip() #Committee type (C=Candidate Committee, B=Ballot Question, P=Political Action Committee, T=Political Party Committee, I or R = Independent Reporting Committee, S=Separate Segregated Political Fund Committee)
+                b4_committee_type = canonFlag(b4_committee_id) # canonical flag
                 b4_entity_date_of_thing_happening = row[7] #Date used to eval recency on dedupe
 
                 """
@@ -1165,7 +1257,8 @@ def parseErrything():
                 b4a_committee_city = "" #City
                 b4a_committee_state = "" #State
                 b4a_committee_zip = "" #ZIP
-                b4a_committee_type = "" #Committee type
+                #b4a_committee_type = "" # Committee type
+                b4a_committee_type = canonFlag(b4a_committee_id) # canonical flag
                 b4a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -1203,7 +1296,8 @@ def parseErrything():
                 b4a_contributor_city = "" #City
                 b4a_contributor_state = "" #State
                 b4a_contributor_zip = "" #ZIP
-                b4a_contributor_type = "" #Contributor type
+                #b4a_contributor_type = "" #Contributor type
+                b4a_contributor_type = canonFlag(b4a_contributor_id) # canonical flag
                 b4a_entity_date_of_thing_happening = row[1] #Date used to eval recency on dedupe
 
                 """
@@ -1279,7 +1373,9 @@ def parseErrything():
         """
         FormB4B1: Expenditures by independent committees
 
-        Data is added to Entity, Expenditure, Loan
+        Data is added to Entity, Expenditure, Donation, Loan
+        
+        We are treating a "direct expenditure" to a committee ("currency, check, money order, etc. given directly to the committee which the committee deposits into its bank account," per the NADC) as a donation
         
         COLUMNS
         =======
@@ -1295,7 +1391,7 @@ def parseErrything():
         
         for row in b4b1reader:
             b4b1_committee_id = row[1]
-            b4b1_beneficiary_id = row[3]
+            b4b1_target_id = row[3]
             
             if b4b1_committee_id not in SHITCOMMITTEES:
                 #Append ID to master list
@@ -1307,7 +1403,8 @@ def parseErrything():
                 b4b1_committee_city = "" #City
                 b4b1_committee_state = "" #State
                 b4b1_committee_zip = "" #ZIP
-                b4b1_committee_type = "" #Committee type
+                #b4b1_committee_type = "" #Committee type
+                b4b1_committee_type = canonFlag(b4b1_committee_id) # canonical flag
                 b4b1_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -1335,17 +1432,18 @@ def parseErrything():
                 ]
                 entities.write("|".join(b4b1_committee_list) + "\n")
                 
-            if b4b1_beneficiary_id not in SHITCOMMITTEES:
+            if b4b1_target_id not in SHITCOMMITTEES:
                 #Append ID to master list
-                id_master_list.append(b4b1_beneficiary_id)
+                id_master_list.append(b4b1_target_id)
                 
-                #Add beneficiary to Entity
-                b4b1_beneficiary_name = ' '.join((row[9].strip().upper()).split()).replace('"',"") #Beneficiary name
-                b4b1_beneficiary_address = "" #Address
-                b4b1_beneficiary_city = "" #City
-                b4b1_beneficiary_state = "" #State
-                b4b1_beneficiary_zip = "" #ZIP
-                b4b1_beneficiary_type = "" #Beneficiary type
+                #Add target to Entity
+                b4b1_target_name = ' '.join((row[9].strip().upper()).split()).replace('"',"") #target name
+                b4b1_target_address = "" #Address
+                b4b1_target_city = "" #City
+                b4b1_target_state = "" #State
+                b4b1_target_zip = "" #ZIP
+                #b4b1_target_type = "" #target type
+                b4b1_target_type = canonFlag(b4b1_target_id) # canonical flag
                 b4b1_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -1356,14 +1454,14 @@ def parseErrything():
                 We're adding b4b1_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 
                 """
-                b4b1_beneficiary_list = [
-                    b4b1_beneficiary_id,
-                    b4b1_beneficiary_name,
-                    b4b1_beneficiary_address,
-                    b4b1_beneficiary_city,
-                    b4b1_beneficiary_state,
-                    b4b1_beneficiary_zip,
-                    b4b1_beneficiary_type,
+                b4b1_target_list = [
+                    b4b1_target_id,
+                    b4b1_target_name,
+                    b4b1_target_address,
+                    b4b1_target_city,
+                    b4b1_target_state,
+                    b4b1_target_zip,
+                    b4b1_target_type,
                     "",
                     "",
                     "",
@@ -1371,9 +1469,9 @@ def parseErrything():
                     "",
                     b4b1_entity_date_of_thing_happening,
                 ]
-                entities.write("|".join(b4b1_beneficiary_list) + "\n")
+                entities.write("|".join(b4b1_target_list) + "\n")
 
-            if b4b1_beneficiary_id not in SHITCOMMITTEES and b4b1_committee_id not in SHITCOMMITTEES:
+            if b4b1_target_id not in SHITCOMMITTEES and b4b1_committee_id not in SHITCOMMITTEES:
                 #datetest
                 b4b1_transaction_date = row[6]
                 b4b1_date_test = validDate(b4b1_transaction_date)
@@ -1397,12 +1495,12 @@ def parseErrything():
                             b4b1_lender_addr = ""
                             b4b1_loan_amount = row[7]
                             b4b1_loan_repaid = 0.00
-                            b4b1_loan_stance = row[4] #0=Support, 1=Oppose
+                            b4b1_loan_stance = row[4].strip() #0=Support, 1=Oppose
                             b4b1_loan_forgiven = 0.00
                             b4b1_paid_by_third_party = 0.00
                             b4b1_guarantor = ""
                             b4b1_committee_id = row[3] # committee receiving the loan
-                            b4b1_lending_committee_id = b4b1_beneficiary_id #lending committee ID
+                            b4b1_lending_committee_id = b4b1_target_id #lending committee ID
                             
                             """
                             DB fields
@@ -1426,26 +1524,56 @@ def parseErrything():
                             ]
                             loans.write("|".join(b4b1_loan_list) + "\n")
                         
-                        #Is it an expendture?
+                        
+                        # Is it a direct expenditure, i.e. a donation?
+                        elif b4b1_transaction_type == "D":
+                            b4b1_cash = getFloat(str(row[7])) #cash                        
+                            b4b1_inkind_amount = ""
+                            b4b1_pledge_amount = ""
+                            b4b1_inkind_desc = ""
+                            b4b1_don_stance = row[4].strip() #0=Support, 1=Oppose
+                            
+                            """
+                            DB fields
+                            =========
+                            db_id, cash, inkind, pledge, inkind_desc, donation_date, donor_id, recipient_id, donation_year, notes, stance, donor_name
+                            """
+                            b4b1_donation_list = [                        
+                                "",
+                                b4b1_cash,
+                                b4b1_inkind_amount,
+                                b4b1_pledge_amount,
+                                b4b1_inkind_desc,
+                                b4b1_date_test,
+                                b4b1_committee_id,
+                                b4b1_target_id,
+                                b4b1_year,
+                                "",
+                                b4b1_don_stance,
+                                "",
+                            ]
+                            donations.write("|".join(b4b1_donation_list) + "\n")
+                        
+                        #Or is it a true expenditure?
                         else:
-                            b4b1_payee = ' '.join((row[9].strip().upper()).split()).replace('"',"")
+                            b4b1_payee = ""
                             b4b1_address = ""
-                            b4b1_exp_purpose = row[5].strip()
-                            b4b1_exp_stance = row[4] #0=Support, 1=Oppose
-                            b4b1_committee_id = row[1] #committee ID doing the expenditure
+                            b4b1_exp_purpose = ""
+                            b4b1_exp_stance = row[4].strip() #0=Support, 1=Oppose
+                            b4b1_committee_id = row[1] #committee ID doing the expending
                             
                             #was it an in-kind expenditure?
                             if b4b1_transaction_type.strip().upper() == "I":
                                 b4b1_exp_inkind = row[7]
-                                b4b1_exp_amount = 0.00
+                                b4b1_exp_amount = "0.00"
                             else:
-                                b4b1_exp_inkind = 0.00
+                                b4b1_exp_inkind = "0.00"
                                 b4b1_exp_amount = row[7]
                             
                             """
                             DB fields
                             ==========
-                            DB id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                            db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                             """
                             b4b1_exp_list = [
                                 "",
@@ -1453,13 +1581,16 @@ def parseErrything():
                                 b4b1_address,
                                 b4b1_date_test,
                                 b4b1_exp_purpose,
-                                str(getFloat(b4b1_exp_amount)),
-                                str(getFloat(b4b1_exp_inkind)),
+                                b4b1_exp_amount,
+                                b4b1_exp_inkind,
                                 b4b1_committee_id,
-                                "",
-                                "",
-                                b4b1_beneficiary_id,
-                                "",
+                                b4b1_exp_stance,
+                                "", #notes
+                                "", #payee committee ID
+                                "", #name of committee doing the expending
+                                b4b1_target_id, #raw target ID
+                                "", #target candidate ID
+                                "", #target committee ID
                             ]
                             expenditures.write("|".join(b4b1_exp_list) + "\n")
     
@@ -1468,7 +1599,9 @@ def parseErrything():
         """
         FormB4B2: Federal and out-of-state disbursements by independent committees
 
-        Data is added to Entity, Expenditure
+        Data is added to Entity, Donation
+        
+        We are treating cash disbursements the same as donations.
         
         COLUMNS
         =======
@@ -1495,7 +1628,8 @@ def parseErrything():
                 b4b2_committee_city = "" #City
                 b4b2_committee_state = "" #State
                 b4b2_committee_zip = "" #ZIP
-                b4b2_committee_type = "" #Committee type
+                #b4b2_committee_type = "" #Committee type
+                b4b2_committee_type = canonFlag(b4b2_committee_id) # canonical flag
                 b4b2_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -1533,39 +1667,39 @@ def parseErrything():
                     b4b2_dict["recipient_id"] = ""
                     b4b2_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                     b4b2_dict["source_table"] = "b4b2"
-                    b4b2_dict["destination_table"] = "expenditure"
+                    b4b2_dict["destination_table"] = "donation"
                     b4b2_dict["donation_date"] = b4b2_transaction_date
                     rows_with_new_bad_dates.append(b4b2_dict)
                 else:
                     b4b2_year = b4b2_date_test.split("-")[0]
                     if int(b4b2_year) >= 1999:
-                        #Add to Expenditure
-                        b4b2_payee = ""
-                        b4b2_address = ""
-                        b4b2_purpose = "OUT-OF-STATE DISBURSEMENT"
-                        b4b2_amount = row[4]
-                        b4b2_inkind = ""
+                        #Add to Donation
+                        b4b2_cash = getFloat(str(row[4])) #cash                        
+                        b4b2_inkind_amount = ""
+                        b4b2_pledge_amount = ""
+                        b4b2_inkind_desc = "" #in-kind description
+                        b4b2_donor_name = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                         
                         """
                         DB fields
                         =========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id, cash, inkind, pledge, inkind_desc, donation_date, donor_id, recipient_id, donation_year, notes, stance, donor_name
                         """
-                        b4b2_exp_list = [
+                        b4b2_donation_list = [                        
                             "",
-                            b4b2_payee,
-                            b4b2_address,
+                            b4b2_cash,
+                            b4b2_inkind_amount,
+                            b4b2_pledge_amount,
+                            b4b2_inkind_desc,
                             b4b2_date_test,
-                            b4b2_purpose,
-                            b4b2_amount,
-                            b4b2_inkind,
                             b4b2_committee_id,
                             "",
+                            b4b2_year,
                             "",
                             "",
-                            "",
+                            b4b2_donor_name,
                         ]
-                        expenditures.write("|".join(b4b2_exp_list) + "\n")
+                        donations.write("|".join(b4b2_donation_list) + "\n")
                 
                 
     with open('formb4b3.txt', 'rb') as b4b3:
@@ -1599,7 +1733,8 @@ def parseErrything():
                 b4b3_committee_city = "" #City
                 b4b3_committee_state = "" #State
                 b4b3_committee_zip = "" #ZIP
-                b4b3_committee_type = "" #Committee type
+                #b4b3_committee_type = "" #Committee type
+                b4b3_committee_type = canonFlag(b4b3_committee_id) # canonical flag
                 b4b2_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -1643,6 +1778,9 @@ def parseErrything():
                     b4b3_year = b4b3_date_test.split("-")[0]
                     if int(b4b3_year) >= 1999:
                         #Add to Expenditure
+                        
+                        #Committee Name|Committee ID|Date Received|Payee Name|Payee Address|Purpose Of Disbursement|Date of Disbursement|Amount|Expense Category|Report ID
+                        b4b3_committee_name = ' '.join((row[0].strip().upper()).split()).replace('"',"")
                         b4b3_payee = ' '.join((row[3].strip().upper()).split()).replace('"',"")
                         b4b3_address = ' '.join((row[4].strip().upper()).split()).replace('"',"")
                         b4b3_purpose = ' '.join((row[5].strip().upper()).split()).replace('"',"")
@@ -1652,7 +1790,7 @@ def parseErrything():
                         """
                         DB fields
                         =========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                         """
                         b4b3_exp_list = [
                             "",
@@ -1663,10 +1801,13 @@ def parseErrything():
                             b4b3_amount,
                             b4b3_inkind,
                             b4b3_committee_id,
-                            "",
-                            "",
-                            "",
-                            ""
+                            "", #stance
+                            "", #notes
+                            "", #payee committee ID
+                            b4b3_committee_name,
+                            "", #raw target
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b4b3_exp_list) + "\n")
        
@@ -1701,7 +1842,8 @@ def parseErrything():
                 b5_committee_city = "" #City
                 b5_committee_state = "" #State
                 b5_committee_zip = "" #ZIP
-                b5_committee_type = "" #Committee type
+                #b5_committee_type = "" #Committee type
+                b5_committee_type = canonFlag(b5_committee_id) # canonical flag
                 b5_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
 
                 """
@@ -1739,7 +1881,8 @@ def parseErrything():
                 b5_contributor_city = "" #City
                 b5_contributor_state = "" #State
                 b5_contributor_zip = "" #ZIP
-                b5_contributor_type = row[8].strip().upper() #Contributor type (B=Business, I=Individual, C=Corporation, M=Candidate committee, P=PAC, Q=Ballot Question Committee, R=Political Party Committee)
+                #b5_contributor_type = row[8].strip().upper() #Contributor type (B=Business, I=Individual, C=Corporation, M=Candidate committee, P=PAC, Q=Ballot Question Committee, R=Political Party Committee)
+                b5_contributor_type = canonFlag(b5_contributor_id) # canonical flag
                 b5_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
                 b5_contributor_occupation = row[12].strip()
                 b5_contributor_employer = row[13].strip()
@@ -1774,13 +1917,42 @@ def parseErrything():
     #now we do the b6 tables with some fly csvjoin ish
     
     """
-    FormB6EXPEND: Expenditures on behalf of committees by people or entities who do not have an ID
+    FormB6 + B6CONT + B6EXPEND: Expenditures on behalf of committees by people or entities who do not have an ID
  
     Data is added to Entity, Expenditure
     
     COLUMNS
     =======
-    Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Date Received|Form ID|Expenditure Date|Amount|Description|Recipient Name|Recipient Address
+    0: Committee Name
+    1: Form ID Number
+    2: Committee ID
+    3: Postmark Date
+    4: Date Received
+    5: Microfilm Number
+    6: Expenditure Name
+    7: Expend Phone
+    8: Expend Address
+    9: Expend City
+    10: Expend State
+    11: Expend Zip
+    12: Election Date
+    13: Recipient Name
+    14: Recipient Address
+    15: Expenditure Date
+    16: Amount
+    17: Description
+    18: Date Last Revised
+    19: Last Revised By
+    20: Committee Name
+    21: Form B6 ID
+    22: Date Received
+    23: Form ID
+    24: Expenditure Date
+    25: Amount
+    26: Description
+    27: Recipient Name
+    28: Recipient Address
+    
     """
     
     print "    formb6expend ..."
@@ -1797,24 +1969,15 @@ def parseErrything():
             if b6_committee_id not in SHITCOMMITTEES:
                 #Append ID to master list
                 id_master_list.append(b6_committee_id)
-                
                 #Add committee to Entity
                 b6_committee_name = ' '.join((row[0].strip().upper()).split()).replace('"',"") #Committee name
                 b6_committee_address = "" #Address
                 b6_committee_city = "" #City
                 b6_committee_state = "" #State
                 b6_committee_zip = "" #ZIP
-                b6_committee_type = "" #Committee type
-                b6_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-
-                """
-                DB fields
-                ========
-                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
-                
-                We're adding b6_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
-                
-                """
+                #b6_committee_type = "" #Committee type
+                b6_committee_type = canonFlag(b6_committee_id) # canonical flag
+                b6_entity_date_of_thing_happening = row[24] #Date used to eval recency on dedupe
                 
                 b6_committee_list = [
                     b6_committee_id,
@@ -1831,11 +1994,22 @@ def parseErrything():
                     "",
                     b6_entity_date_of_thing_happening,
                 ]
-                entities.write("|".join(b6_committee_list) + "\n")
                 
                 #Womp into Expenditure
+                
+                #douse this particular garb fire with a flood of IF statements
+                if row[15] and row[15] != "":
+                    b6_transaction_date = row[15]
+                elif row[24] and row[24] != "":
+                    b6_transaction_date = row[24]
+                elif row[4] and row[4] != "":
+                    b6_transaction_date = row[4]
+                elif row[22] and row[22] != "":
+                    b6_transaction_date = row[22]
+                elif row[3] and row[3] != "":
+                    b6_transaction_date = row[3]
+                
                 #date test
-                b6_transaction_date = row[24]
                 b6_date_test = validDate(b6_transaction_date)
                 if b6_date_test == "broke":
                     b6_dict = {}
@@ -1845,7 +2019,7 @@ def parseErrything():
                     b6_dict["source_table"] = "b6expend"
                     b6_dict["destination_table"] = "expenditure"
                     b6_dict["donation_date"] = b6_transaction_date
-                    rows_with_new_bad_dates.append(b6_dict)
+                    #rows_with_new_bad_dates.append(b6_dict)
                     print b6_dict
                 else:
                     b6_year = b6_date_test.split("-")[0]
@@ -1855,16 +2029,19 @@ def parseErrything():
                         b6_purpose = ' '.join((row[26].strip().upper()).split()).replace('"',"")
                         b6_amount = row[25]
                         b6_inkind = ""
-                        b6_committee_id = ""
+                        b6_target_id = row[2]
                         b6_stance = ""
-                        b6_comm_receiving = row[2]
                         b6_exp_name = ' '.join((row[6].strip().upper()).split()).replace('"',"")
+                        b6_exp_addr = " ".join([row[8].strip().upper(), row[9].strip().upper(), row[10].strip().upper(), row[11].strip().upper()])
+                        b6_exp_addr = ' '.join(b6_exp_addr.split()).replace('"',"")
                         
                         """
                         DB fields
                         ========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
+
                         """
+
                         b6_exp_list = [
                             "",
                             b6_payee,
@@ -1873,118 +2050,16 @@ def parseErrything():
                             b6_purpose,
                             b6_amount,
                             b6_inkind,
-                            b6_committee_id,
-                            "",
-                            "",
-                            b6_comm_receiving,
-                            b6_exp_name,
+                            "", #committee doing the expending (doesn't exist, is the point)
+                            "", #stance
+                            b6_exp_addr, #notes
+                            "", #payee ID
+                            b6_exp_name, #name of person/entity doing the expending
+                            b6_committee_id, #raw target -- expenditure is made on its behalf
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b6_exp_list) + "\n")
-    
-    
-    
-    """
-    FormB6CONT: Donations to committees by people or entities who do not have an ID
- 
-    Data is added to Entity, Donation
-    
-    COLUMNS
-    =======
-    Committee Name|Form ID Number|Committee ID|Postmark Date|Date Received|Microfilm Number|Expenditure Name|Expend Phone|Expend Address|Expend City|Expend State|Expend Zip|Election Date|Recipient Name|Recipient Address|Expenditure Date|Amount|Description|Date Last Revised|Last Revised By|Committee Name|Form B6 ID|Form ID|Contributor Name|Contributor Address|Occupation|Place Of Business|Employer
-    """
-    
-    print "    formb6cont ..."
-    
-    with hide('running', 'stdout', 'stderr'):
-        stitched_b6don = local('csvjoin -d "|" -c "Form ID Number,Form B6 ID" --right formb6.txt formb6cont.txt | csvformat -D "|" |  sed -e \'1d\'', capture=True)
-        
-        ls = []
-        for dude in stitched_b6don.split("\n"):
-            ls.append(dude.split("|"))
-        for row in ls:
-            b6_don_committee_id = row[2]
-            
-            if b6_don_committee_id not in SHITCOMMITTEES:
-                #Append ID to master list
-                id_master_list.append(b6_don_committee_id)
-                
-                #Add committee to Entity
-                b6_don_committee_name = ' '.join((row[0].strip().upper()).split()).replace('"',"") #Committee name
-                b6_don_committee_address = "" #Address
-                b6_don_committee_city = "" #City
-                b6_don_committee_state = "" #State
-                b6_don_committee_zip = "" #ZIP
-                b6_don_committee_type = "" #Committee type
-                b6_don_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
-
-                """
-                DB fields
-                ========
-                nadcid, name, address, city, state, zip, entity_type, notes, employer, occupation, place_of_business, dissolved_date
-                
-                We're adding b6_don_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
-                
-                """
-                
-                b6_don_committee_list = [
-                    b6_don_committee_id,
-                    b6_don_committee_name,
-                    b6_don_committee_address,
-                    b6_don_committee_city,
-                    b6_don_committee_state,
-                    b6_don_committee_zip,
-                    b6_don_committee_type,
-                    "",
-                    "",
-                    "",
-                    "",
-                    "",
-                    b6_don_entity_date_of_thing_happening,
-                ]
-                entities.write("|".join(b6_don_committee_list) + "\n")
-    
-                #Womp into donations
-                #datetest
-                b6_don_donation_date = row[4]
-                b6_don_date_test = validDate(b6_don_donation_date)
-                if b6_don_date_test == "broke":
-                    b6_don_dict = {}
-                    b6_don_dict["donor_id"] = row[10]
-                    b6_don_dict["recipient_id"] = row[6]
-                    b6_don_dict["lookup_name"] = ' '.join((row[0].strip().upper()).split()).replace('"',"")
-                    b6_don_dict["source_table"] = "b6cont"
-                    b6_don_dict["destination_table"] = "donation"
-                    b6_don_dict["donation_date"] = b6_don_donation_date
-                    rows_with_new_bad_dates.append(b6_don_dict)
-                else:
-                    b6_don_year = b6_don_date_test.split("-")[0]
-                    if int(b6_year) >= 1999:
-                        b6_don_cash = str(getFloat(row[16])) #cash
-                        b6_don_inkind_amount = "" #inkind
-                        b6_don_pledge_amount = "" #pledge
-                        b6_don_inkind_desc = "" #in-kind description
-                        b6_don_donor_name = ' '.join((row[23].strip().upper()).split()).replace('"',"") #donor name
-                        
-                        """
-                        DB fields
-                        ========
-                        db_id, cash, inkind, pledge, inkind_desc, donation_date, donor_id, recipient_id, donation_year, notes, stance, donor_name
-                        """
-                        b6_don_donation_list = [                        
-                            "",
-                            b6_don_cash,
-                            b6_don_inkind_amount,
-                            b6_don_pledge_amount,
-                            b6_don_inkind_desc,
-                            b6_don_date_test,
-                            "",
-                            b6_don_committee_id,
-                            b6_don_year,
-                            "",
-                            "",
-                            b6_don_donor_name,
-                        ]
-                        donations.write("|".join(b6_don_donation_list) + "\n")
     
     
     with open('formb7.txt', 'rb') as b7:
@@ -2017,7 +2092,8 @@ def parseErrything():
                 b7_committee_city = "" #City
                 b7_committee_state = "" #State
                 b7_committee_zip = "" #ZIP
-                b7_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b7_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b7_committee_type = canonFlag(b7_committee_id) # canonical flag
                 b7_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
 
                 """
@@ -2056,7 +2132,8 @@ def parseErrything():
                 b7_sspf_committee_state = "" #State
                 b7_sspf_committee_zip = "" #ZIP
                 b7_sspf_committee_descrip = ' '.join((row[9].strip().upper()).split()).replace('"',"")  #description
-                b7_sspf_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b7_sspf_committee_type = row[7].upper().strip() #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b7_sspf_committee_type = canonFlag(b7_sspf_committee_id) # canonical flag
                 b7_sspf_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
 
                 """
@@ -2117,7 +2194,8 @@ def parseErrything():
                 b72_committee_city = "" #City
                 b72_committee_state = "" #State
                 b72_committee_zip = "" #ZIP
-                b72_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b72_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b72_committee_type = canonFlag(b72_committee_id) # canonical flag
                 b72_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
                 
                 """
@@ -2155,7 +2233,8 @@ def parseErrything():
                 b72_contributor_city = "" #City
                 b72_contributor_state = "" #State
                 b72_contributor_zip = "" #ZIP
-                b72_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b72_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b72_contributor_type = canonFlag(b72_contributor_id) # canonical flag
                 b72_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
                 
                 """
@@ -2234,11 +2313,21 @@ def parseErrything():
         
         COLUMNS
         =======
-        Contributor Name|Contributor ID|Date Received|Committee ID|Contribution Date|Amount|Nature Of Contribution|Support/Oppose|Description|Microfilm Number|Committee Name
+        0: Contributor Name
+        1: Contributor ID
+        2: Date Received
+        3: Committee ID
+        4: Contribution Date
+        5: Amount
+        6: Nature Of Contribution
+        7: Support/Oppose
+        8: Description
+        9: Microfilm Number
+        10: Committee Name
         
         *** n.b. committee ID/name and contributor ID/name headers are swapped in the raw data, also there is no Report ID, contrary to headers ***
         
-        We are grouping "personal service" expenditures with "in-kind"
+        We are grouping "personal service" expenditures ("personnel provided to or for the benefit of a candidate or ballot question or political party committee when the person rendering such services is paid his or her regular salary or is otherwise compensated by such corporation, union or association," per the NADC) with "in-kind" expenditures.
         
         """
         
@@ -2261,7 +2350,8 @@ def parseErrything():
                 b73_committee_city = "" #City
                 b73_committee_state = "" #State
                 b73_committee_zip = "" #ZIP
-                b73_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b73_committee_type = "" #Committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b73_committee_type = canonFlag(b73_committee_id) # canonical flag
                 b73_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
                 
                 """
@@ -2299,7 +2389,8 @@ def parseErrything():
                 b73_contributor_city = "" #City
                 b73_contributor_state = "" #State
                 b73_contributor_zip = "" #ZIP
-                b73_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                #b73_contributor_type = "" #contributor type (C=Corporation, L=Labor Organization, I=Industry or Trade Association, P=Professional Association)
+                b73_contributor_type = canonFlag(b73_contributor_id) # canonical flag
                 b73_entity_date_of_thing_happening = row[2] #Date used to eval recency on dedupe
                  
                 """
@@ -2328,6 +2419,7 @@ def parseErrything():
                 entities.write("|".join(b73_contributor_list) + "\n")
             
             if b73_committee_id not in SHITCOMMITTEES and b73_contributor_id not in SHITCOMMITTEES:
+                #date test
                 b73_exp_date = row[4]
                 b73_exp_date_test = validDate(b73_exp_date)
                 if b73_exp_date_test == "broke":
@@ -2344,12 +2436,12 @@ def parseErrything():
                     if int(b73_year) >= 1999:
                         #womp into Expenditure
                         b73_contrib_type = row[6].upper().strip() #(I=In-Kind, P=Personal Service, E=Independent Expenditure)
-                        b73_payee = ' '.join((row[10].upper().strip()).split()).replace('"',"")
+                        b73_payee = ""
                         b73_address = ""
                         b73_stance = row[7] #0=support, 1=oppose
                         b73_purpose = ' '.join((row[8].strip().upper()).split()).replace('"',"")
                         b73_contrib_name = ' '.join((row[0].strip().upper()).split()).replace('"',"")
-                        
+
                         if b73_contrib_type == "E":
                             b73_amount = row[5]
                             b73_inkind = ""
@@ -2360,7 +2452,7 @@ def parseErrything():
                         """
                         DB fields
                         ========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                         """
                         b73_exp_list = [
                             "",
@@ -2370,11 +2462,14 @@ def parseErrything():
                             b73_purpose,
                             b73_amount,
                             b73_inkind,
-                            b73_committee_id,
+                            b73_contributor_id, #ID of committee doing the expending
                             b73_stance,
-                            "",
-                            b73_contributor_id,
-                            b73_contrib_name,
+                            "", # notes
+                            "", #payee committee ID
+                            b73_contrib_name, # name of committee doing the expending
+                            b73_committee_id, #raw target committee ID
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b73_exp_list) + "\n")
     
@@ -2407,7 +2502,8 @@ def parseErrything():
                 b9_committee_city = "" #City
                 b9_committee_state = "" #State
                 b9_committee_zip = "" #ZIP
-                b9_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                #b9_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                b9_committee_type = canonFlag(b9_committee_id) # canonical flag
                 b9_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
                 
                 """
@@ -2445,7 +2541,30 @@ def parseErrything():
     
     COLUMNS
     =======
-    Contributor Name|Form ID|Contributor ID|Postmark Date|Date Received|Microfilm Number|Contributor Type|Date Last Revised|Last Revised By|Contributor Phone|Contributor Name|Form B9 ID|Form ID|Recipient ID|Support/Oppose|Nature of Expenditure|Expenditure Date|Previous Total|Amount|Total|Description|Entry Date|Recipient Name
+    0: Contributor Name
+    1: Form ID
+    2: Contributor ID
+    3: Postmark Date
+    4: Date Received
+    5: Microfilm Number
+    6: Contributor Type
+    7: Date Last Revised
+    8: Last Revised By
+    9: Contributor Phone
+    10: Contributor Name
+    11: Form B9 ID
+    12: Form ID
+    13: Recipient ID
+    14: Support/Oppose
+    15: Nature of Expenditure
+    16: Expenditure Date
+    17: Previous Total
+    18: Amount
+    19: Total
+    20: Description
+    21: Entry Date
+    22: Recipient Name
+    
     """
     
     print "    formb9b ..."
@@ -2470,7 +2589,8 @@ def parseErrything():
                 b9_exp_committee_city = "" #City
                 b9_exp_committee_state = "" #State
                 b9_exp_committee_zip = "" #ZIP
-                b9_exp_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                #b9_exp_committee_type = row[6].upper().strip() #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                b9_exp_committee_type = canonFlag(b9_exp_committee_id) # canonical flag
                 b9_exp_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
                 
                 """
@@ -2507,8 +2627,10 @@ def parseErrything():
                 b9_exp_recipient_city = "" #City
                 b9_exp_recipient_state = "" #State
                 b9_exp_recipient_zip = "" #ZIP
-                b9_exp_recipient_type = "" #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                #b9_exp_recipient_type = "" #committee type (C=Corporation, L=Labor Organization, I=Industry or Trade Organization, P=Professional Association)
+                b9_exp_recipient_type = canonFlag(b9_exp_recipient_id) # canonical flag
                 b9_exp_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
+                
                 """
                 DB fields
                 ========
@@ -2516,6 +2638,7 @@ def parseErrything():
                 
                 We're adding b9_exp_entity_date_of_thing_happening so that later we can eval for recency on dedupe.
                 """
+                
                 b9_exp_recipient_list = [
                     b9_exp_recipient_id,
                     b9_exp_recipient_name,
@@ -2576,6 +2699,7 @@ def parseErrything():
                             ========
                             db_id, lender_name, lender_addr, loan_date, loan_amount, loan_repaid, loan_forgiven, paid_by_third_party, guarantor, committee_id, notes, stance, lending_committee_id
                             """
+                            
                             b9_loan_list = [
                                 "", #DB ID
                                 b9_lender_name, #lender name
@@ -2592,16 +2716,16 @@ def parseErrything():
                                 b9_loan_lending_committee_id, #lending committee ID
                             ]
                             loans.write("|".join(b9_loan_list) + "\n")
-                            
+                        
+                        # is it an expenditure, then, or
                         elif b9_contrib_type =="D":
-                            # do expenditure shiz here
-                            b9_exp_payee = ' '.join((row[22].upper().strip()).split()).replace('"',"")
+                            b9_exp_payee = ""
                             b9_exp_address = ""
                             b9_exp_purpose = ' '.join((row[20].strip()).split()).replace('"',"")
                             b9_exp_amount = row[18]
                             b9_exp_inkind = ""
-                            b9_exp_receiving_id = row[2]
-                            b9_exp_receiving_name = ' '.join((row[0].upper().strip()).split()).replace('"',"")
+                            b9_exp_contributor_id = row[2]
+                            b9_exp_contributor_name = ' '.join((row[0].upper().strip()).split()).replace('"',"")
                             b9_exp_stance = row[14].strip().upper()
                             b9_exp_stance = row[14].upper().strip() # (S=Support, O=Oppose)
                             if b9_exp_stance == "S":
@@ -2614,8 +2738,9 @@ def parseErrything():
                             """
                             DB fields
                             ========
-                            DB id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                            db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                             """
+                            
                             b9_exp_list = [
                                 "",
                                 b9_exp_payee,
@@ -2624,15 +2749,19 @@ def parseErrything():
                                 b9_exp_purpose,
                                 b9_exp_amount,
                                 b9_exp_inkind,
-                                b9_committee_id,
+                                b9_exp_contributor_id, #committee ID doing the expending
                                 b9_exp_stance,
-                                "",
-                                b9_exp_receiving_id,
-                                b9_exp_receiving_name,
+                                "", #notes
+                                "", #payee ID
+                                b9_exp_contributor_name, #name of committee doing the expending
+                                b9_exp_recipient_id, #raw target committee ID
+                                "", #target candidate ID
+                                "", #target committee ID
                             ]
                             expenditures.write("|".join(b9_exp_list) + "\n")
+                        
+                        #else it's a donation
                         else:
-                            # do donation shiz here
                             b9_don_contributor_id = row[2]
                             b9_don_receiving_id = row[13]
                             b9_don_contributor_name = ' '.join((row[0].strip().upper()).split()).replace('"',"")
@@ -2695,7 +2824,27 @@ def parseErrything():
         
         COLUMNS
         =======
-        Committee Name|Form ID|Committee ID|Postmark Date|Date Received|Microfilm Number|Recipient Name|Recipient Address|Recipient City|Recipient State|Recipient Zip|Recipient Phone|Expenditure Date|Amount|Candidate ID|Candidate Support/Oppose|Ballot Question ID|Ballot Support/Oppose|Date Last Revised|Last Revised By|Candidate/Ballot Name
+        0: Committee Name
+        1: Form ID
+        2: Committee ID
+        3: Postmark Date
+        4: Date Received
+        5: Microfilm Number
+        6: Recipient Name
+        7: Recipient Address
+        8: Recipient City
+        9: Recipient State
+        10: Recipient Zip
+        11: Recipient Phone
+        12: Expenditure Date
+        13: Amount
+        14: Candidate ID
+        15: Candidate Support/Oppose
+        16: Ballot Question ID
+        17: Ballot Support/Oppose
+        18: Date Last Revised
+        19: Last Revised By
+        20: Candidate/Ballot Name
         """
         
         print "    formb11 ..."
@@ -2718,7 +2867,8 @@ def parseErrything():
                 b11_committee_city = "" #City
                 b11_committee_state = "" #State
                 b11_committee_zip = "" #ZIP
-                b11_committee_type = ""
+                #b11_committee_type = ""
+                b11_committee_type = canonFlag(b11_committee_id) # canonical flag
                 b11_entity_date_of_thing_happening = row[4] #Date used to eval recency on dedupe
                 
                 """
@@ -2762,12 +2912,13 @@ def parseErrything():
                     b11_exp_year = b11_exp_date_test.split("-")[0]
                     if int(b11_exp_year) >= 1999:
                         b11_exp_payee = ' '.join((row[6].upper().strip()).split()).replace('"',"")
+                        b11_exp_committee_name =  ' '.join((row[0].upper().strip()).split()).replace('"',"")
                         b11_exp_address = " ".join([row[7], row[8], row[9], row[10]])
                         b11_exp_address = ' '.join((b11_exp_address.upper().strip()).split()).replace('"',"")
                         b11_exp_purpose = ""
                         b11_exp_amount = row[13]
                         b11_exp_inkind = ""
-                        b11_exp_beneficiary_name = row[20]
+                        b11_exp_target_name = row[20]
                         
                         if row[14] and row[14] != "" and row[15] and row[15] != "":
                             b11_exp_stance = row[15].upper().strip() # (S=Support, O=Oppose)
@@ -2777,7 +2928,7 @@ def parseErrything():
                                 b11_exp_stance = "1"
                             else:
                                 b11_exp_stance = ""
-                            b11_exp_beneficiary_id = row[14]
+                            b11_exp_target_id = row[14]
                         else:
                             b11_exp_stance = row[17].upper().strip() # (S=Support, O=Oppose)
                             if b11_exp_stance == "S":
@@ -2786,12 +2937,12 @@ def parseErrything():
                                 b11_exp_stance = "1"
                             else:
                                 b11_exp_stance = ""
-                            b11_exp_beneficiary_id = row[16]
+                            b11_exp_target_id = row[16]
                         
                         """
                         DB fields
                         =========
-                        db_id, payee, payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id, stance, notes, committee_receiving_id, comm_name
+                        db_id (""), payee (name, free text), payee_addr, exp_date, exp_purpose, amount, in_kind, committee_id (doing the expending), stance (support/oppose), notes, payee_committee_id (the payee ID, if exists), committee_exp_name (name of the committee doing the expending), raw_target (free text ID of target ID, will get shunted to candidate or committee ID on save), target_candidate_id, target_committee_id
                         """
                         b11_exp_list = [
                             "",
@@ -2801,11 +2952,14 @@ def parseErrything():
                             b11_exp_purpose,
                             b11_exp_amount,
                             b11_exp_inkind,
-                            b11_committee_id,
+                            b11_committee_id, #ID of committee doing the expending
                             b11_exp_stance,
-                            "",
-                            b11_exp_beneficiary_id,
-                            b11_exp_beneficiary_name,
+                            "", #notes
+                            "", #payee ID
+                            b11_exp_committee_name, #name of committee doing the expending
+                            b11_exp_target_id, #raw target committee ID
+                            "", #target candidate ID
+                            "", #target committee ID
                         ]
                         expenditures.write("|".join(b11_exp_list) + "\n")
                 
@@ -3034,8 +3188,6 @@ def parseErrything():
         local('csvcut -x -d "|" -c db_id,cash,inkind,pledge,inkind_desc,donation_date,donor_id,recipient_id,donation_year,notes,stance,donor_name /home/apps/myproject/myproject/nadc/data/toupload/donations_almost_there.txt | csvformat -D "|" | sed -e \'1d\' -e \'s/\"//g\' > /home/apps/myproject/myproject/nadc/data/toupload/donations.txt', capture=False)
     
     print "\n\nDONE."
-
     
 def tweetIt():
     pass
-    

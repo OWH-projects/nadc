@@ -31,6 +31,21 @@ h3 { margin-top:0px; }
             <div id="chart"></div>
         </div>
         
+        <div id="recentdonors" class="item">
+            <h3>All donations, last 30 days</h3>
+            {% if recentdonations.count > 0 %}
+            <table class="table">
+                <thead><td>Date</td><td>Recipient</td><td>Donor</td><td>Amount</td></thead>
+                {% for thing in recentdonations %}{% if thing.pledge == 0 %}<tr>
+                    <td>{{ thing.donation_date }}</td>
+                    <td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
+                    <td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
+                    <td>${{ thing.totes|intcomma }}</td>
+                </tr>{% endif %}{% endfor %}
+            </table>
+            {% else %}No donations from the last 30 days have been reported{% endif %}
+        </div>
+      
         <div id="topdonors" class="item">
             <h3>Top donors, by dollars</h3>
             <table class="table">{% for thing in top10ind %}
@@ -54,6 +69,9 @@ h3 { margin-top:0px; }
         
         <div id="toprecips" class="item">
             <h3>Top recipients</h3>
+            <table class="table">{% for thing in toprecipients %}
+                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.recipient_id__canonical }}/{{ thing.recipient_id__standard_name|slugify }}">{{ thing.recipient_id__standard_name|title }}</a></b>: ${{ thing.totes|intcomma }}</td></tr>{% endfor %}
+            </table>
         </div>
         
         </div>

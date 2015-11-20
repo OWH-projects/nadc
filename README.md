@@ -33,7 +33,6 @@ A standard data dump from the NADC yields 61 pipe-delimited text files (data dic
 <li><strong>Form B4B3</strong>: Administrative/operating disbursements</li>
 <li><strong>Form B5</strong>: Late contributions</li>
 <li><strong>Form B6</strong>: Reports of an independent expenditure or donation made by people or entities that are not registered as committees</li>
-<li><strong>Form B6CONT</strong>: Contributions to committees by people who do not have an ID</li>
 <li><strong>Form B6EXPEND</strong>: Expenditures made on behalf of committees by people who do not have an ID</li>
 <li><strong>Form B7</strong>: Registration of corporations, unions and other associations</li>
 <li><strong>Form B72</strong>: Donations by corporations, unions and other associations</li>
@@ -84,4 +83,5 @@ To get an exhaustive list of ID'd entities, the script slurps up a half-million 
 ##Data excluded
 <ul>
 <li>Pre-1999 records, which the NADC does not consider especially reliable.</li>
+<li>The "more detailed" expenditure information in the handful of records in <code>Form B6CONT</code>. It is a garbage fire.</li>
 </ul>

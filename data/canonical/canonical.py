@@ -222,7 +222,530 @@ CANON = {
     "14CON21861": {"rawgivername":"","origfirst":"","origlast":"","canonicalid":205,"canonicalname":"James Harris"},
     "15CON24177": {"rawgivername":"","origfirst":"","origlast":"","canonicalid":205,"canonicalname":"James Harris"}
 }
-
+"""
+CANON_OFFICE = {
+    "LINCOLN MAYOR-LINCOLN MAYOR": {"office": "Mayor", "gov": "Lincoln"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 20-LEGISLATIVE COUNCIL 20": {"office": "State senator", "gov": "Nebraska Legislature", "district": "20"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #04 COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Douglas County", "district": "4"},
+    "BUFFALO COUNTY ATTORNEY-BUFFALO COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Buffalo County", "district": "4"},
+    "LEGISLATURE 43-LEGISLATURE 43": {"office": "State senator", "gov": "Nebraska Legislature", "district": "43"},
+    "STATE BOARD OF EDUCATION 01 01": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "1"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 27-LEGISLATIVE COUNCIL 27": {"office": "State senator", "gov": "Nebraska Legislature", "district": "27"},
+    "LINCOLN CITY COUNCIL DISTRICT #03-LINCOLN CITY COUNCIL DISTRICT #03": {"office": "City council member", "gov": "Lincoln", "district": "3"},
+    "LINCOLN CITY COUNCIL AT LARGE-LINCOLN CITY COUNCIL AT LARGE": {"office": "City council member", "gov": "Lincoln", "district": "At-large"},
+    "LINCOLN CITY COUNCIL AT LARGE CITY COUNCIL AT LARGE": {"office": "City council member", "gov": "Lincoln", "district": "At-large"},
+    "LINCOLN MAYOR MAYOR": {"office": "Mayor", "gov": "Lincoln"},
+    "LINCOLN CITY COUNCIL DISTRICT #02 CITY COUNCIL DISTRICT #02": {"office": "City council member", "gov": "Lincoln", "district": "2"},
+    "LINCOLN CITY COUNCIL DISTRICT #02-LINCOLN CITY COUNCIL DISTRICT #02": {"office": "City council member", "gov": "Lincoln", "district": "2"},
+    "LINCOLN CITY COUNCIL DISTRICT #01-LINCOLN CITY COUNCIL DISTRICT #01": {"office": "City council member", "gov": "Lincoln", "district": "1"},
+    "LINCOLN SCHOOL BOARD - DIST 01-LINCOLN SCHOOL BOARD - DIST 01": {"office": "School Board member", "gov": "Lincoln Public Schools", "district": "1"},
+    "HALL COUNTY CLERK OF DISTRICT COURT-HALL COUNTY CLERK OF DISTRICT COURT": {"office": "Clerk of the District Court", "gov": "Hall County"},
+    "HALL COUNTY REGISTER OF DEEDS-HALL COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Hall County"},
+    "BOARD OF REGENTS 07 07": {"office": "Regent", "gov": "NU Board of Regents", "district": "7"},
+    "DOUGLAS COUNTY CLERK OF DISTRICT COURT-DOUGLAS COUNTY CLERK OF DISTRICT COURT": {"office": "Clerk of the District Court", "gov": "Douglas County"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #06-DOUGLAS COUNTY COMMISSIONER DIST. #06": {"office": "County Board member", "gov": "Douglas County", "district": "6"},
+    "POWER REVIEW BOARD MEMBER MEMBER": {"office": "Power Review Board member", "gov": "Nebraska Power Review Board"},
+    "LEGISLATURE 08-LEGISLATURE 08": {"office": "State senator", "gov": "Nebraska Legislature", "district": "8"},
+    "PAPILLION MAYOR-PAPILLION MAYOR":  {"office": "Mayor", "gov": "Papillion"},
+    "LEGISLATURE 04-LEGISLATURE 04": {"office": "State senator", "gov": "Nebraska Legislature", "district": "4"},
+    "CASS COUNTY SHERIFF-CASS COUNTY SHERIFF": {"office": "Sheriff", "gov": "Cass County"},
+    "LEGISLATURE 45-LEGISLATURE 45": {"office": "State senator", "gov": "Nebraska Legislature", "district": "45"},
+    "LEGISLATURE 04 04": {"office": "State senator", "gov": "Nebraska Legislature", "district": "4"},
+    "LEGISLATURE 30-LEGISLATURE 30": {"office": "State senator", "gov": "Nebraska Legislature", "district": "30"},
+    "LEGISLATURE 25 25": {"office": "State senator", "gov": "Nebraska Legislature", "district": "25"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #01-LANCASTER COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Lancaster County", "district": "1"},
+    "AUDITOR OF PUBLIC ACCOUNTS AUDITOR OF PUBLIC ACCOUNTS-AUDITOR OF PUBLIC ACCOU AUDITOR OF PUBLIC ACCOUNTS": {"office": "Auditor of Public Accounts", "gov": "State of Nebraska"},
+    "CASS COUNTY COMMISSIONER - DIST 03-CASS COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Cass County", "district": "3"},
+    "DOUGLAS COUNTY TREASURER-DOUGLAS COUNTY TREASURER": {"office": "County Treasurer", "gov": "Douglas County"},
+    "OMAHA DIST. 66 SCHOOL BOARD AT LARGE DIST. 66 SCHOOL BOARD AT LARGE": {"office": "School board member", "gov": "Westside Community Schools", "district": "At-large"},
+    "OMAHA PUBLIC POWER DISTRICT OMAHA PUBLIC POWER DIST - METR-OMAHA PUBLIC POWER METROPOLITIAN SUBDIVISION": {"office": "OPPD Board member", "gov": "Omaha Public Power District"},
+    "PUBLIC SERVICE COMMISSION 02 02": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "2"},
+    "MADISON COUNTY REGISTER OF DEEDS-MADISON COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Madison County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 35-LEGISLATIVE COUNCIL 35": {"office": "State senator", "gov": "Nebraska Legislature", "district": "35"},
+    "HALL COUNTY SUPERVISOR DISTRICT #01-HALL COUNTY SUPERVISOR DISTRICT #01": {"office": "County Board member", "gov": "Hall County", "district": "1"},
+    "SARPY COUNTY ENGINEER/SURVEYOR-SARPY COUNTY ENGINEER/SURVEYOR": {"office": "County Engineer", "gov": "Sarpy County"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #02-DOUGLAS COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Douglas County", "district": "2"},
+    "LANCASTER COUNTY CLERK-LANCASTER COUNTY CLERK": {"office": "County Clerk", "gov": "Lancaster County"},
+    "OMAHA PUBLIC POWER DISTRICT METROPOLITIAN SUBDIVISION METROPOLITIAN SUBDIVISION": {"office": "OPPD Board member", "gov": "Omaha Public Power District"},
+    "DOUGLAS COUNTY ASSESSOR-DOUGLAS COUNTY ASSESSOR": {"office": "Assessor", "gov": "Douglas County"},
+    "DOUGLAS COUNTY ATTORNEY-DOUGLAS COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Douglas County"},
+    "SARPY COUNTY ATTORNEY-SARPY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Sarpy County"},
+    "GRAND ISLAND MAYOR-GRAND ISLAND MAYOR": {"office": "Mayor", "gov": "Grand Island"},
+    "DUNDY COUNTY ATTORNEY-DUNDY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Dundy County"},
+    "DAWSON COUNTY PUBLIC DEFENDER-DAWSON COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Dawson County"},
+    "MADISON COUNTY COMMISSIONER DIST. #03-MADISON COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Madison County", "district": "3"},
+    "MADISON COUNTY COMMISSIONER DIST. #03 COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Madison County", "district": "3"},
+    "NORFOLK NORFOLK SCHOOL BOARD - DIST 02-NORFOLK NORFOLK SCHOOL BOARD - DIST 02": {"office": "School board member", "gov": "Norfolk Public Schools", "district": "2"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 22-LEGISLATIVE COUNCIL 22": {"office": "State senator", "gov": "Nebraska Legislature", "district": "22"},
+    "LEGISLATURE 22-LEGISLATURE 22": {"office": "State senator", "gov": "Nebraska Legislature", "district": "22"},
+    "LIEUTENANT GOVERNOR LIEUTENANT GOVERNOR-LIEUTENANT GOVERNOR LIEUTENANT GOVERNOR": {"office": "Lieutenant Governor", "gov": "State of Nebraska"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 16-LEGISLATIVE COUNCIL 16": {"office": "State senator", "gov": "Nebraska Legislature", "district": "16"},
+    "LEGISLATURE 24-LEGISLATURE 24": {"office": "State senator", "gov": "Nebraska Legislature", "district": "24"},
+    "BUTLER COUNTY SHERIFF-BUTLER COUNTY SHERIFF": {"office": "Sheriff", "gov": "Butler County"},
+    "STATE TREASURER STATE TREASURER-STATE TREASURER STATE TREASURER": {"office": "State treasurer", "gov": "State of Nebraska"},
+    "LEGISLATURE 33-LEGISLATURE 33": {"office": "State senator", "gov": "Nebraska Legislature", "district": "33"},
+    "LEGISLATURE 48-LEGISLATURE 48": {"office": "State senator", "gov": "Nebraska Legislature", "district": "48"},
+    "OMAHA BOARD OF EDUCATION DIST. #01 BOARD OF EDUCATION DIST. #01": {"office": "School board member", "gov": "Omaha Public Schools", "district": "1"},
+    "OMAHA MAYOR MAYOR": {"office": "Mayor", "gov": "Omaha"},
+    "OMAHA CITY COUNCIL DISTRICT #05 CITY COUNCIL DISTRICT #05": {"office": "City council member", "gov": "Omaha", "district": "5"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 14-LEGISLATIVE COUNCIL 14": {"office": "State senator", "gov": "Nebraska Legislature", "district": "14"},
+    "OMAHA SCHOOL BOARD DISTRICT #03-OMAHA SCHOOL BOARD DISTRICT #03": {"office": "School board member", "gov": "Omaha Public Schools", "district": "3"},
+    "PUBLIC SERVICE COMMISSION COMMISSIONER, DISTRICT #05-PUBLIC SERVICE COMMISSI 05": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "5"},
+    "LANCASTER COUNTY SHERIFF-LANCASTER COUNTY SHERIFF": {"office": "Sheriff", "gov": "Lancaseter County"},
+    "DODGE COUNTY SHERIFF-DODGE COUNTY SHERIFF": {"office": "Sheriff", "gov": "Dodge County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 02-LEGISLATIVE COUNCIL 02": {"office": "State senator", "gov": "Nebraska Legislature", "district": "2"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 31-LEGISLATIVE COUNCIL 31": {"office": "State senator", "gov": "Nebraska Legislature", "district": "31"},
+    "AUDITOR OF PUBLIC ACCOUNTS AUDITOR OF PUBLIC ACCOUNTS AUDITOR OF PUBLIC ACCOUNTS": {"office": "Auditor of Public Accounts", "gov": "State of Nebraska"},
+    "LANCASTER COUNTY CLERK OF DISTRICT COURT-LANCASTER COUNTY CLERK OF DISTRICT COURT": {"office": "Clerk of the District Court", "gov": "Lancaster County"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #05-LANCASTER COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Lancaster County", "district": "5"},
+    "LEGISLATURE 12-LEGISLATURE 12": {"office": "State senator", "gov": "Nebraska Legislature", "district": "12"},
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 05-UNIVERSITY OF NEBRA 05": {"office": "Regent", "gov": "NU Board of Regents", "district": "5"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 47-LEGISLATIVE COUNCIL 47": {"office": "State senator", "gov": "Nebraska Legislature", "district": "47"},
+    "KEARNEY CITY COUNCIL-KEARNEY CITY COUNCIL": {"office": "City council member", "gov": "Kearney"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 33-LEGISLATIVE COUNCIL 33": {"office": "State senator", "gov": "Nebraska Legislature", "district": "33"},
+    "SARPY COUNTY COMMISSIONER - DIST 01-SARPY COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Sarpy County", "district": "1"},
+    "PUBLIC SERVICE COMMISSION 02-PUBLIC SERVICE COMMISSION 02": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "2"},
+    "OMAHA CITY COUNCIL DISTRICT #03 CITY COUNCIL DISTRICT #03": {"office": "City council member", "gov": "Omaha", "district": "3"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 23-LEGISLATIVE COUNCIL 23": {"office": "State senator", "gov": "Nebraska Legislature", "district": "23"},
+    "OMAHA CITY COUNCIL DISTRICT #02-OMAHA CITY COUNCIL DISTRICT #02": {"office": "City council member", "gov": "Omaha", "district": "2"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 03-LEGISLATIVE COUNCIL 03": {"office": "State senator", "gov": "Nebraska Legislature", "district": "3"},
+    "ATTORNEY GENERAL ATTORNEY GENERAL-DEPARTMENT OF JUSTICE ATTORNEY GENERAL": {"office": "Attorney General", "gov": "State of Nebraska"},
+    "GOVERNOR GOVERNOR GOVERNOR": {"office": "Governor", "gov": "State of Nebraska"},
+    "MILLARD SCHOOL BOARD AT LARGE-MILLARD SCHOOL BOARD AT LARGE": {"office": "School board member", "gov": "Millard Public Schools", "district": "At-large"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 09-LEGISLATIVE COUNCIL 09": {"office": "State senator", "gov": "Nebraska Legislature", "district": "9"},
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #07-BUFFALO COUNTY SUPERVISOR DISTRICT #07": {"office": "County Board member", "gov": "Buffalo County", "district": "7"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 30-LEGISLATIVE COUNCIL 30": {"office": "State senator", "gov": "Nebraska Legislature", "district": "30"},
+    "HALL COUNTY SUPERVISOR DISTRICT #07-HALL COUNTY SUPERVISOR DISTRICT #07": {"office": "County Board member", "gov": "Hall County", "district": "7"},
+    "DOUGLAS COUNTY REGISTER OF DEEDS-DOUGLAS COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Douglas County"},
+    "DOUGLAS COUNTY CLERK-DOUGLAS COUNTY CLERK": {"office": "County Clerk", "gov": "Douglas County"},
+    "THURSTON COUNTY SHERIFF-THURSTON COUNTY SHERIFF": {"office": "Sheriff", "gov": "Thurston County"},
+    "OMAHA LEARNING COMMUNITY #04 LEARNING COMMUNITY #04": {"office": "Learning Community Board member", "gov": "Learning Community of Douglas and Sarpy Counties", "district": "4"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 39-LEGISLATIVE COUNCIL 39": {"office": "State senator", "gov": "Nebraska Legislature", "district": "39"},
+    "STATE BOARD OF EDUCATION DISTRICT #03-STATE BOARD OF EDUCATION 03": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "3"},
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #04-BUFFALO COUNTY SUPERVISOR DISTRICT #04": {"office": "County Board member", "gov": "Buffalo County", "district": "4"},
+    "LEGISLATURE 36 36": {"office": "State senator", "gov": "Nebraska Legislature", "district": "36"},
+    "ADAMS COUNTY CLERK, COUNTY CLERK": {"office": "County Clerk", "gov": "Adams County"},
+    "PHELPS COUNTY ATTORNEY-PHELPS COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Phelps County"},
+    "DOUGLAS COUNTY COMMISSIONER - DIST 05-DOUGLAS COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Douglas County", "district": "5"},
+    "GOVERNOR GOVERNOR-GOVERNOR GOVERNOR": {"office": "Governor", "gov": "State of Nebraska"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #04-DOUGLAS COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Douglas County", "district": "4"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 25-LEGISLATIVE COUNCIL 25": {"office": "State senator", "gov": "Nebraska Legislature", "district": "25"},
+    "LEGISLATURE 11 11": {"office": "State senator", "gov": "Nebraska Legislature", "district": "11"},
+    "PUBLIC SERVICE COMMISSION 03 03": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "3"},
+    "LEGISLATURE 16-LEGISLATURE 16": {"office": "State senator", "gov": "Nebraska Legislature", "district": "16"},
+    "GAGE COUNTY SHERIFF-GAGE COUNTY SHERIFF": {"office": "Sheriff", "gov": "Gage County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 40-LEGISLATIVE COUNCIL 40": {"office": "State senator", "gov": "Nebraska Legislature", "district": "40"},
+    "LEGISLATURE 40 40": {"office": "State senator", "gov": "Nebraska Legislature", "district": "40"},
+    "SARPY COUNTY REGISTER OF DEEDS-SARPY COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Sarpy County"},
+    "DOUGLAS COUNTY ENGINEER/SURVEYOR-DOUGLAS COUNTY ENGINEER/SURVEYOR": {"office": "County Engineer", "gov": "Douglas County"},
+    "DOUGLAS COUNTY COMMISSIONER - DIST 07-DOUGLAS COUNTY COMMISSIONER DIST. #07": {"office": "County Board member", "gov": "Douglas County", "district": "7"},
+    "BUFFALO COUNTY REGISTER OF DEEDS-BUFFALO COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Buffalo County"},
+    "PUBLIC SERVICE COMMISSION 04 04": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "4"},
+    "BOARD OF REGENTS 02 02": {"office": "Regent", "gov": "NU Board of Regents", "district": "2"},
+    "LANCASTER COUNTY PUBLIC DEFENDER-LANCASTER COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Lancaster County"},
+    "STANTON COUNTY SHERIFF-STANTON COUNTY SHERIFF": {"office": "Sheriff", "gov": "Stanton County"},
+    METROPOLITAN UTILITIES DISTRICT AT LARGE AT LARGE
+    "DODGE COUNTY REGISTER OF DEEDS-DODGE COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Dodge County"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #03-NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #03
+    "LEGISLATURE LEGISLATURE - DISTRICT 10-LEGISLATIVE COUNCIL 10": {"office": "State senator", "gov": "Nebraska Legislature", "district": "10"},
+    "LEGISLATURE 08 08": {"office": "State senator", "gov": "Nebraska Legislature", "district": "8"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #05 COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Douglas County", "district": "5"},
+    "OMAHA CITY COUNCIL DISTRICT #01-OMAHA CITY COUNCIL DISTRICT #01": {"office": "City council member", "gov": "Omaha", "district": "1"},
+    "OMAHA SCHOOL BOARD DISTRICT #05-OMAHA SCHOOL BOARD DISTRICT #05": {"office": "School board member", "gov": "Omaha Public Schools", "district": "5"},
+    "OMAHA SCHOOL BOARD DISTRICT #05 SCHOOL BOARD DISTRICT #05": {"office": "School board member", "gov": "Omaha Public Schools", "district": "5"},
+    "LANCASTER COUNTY ATTORNEY-LANCASTER COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Lancaster County"},
+    "GRAND ISLAND CITY COUNCIL 2ND WARD-GRAND ISLAND CITY COUNCIL 2ND WARD": {"office": "City council member", "gov": "Grand Island", "district": "2"},
+    "SCOTTS BLUFF COUNTY SHERIFF-SCOTTS BLUFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Scotts Bluff County"},
+    NATURAL RESOURCE DISTRICT LOWER PLATTE SOUTH-NATURAL RESOURCE DISTRICT LOWER PLATTE SOUTH
+    OMAHA PUBLIC POWER DISTRICT NORTH SUBDIVISION NORTH SUBDIVISION
+    "LEGISLATURE 18-LEGISLATURE 18": {"office": "State senator", "gov": "Nebraska Legislature", "district": "18"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 24-LEGISLATIVE COUNCIL 24": {"office": "State senator", "gov": "Nebraska Legislature", "district": "24"},
+    SECRETARY OF STATE SECRETARY OF STATE-SECRETARY OF STATE SECRETARY OF STATE
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 04-UNIVERSITY OF NEBRA 04": {"office": "Regent", "gov": "NU Board of Regents", "district": "4"},
+    "LINCOLN COUNTY SHERIFF-LINCOLN COUNTY SHERIFF": {"office": "Sheriff", "gov": "Lincoln County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 07-LEGISLATIVE COUNCIL 07": {"office": "State senator", "gov": "Nebraska Legislature", "district": "7"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 29-LEGISLATIVE COUNCIL 29": {"office": "State senator", "gov": "Nebraska Legislature", "district": "29"},
+    "BOARD OF REGENTS 08 08": {"office": "Regent", "gov": "NU Board of Regents", "district": "8"},
+    "OMAHA MAYOR-OMAHA MAYOR": {"office": "Mayor", "gov": "Omaha"},
+    "STATE BOARD OF EDUCATION DISTRICT #05-STATE BOARD OF EDUCATION 05": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "5"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 13-LEGISLATIVE COUNCIL 13": {"office": "State senator", "gov": "Nebraska Legislature", "district": "13"},
+    "LINCOLN SCHOOL BOARD - DIST 03-LINCOLN SCHOOL BOARD - DIST 03": {"office": "School board member", "gov": "Lincoln Public Schools", "district": "3"},
+    "BOARD OF REGENTS 05 05": {"office": "Regent", "gov": "NU Board of Regents", "district": "5"},
+    "RALSTON MAYOR-RALSTON MAYOR": {"office": "Mayor", "gov": "Ralston"},
+    SOUTHEAST COMMUNITY COLLEGE DISTRICT #04-SOUTHEAST COMMUNITY COLLEGE 04
+    "LEGISLATURE LEGISLATURE - DISTRICT 43-LEGISLATIVE COUNCIL 43": {"office": "State senator", "gov": "Nebraska Legislature", "district": "43"},
+    "OMAHA CITY COUNCIL DISTRICT #04-OMAHA CITY COUNCIL DISTRICT #04": {"office": "City council member", "gov": "Omaha", "district": "4"},
+    "PUBLIC SERVICE COMMISSION COMMISSIONER, DISTRICT #01-PUBLIC SERVICE COMMISSI 01": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "1"},
+    "LEGISLATURE 20 20": {"office": "State senator", "gov": "Nebraska Legislature", "district": "20"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 34-LEGISLATIVE COUNCIL 34": {"office": "State senator", "gov": "Nebraska Legislature", "district": "34"},
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #06-BUFFALO COUNTY SUPERVISOR DISTRICT #06": {"office": "County Board member", "gov": "Buffalo County", "district": "5"},
+    "BOARD OF REGENTS 04-BOARD OF REGENTS 04": {"office": "Regent", "gov": "NU Board of Regents", "district": "4"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 01-LEGISLATIVE COUNCIL 01": {"office": "State senator", "gov": "Nebraska Legislature", "district": "1"},
+    "LIEUTENANT GOVERNOR LIEUTENANT GOVERNOR LIEUTENANT GOVERNOR": {"office": "Liutenant Governor", "gov": "State of Nebraska"},
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR/SUBDIVISION #05-NEBRASKA PUBLIC POWER SUBDIVISION #05
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 02-UNIVERSITY OF NEBRA 02": {"office": "Regent", "gov": "NU Board of Regents", "district": "2"},
+    LINCOLN AIRPORT AUTHORITY-LINCOLN AIRPORT AUTHORITY
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR/SUBDIVISION #01-NEBRASKA PUBLIC POWER SUBDIVISION #01
+    "DOUGLAS COUNTY PUBLIC DEFENDER-DOUGLAS COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Douglas County"},
+    "DOUGLAS COUNTY SHERIFF-DOUGLAS COUNTY SHERIFF": {"office": "Sheriff", "gov": "Douglas County"},
+    OMAHA PUBLIC POWER DISTRICT METROPOLITIAN SUBDIVISION-OMAHA PUBLIC POWER DISTR METROPOLITIAN SUBDIVISION
+    "LEGISLATURE LEGISLATURE - DISTRICT 49-LEGISLATIVE COUNCIL 49": {"office": "State senator", "gov": "Nebraska Legislature", "district": "49"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 08-LEGISLATIVE COUNCIL 08": {"office": "State senator", "gov": "Nebraska Legislature", "district": "8"},
+    METROPOLITAN UTILITIES DISTRICT AT LARGE-METROPOLITAN UTILITIES DISTRICT AT LARGE
+    "OMAHA CITY COUNCIL DISTRICT #06-OMAHA CITY COUNCIL DISTRICT #06": {"office": "City council member", "gov": "Omaha", "district": "6"},
+    "OMAHA CITY COUNCIL DISTRICT #05-OMAHA CITY COUNCIL DISTRICT #05": {"office": "City council member", "gov": "Omaha", "district": "5"},
+    "LANCASTER COUNTY COMMISSIONER - DIST 02-LANCASTER COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Lancaster County", "district": "2"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 21-LEGISLATIVE COUNCIL 21": {"office": "State senator", "gov": "Nebraska Legislature", "district": "21"},
+    "LEGISLATURE 15-LEGISLATURE 15": {"office": "State senator", "gov": "Nebraska Legislature", "district": "15"},
+    "BELLEVUE MAYOR-BELLEVUE MAYOR": {"office": "Mayor", "gov": "Bellevue"},
+    "PUBLIC SERVICE COMMISSION COMMISSIONER, DISTRICT #03-PUBLIC SERVICE COMMISSI 03": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "3"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #02-NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #02
+    "STATE BOARD OF EDUCATION DISTRICT #04-STATE BOARD OF EDUCATION 04": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "4"},
+    "LEGISLATURE 27-LEGISLATURE 27": {"office": "State senator", "gov": "Nebraska Legislature", "district": "27"},
+    "LEGISLATURE 22 22": {"office": "State senator", "gov": "Nebraska Legislature", "district": "22"},
+    "BOARD OF REGENTS 08-BOARD OF REGENTS 08": {"office": "Regent", "gov": "NU Board of Regents", "district": "8"},
+    "OMAHA CITY COUNCIL - DISTRICT 04-OMAHA CITY COUNCIL DISTRICT #04": {"office": "City council member", "gov": "Omaha", "district": "4"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 19-LEGISLATIVE COUNCIL 19": {"office": "State senator", "gov": "Nebraska Legislature", "district": "19"},
+    "BOARD OF REGENTS 01-BOARD OF REGENTS 01": {"office": "Regent", "gov": "NU Board of Regents", "district": "1"},
+    "LANCASTER COUNTY COMMISSIONER - DIST 05-LANCASTER COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Lancaster County", "district": "5"},
+    "ADAMS COUNTY REGISTER OF DEEDS-ADAMS COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Adams County"},
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR/SUBDIVISION #03-NEBRASKA PUBLIC POWER SUBDIVISION #03
+    LOUP RIVER PUBLIC POWER DISTRICT DIRECTOR-LOUP RIVER PUBLIC POWER DIRECTOR
+    "STATE BOARD OF EDUCATION DISTRICT #06-STATE BOARD OF EDUCATION 06": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "6"},
+    "LINCOLN COUNTY CLERK-LINCOLN COUNTY CLERK": {"office": "County Clerk", "gov": "Lincoln County"},
+    "STATE BOARD OF EDUCATION DISTRICT #08-STATE BOARD OF EDUCATION 08": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "8"},
+    "DAKOTA COUNTY COMMISSIONER-DAKOTA COUNTY COMMISSIONER": {"office": "County Board member", "gov": "Dakota County"},
+    DAWSON COUNTY TREASURER-DAWSON COUNTY TREASURER
+    DAWSON COUNTY TREASURER COUNTY TREASURER
+    "STATE BOARD OF EDUCATION 02 02": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "2"},
+    "LEGISLATURE 31-LEGISLATURE 31": {"office": "State senator", "gov": "Nebraska Legislature", "district": "31"},
+    "LINCOLN CITY COUNCIL DISTRICT #04-LINCOLN CITY COUNCIL DISTRICT #04": {"office": "City council member", "gov": "Lincoln", "district": "4"},
+    "LINCOLN SCHOOL BOARD - DIST 06-LINCOLN SCHOOL BOARD - DIST 06": {"office": "School board member", "gov": "Lincoln Public Schools", "district": "6"},
+    "LEGISLATURE 43 43": {"office": "State senator", "gov": "Nebraska Legislature", "district": "43"},
+    "CHERRY COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Cherry County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 36-LEGISLATIVE COUNCIL 36": {"office": "State senator", "gov": "Nebraska Legislature", "district": "36"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 18-LEGISLATIVE COUNCIL 18": {"office": "State senator", "gov": "Nebraska Legislature", "district": "18"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 17-LEGISLATIVE COUNCIL 17": {"office": "State senator", "gov": "Nebraska Legislature", "district": "17"},
+    "SARPY COUNTY PUBLIC DEFENDER-SARPY COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Sarpy County"},
+    PLATTE COUNTY TREASURER COUNTY TREASURER
+    "LANCASTER COUNTY CLERK COUNTY CLERK": {"office": "County Clerk", "gov": "Lancaster County"},
+    "GAGE COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Gage County"},
+    "SARPY COUNTY SHERIFF-SARPY COUNTY SHERIFF": {"office": "Sheriff", "gov": "Sarpy County"},
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 06-UNIVERSITY OF NEBRA 06": {"office": "Regent", "gov": "NU Board of Regents", "district": "6"},
+    "LEGISLATURE 30 30": {"office": "State senator", "gov": "Nebraska Legislature", "district": "30"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 44-LEGISLATIVE COUNCIL 44": {"office": "State senator", "gov": "Nebraska Legislature", "district": "44"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 45-LEGISLATIVE COUNCIL 45": {"office": "State senator", "gov": "Nebraska Legislature", "district": "45"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 46-LEGISLATIVE COUNCIL 46": {"office": "State senator", "gov": "Nebraska Legislature", "district": "46"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 26-LEGISLATIVE COUNCIL 26": {"office": "State senator", "gov": "Nebraska Legislature", "district": "26"},
+    "LEGISLATURE 49-LEGISLATURE 49": {"office": "State senator", "gov": "Nebraska Legislature", "district": "49"},
+    NATURAL RESOURCE DISTRICT AT LARGE AT LARGE
+    NATIONAL CONVENTION 3RD DISTRICT DELEGATE-NATIONAL CONVENTION 3RD DISTRICT DELEGATE
+    "LEGISLATURE LEGISLATURE - DISTRICT 37-LEGISLATIVE COUNCIL 37": {"office": "State senator", "gov": "Nebraska Legislature", "district": "37"},
+    "ADAMS COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Adams County"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #11 SUBDIVISION #11
+    "LEGISLATURE 47 47": {"office": "State senator", "gov": "Nebraska Legislature", "district": "47"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #09-NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #09
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #09 SUBDIVISION #09
+    "LINCOLN COUNTY COMMISSIONER DIST. #03 COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Lincoln County", "district": "3"},
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR/SUBDIVISION #07-NEBRASKA PUBLIC POWER SUBDIVISION #07
+    OMAHA PUBLIC POWER DISTRICT OMAHA PUBLIC POWER DIST - SOUT-OMAHA PUBLIC POWER SOUTH SUBDIVISION
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #03-BUFFALO COUNTY SUPERVISOR DISTRICT #03": {"office": "County Board member", "gov": "Buffalo County", "district": "3"},
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #03 COUNTY SUPERVISOR DISTRICT #03": {"office": "County Board member", "gov": "Buffalo County", "district": "3"},
+    "LEGISLATURE 17 17": {"office": "State senator", "gov": "Nebraska Legislature", "district": "17"},
+    BUFFALO COUNTY TREASURER COUNTY TREASURER
+    "LEGISLATURE 34 34": {"office": "State senator", "gov": "Nebraska Legislature", "district": "34"},
+    DEPARTMENT OF NATURAL RESOURCES DIRECTOR DIRECTOR
+    "OMAHA CITY COUNCIL DISTRICT #03-OMAHA CITY COUNCIL DISTRICT #03": {"office": "City council member", "gov": "Omaha", "district": "3"},
+    "BELLEVUE MAYOR MAYOR": {"office": "Mayor", "gov": "Bellevue"},
+    "SARPY COUNTY COMMISSIONER DIST. #03 COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Sarpy County", "district": "3"},
+    LANCASTER COUNTY ASSESSOR-LANCASTER COUNTY ASSESSOR
+    SEWARD COUNTY CLERK OF DISTRICT COURT-SEWARD COUNTY CLERK OF DISTRICT COURT
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #06 SUBDIVISION #06
+    "LEGISLATURE LEGISLATURE - DISTRICT 38-LEGISLATIVE COUNCIL 38": {"office": "State senator", "gov": "Nebraska Legislature", "district": "38"},
+    "SARPY COUNTY CLERK-SARPY COUNTY CLERK": {"office": "County Clerk", "gov": "Sarpy County"},
+    "HOLT COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Phelps County"},
+    "DOUGLAS COUNTY COMMISSIONER - DIST 03-DOUGLAS COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Douglas County", "district": "3"},
+    "SAUNDERS COUNTY CLERK COUNTY CLERK": {"office": "County Clerk", "gov": "Saunders County"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 05-LEGISLATIVE COUNCIL 05": {"office": "State senator", "gov": "Nebraska Legislature", "district": "5"},
+    "BOARD OF REGENTS 01 01": {"office": "Regent", "gov": "NU Board of Regents", "district": "1"},
+    "OMAHA CITY COUNCIL DISTRICT #07-OMAHA CITY COUNCIL DISTRICT #07": {"office": "City council member", "gov": "Omaha", "district": "7"},
+    OMAHA PUBLIC POWER DISTRICT SUBURBAN SUBDIVISION SUBURBAN SUBDIVISION
+    "LEGISLATURE 14 14": {"office": "State senator", "gov": "Nebraska Legislature", "district": "14"},
+    "SARPY COUNTY COMMISSIONER - DIST 02-SARPY COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Sarpy County", "district": "2"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 06-LEGISLATIVE COUNCIL 06": {"office": "State senator", "gov": "Nebraska Legislature", "district": "6"},
+    "SARPY COUNTY COMMISSIONER DIST. #05-SARPY COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Sarpy County", "district": "5"},
+    "BOARD OF REGENTS 03-BOARD OF REGENTS 03": {"office": "Regent", "gov": "NU Board of Regents", "district": "3"},
+    SARPY COUNTY TREASURER-SARPY COUNTY TREASURER
+    "LEGISLATURE 42 42": {"office": "State senator", "gov": "Nebraska Legislature", "district": "42"},
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 08-UNIVERSITY OF NEBRA 08": {"office": "Regent", "gov": "NU Board of Regents", "district": "8"},
+    "LEGISLATURE 41-LEGISLATURE 41": {"office": "State senator", "gov": "Nebraska Legislature", "district": "41"},
+    "LEGISLATURE 35-LEGISLATURE 35": {"office": "State senator", "gov": "Nebraska Legislature", "district": "35"},
+    "CHEYENNE COUNTY ATTORNEY-CHEYENNE COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Cheyenne County"},
+    "STATE BOARD OF EDUCATION DISTRICT #07-STATE BOARD OF EDUCATION 07": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "7"},
+    "STATE BOARD OF EDUCATION 07-STATE BOARD OF EDUCATION 07": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "7"},
+    "DAWSON COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Dawson County"},
+    "NORFOLK MAYOR-NORFOLK MAYOR": {"office": "Mayor", "gov": "Norfolk"},
+    "LINCOLN COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Lincoln County"},
+    METROPOLITAN COMMUNITY COLLEGE AT LARGE AT LARGE
+    "PHELPS COUNTY SHERIFF-PHELPS COUNTY SHERIFF": {"office": "Sheriff", "gov": "Phelps County"},
+    "LEGISLATURE 34-LEGISLATURE 34": {"office": "State senator", "gov": "Nebraska Legislature", "district": "14"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 12-LEGISLATIVE COUNCIL 12": {"office": "State senator", "gov": "Nebraska Legislature", "district": "12"},
+    SARPY COUNTY ASSESSOR-SARPY COUNTY ASSESSOR
+    "SEWARD COUNTY SHERIFF-SEWARD COUNTY SHERIFF": {"office": "Sheriff", "gov": "Seward County"},
+    "DOUGLAS COUNTY COMMISSIONER - DIST 02-DOUGLAS COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Douglas County", "district": "2"},
+    OMAHA PUBLIC POWER DISTRICT NORTH SUBDIVISION-OMAHA PUBLIC POWER DISTRICT NORTH SUBDIVISION
+    "STATE BOARD OF EDUCATION 01-STATE BOARD OF EDUCATION 01": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "1"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #01 SUBDIVISION #01
+    "OMAHA CITY COUNCIL DISTRICT #06 CITY COUNCIL DISTRICT #06": {"office": "City council member", "gov": "Omaha", "district": "6"},
+    "LANCASTER COUNTY COMMISSIONER - DIST 04-LANCASTER COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Lancaster County", "district": "4"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 42-LEGISLATIVE COUNCIL 42": {"office": "State senator", "gov": "Nebraska Legislature", "district": "42"},
+    OMAHA PUBLIC POWER DISTRICT SUBURBAN SUBDIVISION-OMAHA PUBLIC POWER DISTRICT SUBURBAN SUBDIVISION
+    "LEGISLATURE 10-LEGISLATURE 10": {"office": "State senator", "gov": "Nebraska Legislature", "district": "10"},
+    METRO TECH COMMUNITY COLLEGE 02-METRO TECH COMMUNITY COLLEGE 02
+    "LEGISLATURE 37 37": {"office": "State senator", "gov": "Nebraska Legislature", "district": "37"},
+    "STATE BOARD OF EDUCATION 08-STATE BOARD OF EDUCATION 08": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "8"},
+    "STATE BOARD OF EDUCATION DISTRICT #02-STATE BOARD OF EDUCATION 02": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "2"},
+    "LEGISLATURE 13-LEGISLATURE 13": {"office": "State senator", "gov": "Nebraska Legislature", "district": "13"},
+    "SARPY COUNTY COMMISSIONER DIST. #04-SARPY COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Sarpy County", "district": "4"},
+    "SARPY COUNTY COMMISSIONER DIST. #04 COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Sarpy County", "district": "4"},
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR/SUBDIVISION #07-NEBRASKA PUBLIC POWER DIS SUBDIVISION #07
+    "DOUGLAS COUNTY COMMISSIONER - DIST 01-DOUGLAS COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Douglas County", "district": "1"},
+    "LEGISLATURE 25-LEGISLATURE 25": {"office": "State senator", "gov": "Nebraska Legislature", "district": "25"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #01-DOUGLAS COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Douglas County", "district": "1"},
+    "OMAHA DIST. 66 SCHOOL BOARD AT LARGE-OMAHA DIST. 66 SCHOOL BOARD AT LARGE": {"office": "School board member", "gov": "Westside Community Schools", "district": "At-large"},
+    "PAPILLION CITY COUNCIL, WARD IV-PAPILLION CITY COUNCIL, WARD IV": {"office": "City council member", "gov": "Papillion", "district": "4"},
+    METROPOLITAN COMMUNITY COLLEGE METROPOLITAN COMM COLLEGE-METROPOLITAN COMMUNITY C AT LARGE
+    "LEGISLATURE 26-LEGISLATURE 26": {"office": "State senator", "gov": "Nebraska Legislature", "district": "26"},
+    "NEMAHA COUNTY SHERIFF-NEMAHA COUNTY SHERIFF": {"office": "Sheriff", "gov": "Nemaha County"},
+    "DOUGLAS COUNTY COMMISSIONER - DIST 06-DOUGLAS COUNTY COMMISSIONER DIST. #06": {"office": "County Board member", "gov": "Douglas County", "district": "6"},
+    "HALL COUNTY SHERIFF-HALL COUNTY SHERIFF": {"office": "Sheriff", "gov": "Hall County"},
+    "PLATTE COUNTY REGISTER OF DEEDS-PLATTE COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Platte County"},
+    "LEGISLATURE 44-LEGISLATURE 44": {"office": "State senator", "gov": "Nebraska Legislature", "district": "44"},
+    "BOARD OF REGENTS 06 06": {"office": "Regent", "gov": "NU Board of Regents", "district": "6"},
+    SECRETARY OF STATE SECRETARY OF STATE SECRETARY OF STATE
+    "LEGISLATURE 03 03": {"office": "State senator", "gov": "Nebraska Legislature", "district": "3"},
+    MERRICK COUNTY TREASURER-MERRICK COUNTY TREASURER
+    STATE TREASURER STATE TREASURER STATE TREASURER
+    "SAUNDERS COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Saunders County"},
+    "BOARD OF REGENTS 05-BOARD OF REGENTS 05": {"office": "Regent", "gov": "NU Board of Regents", "district": "5"},
+    "LEGISLATURE LEGISLATURE - DISTRICT 41-LEGISLATIVE COUNCIL 41": {"office": "State senator", "gov": "Nebraska Legislature", "district": "41"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #05 COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Lancaster County", "district": "5"},
+    "LEGISLATURE 24 24": {"office": "State senator", "gov": "Nebraska Legislature", "district": "24"},
+    DOUGLAS COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    "BOARD OF REGENTS 04 04": {"office": "Regent", "gov": "NU Board of Regents", "district": "4"},
+    "STATE BOARD OF EDUCATION 02-STATE BOARD OF EDUCATION 02": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "2"},
+    "LINCOLN CITY COUNCIL DISTRICT #01 CITY COUNCIL DISTRICT #01": {"office": "City council member", "gov": "Lincoln", "district": "1"},
+    "LEGISLATURE 09-LEGISLATURE 09": {"office": "State senator", "gov": "Nebraska Legislature", "district": "9"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #03 COUNTY COMMISSIONER DIST. #03"
+    "STATE BOARD OF EDUCATION 04-STATE BOARD OF EDUCATION 04": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "4"},
+    "LEGISLATURE 40-LEGISLATURE 40": {"office": "State senator", "gov": "Nebraska Legislature", "district": "40"},
+    "LEGISLATURE 13 13": {"office": "State senator", "gov": "Nebraska Legislature", "district": "13"},
+    METRO TECH COMMUNITY COLLEGE 02 02
+    "LEGISLATURE 38-LEGISLATURE 38": {"office": "State senator", "gov": "Nebraska Legislature", "district": "38"},
+    "SARPY COUNTY COMMISSIONER DIST. #03-SARPY COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Sarpy County", "district": "3"},
+    SARPY COUNTY CLERK OF DISTRICT COURT-SARPY COUNTY CLERK OF DISTRICT COURT
+    "LEGISLATURE 37-LEGISLATURE 37": {"office": "State senator", "gov": "Nebraska Legislature", "district": "37"},
+    "LEGISLATURE 01 01": {"office": "State senator", "gov": "Nebraska Legislature", "district": "1"},
+    "OMAHA SCHOOL BOARD DISTRICT #07-OMAHA SCHOOL BOARD DISTRICT #07": {"office": "School board member", "gov": "Omaha Public Schools", "district": "7"},
+    "LEGISLATURE 02 02": {"office": "State senator", "gov": "Nebraska Legislature", "district": "2"},
+    "NORTH PLATTE CITY COUNCIL 2ND WARD-NORTH PLATTE CITY COUNCIL 2ND WARD": {"office": "City council member", "gov": "North Platte", "district": "2"},
+    "NORFOLK CITY COUNCIL-NORFOLK CITY COUNCIL":{"office": "City council member", "gov": "Norfolk"},
+    "LEGISLATURE 03-LEGISLATURE 03": {"office": "State senator", "gov": "Nebraska Legislature", "district": "3"},
+    "LEGISLATURE 19-LEGISLATURE 19": {"office": "State senator", "gov": "Nebraska Legislature", "district": "19"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #03-LANCASTER COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Lancaster County", "district": "3"},
+    "MADISON COUNTY SHERIFF-MADISON COUNTY SHERIFF": {"office": "Sheriff", "gov": "Madison County"},
+    "LEGISLATURE 32-LEGISLATURE 32": {"office": "State senator", "gov": "Nebraska Legislature", "district": "32"},
+    "OMAHA LEARNING COMMUNITY #03 LEARNING COMMUNITY #03": {"office": "Learning Community Board member", "gov": "Learning Community of Douglas and Sarpy Counties", "district": "3"},
+    "LEGISLATURE 07-LEGISLATURE 07": {"office": "State senator", "gov": "Nebraska Legislature", "district": "7"},
+    "LEGISLATURE 07 07": {"office": "State senator", "gov": "Nebraska Legislature", "district": "7"},
+    "LEGISLATURE 06-LEGISLATURE 06": {"office": "State senator", "gov": "Nebraska Legislature", "district": "6"},
+    "BOARD OF REGENTS 02-BOARD OF REGENTS 02": {"office": "Regent", "gov": "NU Board of Regents", "district": "2"},
+    "SAUNDERS COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Saunders County"},
+    "LEGISLATURE 29-LEGISLATURE 29": {"office": "State senator", "gov": "Nebraska Legislature", "district": "29"},
+    "BOARD OF REGENTS BOARD OF REGENTS - DISTRICT 03-UNIVERSITY OF NEBRA 03": {"office": "Regent", "gov": "NU Board of Regents", "district": "3"},
+    "STATE BOARD OF EDUCATION 06-STATE BOARD OF EDUCATION 06": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "6"},
+    "LEGISLATURE 41 41": {"office": "State senator", "gov": "Nebraska Legislature", "district": "41"},
+    "GAGE COUNTY SUPERVISOR DISTRICT #06 COUNTY SUPERVISOR DISTRICT #06": {"office": "County Board member", "gov": "Gage County", "district": "6"},
+    "GRAND ISLAND MAYOR MAYOR": {"office": "Mayor", "gov": "Grand Island"},
+    "BELLEVUE CITY COUNCIL DISTRICT #02-BELLEVUE CITY COUNCIL DISTRICT #02": {"office": "City council member", "gov": "Bellevue", "district": "2"},
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #07 SUBDISTRICT #07
+    METRO TECH COMMUNITY COLLEGE 01 01
+    METRO TECH COMMUNITY COLLEGE 01-METRO TECH COMMUNITY COLLEGE 01
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #07-NATURAL RESOURCE DISTRICT SUBDISTRICT #07
+    "LEGISLATURE 10 10": {"office": "State senator", "gov": "Nebraska Legislature", "district": "10"},
+    "OMAHA CITY COUNCIL DISTRICT #07 CITY COUNCIL DISTRICT #07": {"office": "City council member", "gov": "Omaha", "district": "7"},
+    "LEGISLATURE 28-LEGISLATURE 28": {"office": "State senator", "gov": "Nebraska Legislature", "district": "28"},
+    "WASHINGTON COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Washington County"},
+    "LINCOLN SCHOOL BOARD - DIST 05-LINCOLN SCHOOL BOARD - DIST 05": {"office": "School board member", "gov": "Lincoln Public Schools", "district": "5"},
+    "LEGISLATURE 29 29": {"office": "State senator", "gov": "Nebraska Legislature", "district": "29"},
+    "LINCOLN SCHOOL BOARD - DIST 07-LINCOLN SCHOOL BOARD - DIST 07": {"office": "School board member", "gov": "Lincoln Public Schools", "district": "7"},
+    "PUBLIC SERVICE COMMISSION 05-PUBLIC SERVICE COMMISSION 05": {"office": "Public Service Commission member", "gov": "Nebraska Public Service Commission", "district": "5"},
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #05-NATURAL RESOURCE DISTRICT SUBDISTRICT #05
+    "HAMILTON COUNTY CLERK-HAMILTON COUNTY CLERK": {"office": "County Clerk", "gov": "Hamilton County"},
+    "LEGISLATURE 48 48": {"office": "State senator", "gov": "Nebraska Legislature", "district": "48"},
+    "ATTORNEY GENERAL ATTORNEY GENERAL-ATTORNEY GENERAL ATTORNEY GENERAL": {"office": "Attorney General", "gov": "State of Nebraska"},
+    "SARPY COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Sarpy County"},
+    "LEGISLATURE 06 06": {"office": "State senator", "gov": "Nebraska Legislature", "district": "6"},
+    "CASS COUNTY COMMISSIONER DIST. #03 COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Cass County", "district": "3"},
+    "SARPY COUNTY COMMISSIONER DIST. #02 COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Sarpy County", "district": "2"},
+    DOUGLAS COUNTY ASSESSOR COUNTY ASSESSOR
+    "LEGISLATURE 23-LEGISLATURE 23": {"office": "State senator", "gov": "Nebraska Legislature", "district": "23"},
+    "LEGISLATURE 45 45": {"office": "State senator", "gov": "Nebraska Legislature", "district": "10"},
+    "LEGISLATURE 01-LEGISLATURE 01": {"office": "State senator", "gov": "Nebraska Legislature", "district": "1"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #10-NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #10
+    "DOUGLAS COUNTY COMMISSIONER DIST. #03-DOUGLAS COUNTY COMMISSIONER DIST. #03": {"office": "County Board member", "gov": "Douglas County", "district": "3"},
+    "STATE BOARD OF EDUCATION 03 03": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "3"},
+    "LEGISLATURE 19 19": {"office": "State senator", "gov": "Nebraska Legislature", "district": "19"},
+    "BOARD OF REGENTS 07-BOARD OF REGENTS 07": {"office": "Regent", "gov": "NU Board of Regents", "district": "7"},
+    "MADISON COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Madison County", "district": "1"},
+    "STATE BOARD OF EDUCATION 03-STATE BOARD OF EDUCATION 03": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "3"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #04-LANCASTER COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Lancaster County", "district": "4"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #05-DOUGLAS COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Douglas County", "district": "5"},
+    "LEGISLATURE 39 39": {"office": "State senator", "gov": "Nebraska Legislature", "district": "39"},
+    NATURAL RESOURCE DISTRICT PAPIO MISSOURI SUBDISTRICT PAPIO MISSOURI SUBDISTRICT #11
+    "LANCASTER COUNTY COMMISSIONER DIST. #02-LANCASTER COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Lancaster County", "district": "2"},
+    "LEGISLATURE 27 27": {"office": "State senator", "gov": "Nebraska Legislature", "district": "27"},
+    METRO TECH COMMUNITY COLLEGE 03-METRO TECH COMMUNITY COLLEGE 03
+    NATURAL RESOURCE DISTRICT MIDDLE REPUBLICAN AT LARGE MIDDLE REPUBLICAN AT LARGE
+    "LANCASTER COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Lancaster County", "district": "1"},
+    "LEGISLATURE 38 38": {"office": "State senator", "gov": "Nebraska Legislature", "district": "38"},
+    "LEGISLATURE 46 46": {"office": "State senator", "gov": "Nebraska Legislature", "district": "46"},
+    "LEGISLATURE 44 44": {"office": "State senator", "gov": "Nebraska Legislature", "district": "44"},
+    "LEGISLATURE 28 28": {"office": "State senator", "gov": "Nebraska Legislature", "district": "28"},
+    "LEGISLATURE 12 12": {"office": "State senator", "gov": "Nebraska Legislature", "district": "12"},
+    "BELLEVUE BELLEVUE CITY COUNCIL BELLEVUE CITY COUNCIL": {"office": "City council member", "gov": "Bellevue"},
+    "LEGISLATURE 16 16": {"office": "State senator", "gov": "Nebraska Legislature", "district": "16"},
+    METRO TECH COMMUNITY COLLEGE 03 03
+    "LEGISLATURE 32 32": {"office": "State senator", "gov": "Nebraska Legislature", "district": "32"},
+    "SARPY COUNTY COMMISSIONER DIST. #05 COUNTY COMMISSIONER DIST. #05": {"office": "County Board member", "gov": "Sarpy County", "district": "5"},
+    "SCOTTS BLUFF COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Scotts Bluff County"},
+    "LEGISLATURE 26 26": {"office": "State senator", "gov": "Nebraska Legislature", "district": "26"},
+    "DODGE COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Dodge County"},
+    "WASHINGTON COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Washington County"},
+    "GAGE COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Gage County"},
+    "ATTORNEY GENERAL ATTORNEY GENERAL ATTORNEY GENERAL": {"office": "Attorney General", "gov": "State of Nebraska"},
+    "STATE BOARD OF EDUCATION 05 05": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "5"},
+    "PAPILLION PAPILLION SCHOOL BOARD-PAPILLION PAPILLION SCHOOL BOARD": {"office": "School board member", "gov": "Papillion-La Vista Public Schools"},
+    "DOUGLAS COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Douglas County"},
+    OMAHA PUBLIC POWER DISTRICT SOUTH SUBDIVISION SOUTH SUBDIVISION
+    "NORTH PLATTE MAYOR-NORTH PLATTE MAYOR": {"office": "Mayor", "gov": "North Platte"},
+    METRO TECH COMMUNITY COLLEGE 04-METRO TECH COMMUNITY COLLEGE 04
+    NATURAL RESOURCE DISTRICT PAPIO MISSOURI SUBDISTRICT #03 PAPIO MISSOURI SUBDISTRICT #03
+    "OMAHA OMAHA SCHOOL BOARD - DIST 66-OMAHA OMAHA SCHOOL BOARD - DIST 66": {"office": "School board member", "gov": "Westside Community Schools"},
+    "HOLT COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Holt County"},
+    CASS COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    "SCOTTS BLUFF COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Scotts Bluff County"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #02 COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Douglas County", "district": "2"},
+    NEBRASKA PUBLIC POWER DISTRICT DIRECTOR DIRECTOR
+    "NORTH PLATTE MAYOR MAYOR": {"office": "Mayor", "gov": "North Platte"},
+    "SARPY COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Sarpy County", "district": "1"},
+    "NORFOLK MAYOR MAYOR": {"office": "Mayor", "gov": "Norfolk"},
+    "BUFFALO COUNTY SUPERVISOR DISTRICT #02 COUNTY SUPERVISOR DISTRICT #02": {"office": "County Board member", "gov": "Buffalo County", "district": "2"},
+    "STATE BOARD OF EDUCATION 04 04": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "4"},
+    METRO TECH COMMUNITY COLLEGE 04 04
+    "OMAHA OMAHA SCHOOL BOARD - DIST 10 OMAHA SCHOOL BOARD - DIST 10": {"office": "School board member", "gov": "Omaha Public Schools", "district": "10"},
+    "LA VISTA MAYOR MAYOR": {"office": "Mayor", "gov": "La Vista"},
+    "OMAHA OMAHA SCHOOL BOARD OMAHA SCHOOL BOARD": {"office": "School board member", "gov": "Omaha Public Schools", "district": "10"},
+    "OMAHA CITY COUNCIL DISTRICT #02 CITY COUNCIL DISTRICT #02": {"office": "City council member", "gov": "Omaha", "district": "2"},
+    LINCOLN SCHOOL BOARD - DIST 05 SCHOOL BOARD - DIST 05
+    LANCASTER COUNTY ASSESSOR COUNTY ASSESSOR
+    LINCOLN AIRPORT AUTHORITY AIRPORT AUTHORITY
+    PAPILLION PAPILLION SCHOOL BOARD PAPILLION SCHOOL BOARD
+    "HASTINGS HASTINGS MAYOR HASTINGS MAYOR": {"office": "Mayor", "gov": "Hastings"},
+    OMAHA OMAHA SCHOOL BOARD - DIST 01 OMAHA SCHOOL BOARD - DIST 01
+    OMAHA OMAHA SCHOOL BOARD - DIST 12 OMAHA SCHOOL BOARD - DIST 12
+    OMAHA OMAHA SCHOOL BOARD - DIST 04 OMAHA SCHOOL BOARD - DIST 04
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #03 SUBDISTRICT #03
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #05 SUBDISTRICT #05
+    BELLEVUE BELLEVUE SCHOOL BOARD BELLEVUE SCHOOL BOARD
+    GRAND ISLAND SCHOOL BOARD DISTRICT #02 SCHOOL BOARD DISTRICT #02
+    "LINCOLN CITY COUNCIL DISTRICT #04 CITY COUNCIL DISTRICT #04": {"office": "City council member", "gov": "Lincoln", "district": "4"},
+    "LINCOLN CITY COUNCIL DISTRICT #03 CITY COUNCIL DISTRICT #03": {"office": "City council member", "gov": "Omaha", "district": "3"},
+    "LEGISLATURE 18 18": {"office": "State senator", "gov": "Nebraska Legislature", "district": "18"},
+    "LEGISLATURE 35 35": {"office": "State senator", "gov": "Nebraska Legislature", "district": "35"},
+    "LEGISLATURE 05 05": {"office": "State senator", "gov": "Nebraska Legislature", "district": "5"},
+    "LEGISLATURE 21 21": {"office": "State senator", "gov": "Nebraska Legislature", "district": "21"},
+    "LEGISLATURE 33 33": {"office": "State senator", "gov": "Nebraska Legislature", "district": "33"},
+    "DODGE COUNTY SUPERVISOR DISTRICT #01 COUNTY SUPERVISOR DISTRICT #01": {"office": "County Board member", "gov": "Dodge County", "district": "1"},
+    "BOARD OF REGENTS 03 03": {"office": "Regent", "gov": "NU Board of Regents", "district": "3"},
+    "HAMILTON COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Hamilton County"},
+    "GAGE COUNTY SUPERVISOR DISTRICT #03 COUNTY SUPERVISOR DISTRICT #03": {"office": "County Board member", "gov": "Gage County", "district": "3"},
+    "DOUGLAS COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Douglas County"},
+    LINCOLN SCHOOL BOARD - DIST 02 SCHOOL BOARD - DIST 02
+    "LEGISLATURE 23 23": {"office": "State senator", "gov": "Nebraska Legislature", "district": "23"},
+    "FREMONT MAYOR MAYOR": {"office": "Mayor", "gov": "Fremont"},
+    NATURAL RESOURCE DISTRICT UPPER REPUBLICAN - AT LARGE UPPER REPUBLICAN - AT LARGE
+    DOUGLAS COUNTY TREASURER COUNTY TREASURER
+    "LEGISLATURE 31 31": {"office": "State senator", "gov": "Nebraska Legislature", "district": "31"},
+    "LANCASTER COUNTY COMMISSIONER AT LARGE COUNTY COMMISSIONER AT LARGE": {"office": "County Board member", "gov": "Lancaster County", "district": "At-large"},
+    "LANCASTER COUNTY ATTORNEY COUNTY ATTORNEY": {"office": "County Attorney", "gov": "Lancaster County"},
+    "LEGISLATURE 15 15": {"office": "State senator", "gov": "Nebraska Legislature", "district": "15"},
+    SARPY COUNTY ASSESSOR COUNTY ASSESSOR
+    LANCASTER COUNTY TREASURER COUNTY TREASURER
+    "KEARNEY CITY COUNCIL CITY COUNCIL": {"office": "City council member", "gov": "Kearney"},
+    "SEWARD COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Seward County"},
+    "STATE BOARD OF EDUCATION 08 08": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "8"},
+    "STATE BOARD OF EDUCATION 07 07": {"office": "State Board of Education member", "gov": "State of Nebraska", "district": "7"},
+    "CASS COUNTY COMMISSIONER DIST. #02 COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Cass County", "district": "2"},
+    "CHEYENNE COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Cheyenne County"},
+    "WASHINGTON COUNTY SUPERVISOR DISTRICT #04 COUNTY SUPERVISOR DISTRICT #04": {"office": "County Board member", "gov": "Washington County", "district": "4"},
+    "CASS COUNTY COMMISSIONER DIST. #04 COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Cass County", "district": "4"},
+    "LEGISLATURE 49 49": {"office": "State senator", "gov": "Nebraska Legislature", "district": "49"},
+    "CASS COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Cass County", "district": "1"},
+    "LEGISLATURE 09 09": {"office": "State senator", "gov": "Nebraska Legislature", "district": "9"},
+    "LANCASTER COUNTY COMMISSIONER DIST. #04 COUNTY COMMISSIONER DIST. #04": {"office": "County Board member", "gov": "Lancaster County", "district": "4"},
+    HASTINGS SCHOOL BOARD SCHOOL BOARD
+    "BEATRICE MAYOR MAYOR": {"office": "Mayor", "gov": "Beatrice"}, 
+    "PLATTE COUNTY SUPERVISOR DISTRICT #06 COUNTY SUPERVISOR DISTRICT #06": {"office": "County Board member", "gov": "Platte County", "district": "6"},
+    LINCOLN SCHOOL BOARD - DIST 06 SCHOOL BOARD - DIST 06
+    METROPOLITAN COMMUNITY COLLEGE DISTRICT #02 DISTRICT #02
+    DAKOTA COUNTY TREASURER COUNTY TREASURER
+    "OMAHA CITY COUNCIL DISTRICT #01 CITY COUNCIL DISTRICT #01": {"office": "City council member", "gov": "Omaha", "district": "1"},
+    "DOUGLAS COUNTY COMMISSIONER DIST. #07 COUNTY COMMISSIONER DIST. #07": {"office": "County Board member", "gov": "Douglas County", "district": "7"},
+    "SARPY COUNTY ENGINEER/SURVEYOR COUNTY ENGINEER/SURVEYOR": {"office": "County Engineer", "gov": "Sarpy County"},
+    "SEWARD COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Seward County", "district": "1"},
+    OMAHA OMAHA SCHOOL BOARD - DIST 09 OMAHA SCHOOL BOARD - DIST 09
+    "PAPILLION MAYOR MAYOR": {"office": "Mayor", "gov": "Papillion"},
+    "SEWARD MAYOR MAYOR": {"office": "Mayor", "gov": "Seward"},
+    "NORFOLK CITY COUNCIL CITY COUNCIL": {"office": "City council member", "gov": "Norfolk"},
+    "MADISON COUNTY PUBLIC DEFENDER COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Madison County"},
+    DAWSON COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    SCOTTS BLUFF COUNTY TREASURER COUNTY TREASURER
+    "DAWSON COUNTY REGISTER OF DEEDS COUNTY REGISTER OF DEEDS": {"office": "Register of Deeds", "gov": "Dawson County"},
+    OMAHA SCHOOL BOARD DISTRICT #06 SCHOOL BOARD DISTRICT #06
+    BOX BUTTE COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    KNOX COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    "DODGE COUNTY CLERK COUNTY CLERK": {"office": "County Clerk", "gov": "Dodge County"},
+    "LANCASTER COUNTY ENGINEER/SURVEYOR COUNTY ENGINEER/SURVEYOR": {"office": "County Engineer", "gov": "Lancaster County"},
+    OMAHA SCHOOL BOARD DISTRICT #08 SCHOOL BOARD DISTRICT #08
+    "OMAHA CITY COUNCIL DISTRICT #04 CITY COUNCIL DISTRICT #04": {"office": "City council member", "gov": "Omaha", "district": "4"},
+    "PLATTE COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Platte County"},
+    SARPY COUNTY CLERK OF DISTRICT COURT COUNTY CLERK OF DISTRICT COURT
+    "PLATTE COUNTY CLERK COUNTY CLERK": {"office": "County Clerk", "gov": "Platte County"},
+    "LINCOLN COUNTY COMMISSIONER DIST. #01 COUNTY COMMISSIONER DIST. #01": {"office": "County Board member", "gov": "Lincoln County", "district": "1"},
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #01 SUBDISTRICT #01
+    OMAHA BOARD OF EDUCATION DIST. #02 BOARD OF EDUCATION DIST. #02
+    "LANCASTER COUNTY PUBLIC DEFENDER COUNTY PUBLIC DEFENDER": {"office": "Public Defender", "gov": "Lancaster County"},
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #10 SUBDISTRICT #10
+    "BUTLER COUNTY SHERIFF COUNTY SHERIFF": {"office": "Sheriff", "gov": "Butler County"},
+    "GRAND ISLAND CITY COUNCIL 2ND WARD CITY COUNCIL 2ND WARD": {"office": "City council member", "gov": "Grand Island", "district": "2"},
+    MILLARD SCHOOL BOARD AT LARGE SCHOOL BOARD AT LARGE
+    "GERING MAYOR MAYOR": {"office": "Mayor", "gov": "Gering"},
+    NATURAL RESOURCE DISTRICT SUBDISTRICT #08 SUBDISTRICT #08
+    "CHADRON CITY COUNCIL CITY COUNCIL": {"office": "City council member", "gov": "Chadron"},
+    KEARNEY BOARD OF EDUCATION #07 BOARD OF EDUCATION #07
+    "FRANKLIN FRANKLIN FRANKLIN": {"office": "School board member", "gov": "Franklin Public Schools"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #02 SUBDIVISION #02
+    OMAHA SCHOOL BOARD DISTRICT #10 SCHOOL BOARD DISTRICT #10
+    SCOTTS BLUFF SCHOOL BOARD SCHOOL BOARD
+    "HALL COUNTY CLERK COUNTY CLERK": {"office": "County Clerk", "gov": "Hall County"},
+    "KEITH COUNTY COMMISSIONER DIST. #02 COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Keith County", "district": "2"},
+    NEBRASKA PUBLIC POWER DISTRICT SUBDIVISION #07 SUBDIVISION #07
+    LINCOLN SCHOOL BOARD - DIST 04 SCHOOL BOARD - DIST 04
+    "LANCASTER COUNTY COMMISSIONER DIST. #02 COUNTY COMMISSIONER DIST. #02": {"office": "County Board member", "gov": "Lancaster County", "district": "2"},
+    WESTSIDE COMMUNITY SCHOOLS BOARD OF ED MEMBER MEMBER
+}
+"""
 SHITDATES = {
     "2021-09-26": "2012-09-26",
     "2096-05-09": "1996-05-09",
@@ -274,8 +797,44 @@ SHITDATES = {
 SHITCOMMITTEES = ["99IRC00020", "08PAC00154"]
 
 SHITSTRINGS = [
-    ("(DISSOLVED)", ""),
-    ("(NOW-MCCOY FOR GOV)", ""),
-    ("- NOW LEGISLATURE)", ""),
+    ("(NOW-MCCOY FOR GOV)", "(NOW MCCOY FOR GOVERNOR)"),
+    ("- NOW LEGISLATURE)", "(NOW LEGISLATURE)"),
     ("T #37)", ""),
+    ("(FKA JIM SUTTLE FOR OMAHA MAYOR)(D","(JIM SUTTLE FOR OMAHA MAYOR)"),
+    ("(LEGISLATURE DISSOLVED)", "(LEGISLATURE)"),
+    ("(FOR LEGISLATURE DISSOLVED)", "(FOR LEGISLATURE)"),
+    ("(NOW FOR GOVERNOR)", "(NOW GOVERNOR)"),
+    ("MARY (68154) BARRETT", "MARY BARRETT"),
+    ("MARY (68114) BARRETT", "MARY BARRETT"),    
+    ("NE STATE AFL - CIO", "NE STATE AFL-CIO"),
+    ("(NR)", ""),
+    ("&#39;","'"),
+    ("&AMP;","&"),
+    ("INC.", ""),
+    ("(DONT USE)",""),
+    ("(NOT REGISTERED)", ""),
+    ("(NOT REGISTERED(",""),
+    ("(DISSOLVED 2011)",""),
+    ("(DISSOLVED 6-27-14)",""),
+    ("HAL (68114) DAUB","HAL DAUB"),
+    ("ROBERT (68114) BATES","ROBERT BATES"),
+    ("L. STEVE GRASZ","STEVE GRASZ"),
+    ("JOHN (540910) LUCKASEN","JOHN LUCKASEN"),
+    ("FRANCES (68114) BLUMKIN","FRANCES BLUMKIN"),
+    ("(DISSOLVED 2008-12-11)",""),
+    ("CO-SPO;NSOR","COSPONSOR"),
+    ("GOVERNOR;S","GOVERNOR'S"),
+    ("(DISSOLVED LEGISLATURE)",""),
+    ("(DISSOLVED 2012)",""),
+    ("(DISSOLVED)", ""),
+    ("(DISSOVED)",""),
+    ("(DISSOLVED",""),
+    ("(DISSOLVE",""),
+    ("(DISSOLV",""),
+    ("(DISSOL",""),
+    ("(DISSO",""),
+    ("(DISS",""),
+    ("(DIS",""),
+    ("(DI",""),
+    ("(D",""),    
 ]

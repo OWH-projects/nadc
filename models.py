@@ -42,6 +42,7 @@ class Candidate(models.Model):
     office_desc = models.CharField(max_length=30, null=True, blank=True)
     donor_id = models.CharField(max_length=30, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
+    election_date = models.DateField(null=True, blank=True)
 
 class Loan(models.Model):
     committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lendee")
@@ -59,7 +60,10 @@ class Loan(models.Model):
     
 class Expenditure(models.Model):
     committee = models.ForeignKey(Entity, related_name="committee_exp", null=True, blank=True) # (optional) committee doing the expending
-    payee_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_payee") # (optional) committee receiving the expenditure
+    target_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_target_committee") # (optional) target committee, either being supported or opposed
+    target_candidate = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_target_candidate")
+    raw_target = models.CharField(max_length=100, null=True, blank=True) #(optional) raw text of target candidate or committee, to get sent to target_committee or target_candidate on save.
+    payee_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_payee") #(optional) if group being paid has an id, it goes here
     payee = models.CharField(max_length=70, null=True, blank=True)
     payee_addr = models.CharField(max_length=70)
     exp_date = models.DateField()
@@ -69,7 +73,16 @@ class Expenditure(models.Model):
     stance = models.CharField(max_length=10, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     committee_exp_name = models.CharField(max_length=200, null=True, blank=True)
+    def save(self):
+        if len(self.raw_target) > 0:
+            if Entity.objects.filter(nadcid=str(self.raw_target)).count() > 0:
+                self.target_committee = Entity.objects.filter(nadcid=str(self.raw_target))[0]
+            if Candidate.objects.filter(cand_id=str(self.raw_target)).count() > 0:
+                self.target_candidate = Candidate.objects.filter(cand_id=str(self.raw_target))[0]
+        super(Expenditure, self).save()
+
     
+
 class Ballot(models.Model):
     nadcid = models.ForeignKey(Entity)
     ballot = models.CharField(max_length=80)

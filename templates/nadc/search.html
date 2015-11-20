@@ -15,10 +15,15 @@
 {% if candidate_results or entity_results %}
 <h3>Search results for '{{ query }}'</h3>
 
+
+{% if candidate_results %}
+{% with candidate_results|first as candname %}
+It looks like someone with a similar name has run for office. You may be looking for <a href="/campaign-finance/{{ candname.cand_id }}/{{ candname.cand_name|slugify }}">{{ candname.cand_name|title }}</a>, who ran for {% endwith %}
+{% for match in candidate_results %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ match.office_desc|title }}{% endfor %}. 
+{% endif %}
+
+
 <ul>
-{% for match in candidate_results %}
-<li><a href="/campaign-finance/{{ match.cand_id }}/{{ match.cand_name|slugify }}">{{ match.cand_name|title }} (Candidate for {{ match.office_sought|title }} {{ match.office_desc|title }})</a>
-{% endfor %}
 {% for match in entity_results %}
 <li><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></li>
 {% endfor %}
