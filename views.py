@@ -34,89 +34,6 @@ def Coverage(request):
     dictionaries = {}
     return render_to_response('nadc/coverage.html', dictionaries)
 
-
-
-#This needs to be checked to ensure it rolls in candidate and ballotQs everywhere needed
-def AdvancedSearch(request):
-    if request.method == 'POST':
-        mainform = AdvancedSearchForm(request.POST)
-        if mainform.is_valid():
-            donor = mainform.cleaned_data['donor_name']
-            donor_exploded = donor.split(" ")
-            recipient = mainform.cleaned_data['recipient_name']
-            recipient_exploded = recipient.split(" ")
-            donor_city = mainform.cleaned_data['donor_city']
-            recipient_city = mainform.cleaned_data['recipient_city']
-            giver_zip = mainform.cleaned_data['giver_zip']
-            recipient_zip = mainform.cleaned_data['recipient_zip']
-            expenditure_description = mainform.cleaned_data['expenditure_description']
-            exp_exploded = expenditure_description.split(" ")
-            donations_check = mainform.cleaned_data['donations']
-            loans_check = mainform.cleaned_data['loans']
-            from_amount = mainform.cleaned_data['from_amount']
-            to_amount = mainform.cleaned_data['to_amount']
-            expenditures_check = mainform.cleaned_data['expenditures']
-
-            if donations_check == True:
-                donation_qs = Q()
-                for term in donor_exploded:
-                    donation_qs &= Q(donor__standard_name__icontains=term) | Q(donor__candidate_detail__cand_name__icontains=term) | Q(donor__name__icontains=term)
-                for term in recipient_exploded:
-                    donation_qs &= Q(recipient__standard_name__icontains=term) | Q(recipient__candidate_detail__cand_name__icontains=term) | Q(recipient__name__icontains=term)
-                
-
-            if expenditures_check == True:
-                expenditure_qs = Q()
-                expterm_qs = Q()
-                for term in donor_exploded:
-                    expenditure_qs &= Q(committee__standard_name__icontains=term) | Q(payee__icontains=term) | Q(committee_exp_name__icontains=term)
-                for term in exp_exploded:
-                    expterm_qs &= Q(exp_purpose__icontains=term)
-
-            if loans_check == True:
-                loan_qs = Q()
-                for term in donor_exploded:
-                    loan_qs &= Q(lender_name__icontains=term) | Q(lending_committee__standard_name__icontains=term) | Q(lending_committee__candidate_detail__cand_name__icontains=term)
-                for term in recipient_exploded:
-                    loan_qs &= Q(committee__standard_name__icontains=term) | Q(committee__candidate_detail__cand_name__icontains=term)
-
-            if mainform.cleaned_data['from_date']:
-                from_date = mainform.cleaned_data['from_date']
-            else:
-                from_date = '1995-01-01'
-
-            if mainform.cleaned_data['to_date']:
-                to_date = mainform.cleaned_data['to_date']
-            else:
-                to_date = '2015-12-01'
-
-            if donations_check == True:
-                if donor or recipient:
-                    donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date).filter(donor__city__icontains=donor_city).filter(recipient__city__icontains=recipient_city).filter(donor__zip__icontains=giver_zip).filter(recipient__zip__icontains=recipient_zip).filter(Q(cash__gte=from_amount) | Q(inkind__gte=from_amount))
-                else:
-                    donations = Donation.objects.filter(donation_date__gte=from_date).filter(donation_date__lte=to_date).filter(donor__city__icontains=donor_city).filter(recipient__city__icontains=recipient_city).filter(donor__zip__icontains=giver_zip).filter(recipient__zip__icontains=recipient_zip).filter(Q(cash__gte=from_amount) | Q(inkind__gte=from_amount))
-            else:
-                donations = []
-            
-            if expenditures_check == True:
-               expenditures = Expenditure.objects.filter(expenditure_qs).filter(exp_date__gte=from_date).filter(exp_date__lte=to_date).filter(expterm_qs).filter(payee_addr__icontains=recipient_city).filter(payee_addr__icontains=recipient_zip).filter(amount__gte=from_amount).filter(amount__lte=to_amount)
-            else:
-               expenditures = []
-
-            if loans_check == True:
-               loans = Loan.objects.filter(loan_qs).filter(loan_date__gte=from_date).filter(loan_date__lte=to_date).filter(loan_amount__lte=to_amount).filter(loan_amount__gte=from_amount).filter(lender_addr__icontains=donor_city).filter(lender_addr__icontains=giver_zip)
-            else:
-               loans = []
-            dictionaries = {'loans': loans, 'expenditures': expenditures, 'donations':donations, 'mainform':mainform,}
-            return render(request, 'nadc/advancedsearch.html', dictionaries)
-        else:
-            dictionaries = { 'mainform':mainform }
-            return render(request, 'nadc/advancedsearch.html', dictionaries)
-    else:
-        mainform = AdvancedSearchForm()
-        dictionaries = { 'mainform':mainform }
-        return render(request, 'nadc/advancedsearch.html', dictionaries)
-
 def Search(request):
     query = request.GET.get('q', '')
     exploded = query.split(" ")
@@ -137,57 +54,6 @@ def Search(request):
 
     dictionaries = { 'entity_results': entity_results, 'candidate_results': candidate_results, 'query': query, }
     return render_to_response('nadc/search.html', dictionaries)    
-
-
-
-#def Search(request):
-#    if request.method == 'POST':
-#        mainform = SearchForm(request.POST)
-#        if mainform.is_valid():
-#            rawsearch = mainform.cleaned_data['searchterm']
-#            rawsearch_exploded = rawsearch.split(" ")
-#
-#            expenditure_qs = Q()
-#            for term in rawsearch_exploded:
-#                expenditure_qs.add((
-#                Q(payee__icontains=term) |
-#                Q(committee__standard_name__icontains=term) |
-#                Q(payee_committee__standard_name__icontains=term)),
-#                expenditure_qs.connector)                
-#
-#            loan_qs = Q()
-#            for term in rawsearch_exploded:    
-#                loan_qs.add((
-#                Q(lender_name__icontains=term) |
-#                Q(committee__standard_name__icontains=term)),
-#                loan_qs.connector)
-#
-#            donation_qs = Q()
-#            for term in rawsearch_exploded:
-#                donation_qs.add((
-#                Q(donor__standard_name__icontains=term) | 
-#                Q(recipient__standard_name__icontains=term)), 
-#                donation_qs.connector)
-#
-#            if mainform.cleaned_data['from_date']:
-#                from_date = mainform.cleaned_data['from_date']
-#            else:
-#                from_date = '1995-01-01'
-#            if mainform.cleaned_data['to_date']:
-#                to_date = mainform.cleaned_data['to_date']
-#            else:
-#                to_date = '2015-12-01'
-#
-#            donations = Donation.objects.filter(donation_qs).filter(donation_date__gte=from_date).filter(donation_date__lte=to_date)
-#            expenditures = Expenditure.objects.filter(expenditure_qs).filter(exp_date__gte=from_date).filter(exp_date__lte=to_date)
-#            loans = Loan.objects.filter(loan_qs).filter(loan_date__gte=from_date).filter(loan_date__lte=to_date)
-#            dictionaries = {'loans': loans, 'expenditures': expenditures, 'donations':donations, 'rawsearch':rawsearch, 'mainform':mainform,}
-#            return render(request, 'nadc/advancedsearch.html', dictionaries)
-#    else:
-#        mainform = SearchForm()
-#    dictionaries = { 'mainform':mainform }
-#    return render(request, 'nadc/search.html', dictionaries)
-
     
 def EntityPage(request, id):
 
@@ -274,9 +140,9 @@ def EntityPage(request, id):
             
         # Expenditures
         try:
-            normal_expenditures = Expenditure.objects.filter(committee=id).filter(payee_committee="").order_by('-exp_date')
+            normal_expenditures = Expenditure.objects.filter(committee=id).filter(raw_target="").order_by('-exp_date')
             normal_spent = normal_expenditures.aggregate(Sum("amount"))
-            ind_expenditures = Expenditure.objects.filter(committee=id).exclude(payee_committee="").order_by('-exp_date')
+            ind_expenditures = Expenditure.objects.filter(committee=id).exclude(raw_target="").order_by('-exp_date')
             ind_spent = ind_expenditures.aggregate(Sum("amount"))
         except:
             normal_expenditures = []

@@ -1,3 +1,0 @@
-Fabric==1.10.2
-pandas==0.16.2
-Csvkit==0.9.1

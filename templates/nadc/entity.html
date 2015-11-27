@@ -6,7 +6,7 @@
 {% block title %}{% endblock %}
 
 {% block morestyles %}
-<link rel="stylesheet" href="/static/nadc/donor.css">
+    <link rel="stylesheet" href="/static/nadc/entity.css">
 {% endblock %}
 
 {% block content %}
@@ -15,10 +15,10 @@
 
 <br><br><br>
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.cand_name }}{% endif %}</b></h1>
-{% if name.city and name.state %}<h4>{{ name.city|title }}, {{ name.state }} {{ name.zip }}</h4>{% endif %}
+{% if name.city and name.state %}<h4>{{ name.city|title }}, {{ name.state }}</h4>{% endif %}
 {% if name.dissolved_date %}<h4>(Committee dissolved in {{ name.dissolved_date|date:"o" }}</h4>{% endif %}
 {% if name.employer or name.occupation or name.place_of_business %}<h4>{{ name.occupation|title }} at {{ name.employer|title }}, {{ name.place_of_business|title }}</h4>{% endif %}
-{% if gets %}<h4><a href="http://www.nadc.nebraska.gov/ccdb/search.cgi?page=details&type=committee&IDNO={{ name.nadcid }}" target="_blank">Official NADC listings</a></h4>{% endif %}
+{% if gets %}<h4><a href="http://www.nadc.nebraska.gov/ccdb/search.cgi?page=details&type=committee&IDNO={{ name.nadcid }}" target="_blank">Official NADC records</a></h4>{% endif %}
 
 
 {% if gives %}
@@ -41,12 +41,6 @@
 <h3 class="bold" style="margin-bottom:0;">${{ totalborrowed.loan_amount__sum|intcomma }}</h3>
 <p class="small ital">BORROWED</p>
 {% endif %}
-
-
-
-
-
-
 
 {% comment %}
 {% if comm_candidates %}
@@ -86,8 +80,10 @@
 
 	<h3>Top donors</h3>
 		
-    {% if groupedgets.count > 5 %}<div id="getspiechart" style="width: 900px; height: 500px;"></div>{% endif %}
-	
+    {% if groupedgets.count > 5 %}
+    
+    <div id="getspiechart" style="width: 900px; height: 500px;"></div>
+    {% endif %}
 	
 	<table class="table table-condensed">
 		<thead>
@@ -100,7 +96,7 @@
 
 		{% for donation in groupedgets %}
 			<tr>
-				<td><a href="/campaign-finance/{{ donation.donor__nadcid }}/{{ donation.donor__name|slugify }}">{{ donation.donor__name|title }}</a></td>
+				<td><a href="/campaign-finance/{{ donation.donor__canonical }}/{{ donation.donor__standard_name|slugify }}">{{ donation.donor__standard_name|title }}</a></td>
 				<td class="r">${{ donation.total|intcomma }}</td>
 			</tr>
 		{% endfor %}
@@ -115,7 +111,9 @@
 	<h2>GIVES</h2>
 	
 	<h3>Top committees supported</h3>
-	
+    
+    <div id="gives_chart_div"></div>
+    
     {% if groupedgives.count > 5 %}<div id="givespiechart" style="width: 900px; height: 500px;"></div>{% endif %}
     
 	<div id="timeline" style="width:100%;height:300px"></div>
@@ -257,10 +255,18 @@
 	
 {% endif %}
 
+<script type="text/html" class="gives_chart_template">
 
-<tr>
+Top five: $<%= sum(_.pluck(applejack.topfive, "sum")) %>
+Rest: $<%= applejack.rest.tot %><br>
 
 
+
+
+<% _.each( applejack.topfive, function( d ){ %>    
+    
+<% }); %>
+</script>
 
 
 {% endblock %}
@@ -271,8 +277,42 @@
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
 
-    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    _.templateSettings.variable = "applejack";
 
+    var sum = function(ls) {
+        return _.reduce(ls, function(memo, num){ return memo + num; }, 0);
+    };
+    
+    {% if gives %}
+    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"o-m-d" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    
+    var gives_out = _.chain(gives)
+        .groupBy("recipient_id")
+        .map(function(value, key) {
+            return {
+                id: key,
+                sum: sum(_.pluck(value, "cash")),
+                name: _.pluck(value, "recipient_name")[0],
+                gives: value
+            }
+        })
+        .sortBy("sum").reverse()
+        .value();
+
+        
+    var gives_for_chart = {
+        topfive: _.first(gives_out, 5),
+        rest: {
+                num: gives_out.length - 5,
+                tot: sum(_.pluck(gives, "cash")) - sum(_.pluck(this.topfive, "sum"))
+        }
+    };
+    
+    var template = _.template($( "script.gives_chart_template" ).html());
+    $('#gives_chart_div').html(template(gives_for_chart));
+   
+
+   
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
@@ -293,8 +333,9 @@
 
         chart.draw(data, options);
       }
-</script>
-<script type="text/javascript">
+    {% endif %}
+      
+      {% if gets %}
       var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.nadcid }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
@@ -317,12 +358,10 @@
 
         chart.draw(data, options);
       }
-    </script>
+      {% endif %}
 
+      
 
-
-
-<script type="text/javascript">
 var timelinegives = [
 {% for row in allgives %}
     [{{ forloop.counter }}, {{ row.total }}]{% if not forloop.last %},{% endif %}

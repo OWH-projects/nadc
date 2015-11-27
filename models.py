@@ -18,6 +18,8 @@ class Entity(models.Model):
     employer = models.TextField(null=True, blank=True)
     place_of_business = models.TextField(null=True, blank=True)
     dissolved_date = models.DateField(null=True, blank=True)
+    registered_date = models.DateField(null=True, blank=True)
+
 
 class Donation(models.Model):
     donor = models.ForeignKey(Entity, related_name="giver", null=True, blank=True)
@@ -37,12 +39,11 @@ class Candidate(models.Model):
     cand_name = models.CharField(max_length=70, null=True, blank=True)
     stance = models.CharField(max_length=2, null=True, blank=True)
     committee = models.ForeignKey(Entity, related_name="candidate_detail")
-    office_sought = models.CharField(max_length=30, null=True, blank=True)
-    office_title = models.CharField(max_length=30, null=True, blank=True)
-    office_desc = models.CharField(max_length=30, null=True, blank=True)
+    office_govt = models.CharField(max_length=100, null=True, blank=True)
+    office_title = models.CharField(max_length=100, null=True, blank=True)
+    office_dist = models.CharField(max_length=100, null=True, blank=True)
     donor_id = models.CharField(max_length=30, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
-    election_date = models.DateField(null=True, blank=True)
 
 class Loan(models.Model):
     committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lendee")
@@ -61,7 +62,7 @@ class Loan(models.Model):
 class Expenditure(models.Model):
     committee = models.ForeignKey(Entity, related_name="committee_exp", null=True, blank=True) # (optional) committee doing the expending
     target_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_target_committee") # (optional) target committee, either being supported or opposed
-    target_candidate = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_target_candidate")
+    target_candidate = models.ForeignKey(Candidate, null=True, blank=True, related_name="committee_target_candidate")
     raw_target = models.CharField(max_length=100, null=True, blank=True) #(optional) raw text of target candidate or committee, to get sent to target_committee or target_candidate on save.
     payee_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_payee") #(optional) if group being paid has an id, it goes here
     payee = models.CharField(max_length=70, null=True, blank=True)
