@@ -6,7 +6,7 @@
 {% block title %}{% endblock %}
 
 {% block morestyles %}
-    <link rel="stylesheet" href="/media/nadc/entity.css">
+    <link href="{% static "nadc/entity.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -395,7 +395,7 @@ Loans
 
 
 {% block scripts %}
-<script src="/media/scripts/owh-utils.js"></script>
+<script src="http://www.dataomaha.com/media/scripts/owh-utils.js"></script>
 <script>
     
     // set template variable
