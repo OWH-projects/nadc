@@ -20,7 +20,6 @@ class Entity(models.Model):
     dissolved_date = models.DateField(null=True, blank=True)
     registered_date = models.DateField(null=True, blank=True)
 
-
 class Donation(models.Model):
     donor = models.ForeignKey(Entity, related_name="giver", null=True, blank=True)
     recipient = models.ForeignKey(Entity, related_name="getter", null=True, blank=True)
@@ -44,6 +43,17 @@ class Candidate(models.Model):
     office_dist = models.CharField(max_length=100, null=True, blank=True)
     donor_id = models.CharField(max_length=30, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
+    govslug = models.CharField(max_length=100, null=True, blank=True)
+    def display_office(self):
+        if len(self.office_dist) > 0:
+            return "%s, %s" % (self.office_title, self.office_dist)
+        else:
+            return "%s" % (self.office_title)
+
+    def save(self):
+        self.govslug = '%s' % slugify(self.office_govt)
+        print self.govslug
+        super(Candidate, self).save()
 
 class Loan(models.Model):
     committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lendee")
@@ -82,7 +92,14 @@ class Expenditure(models.Model):
                 self.target_candidate = Candidate.objects.filter(cand_id=str(self.raw_target))[0]
         super(Expenditure, self).save()
 
-    
+#This table stores information we want on people that does not exist in the database. Therefore, it's divorced from the normal database structure, with relationships that aren't defined explicitly in the data. Instead, they are handled through views. 
+#Yes. This is gross.
+class AdditionalInfo(models.Model):
+    canonical = models.CharField(max_length=20, null=True, blank=True) #The canonical_id in the Entity table
+    candidate = models.CharField(max_length=20, null=True, blank=True) #The candidate_id in the Candidate table
+    mugshot = models.FileField(upload_to="nadc/mugs/")
+    title = models.CharField(max_length=120)
+    description = models.TextField(null=True, blank=True)
 
 class Ballot(models.Model):
     nadcid = models.ForeignKey(Entity)
@@ -90,7 +107,7 @@ class Ballot(models.Model):
     ballot_type = models.CharField(max_length=5)
     stance = models.CharField(max_length=10, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
-    
+
 class SearchForm(forms.Form):
     searchterm = forms.CharField(label="Search term", max_length=75)
     from_date = forms.DateField(label="From date", required=False)
@@ -113,3 +130,4 @@ class AdvancedSearchForm(forms.Form):
     from_amount = forms.IntegerField(label="Minimum $", required=False, initial=0)
     to_amount = forms.IntegerField(label="Maxamim $", required=False, initial=2000000)
 
+    

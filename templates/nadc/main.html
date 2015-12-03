@@ -7,7 +7,6 @@
 {% block morestyles %}
 <style>
 #chart { width: 100%; height: 250px; margin-bottom:30px;}
-h3 { margin-top:0px; }
 .item { margin-bottom:40px; }
 </style>
 {% endblock %}
@@ -18,7 +17,8 @@ h3 { margin-top:0px; }
     <div class="container">
 		<p class="sf">c</p>
         <h1 class="bold">Some catchy hed here</h1>
-        <p>A search engine for Nebraska campaign finance records<br>Explore {{ DONATION_TOTAL|intcomma }} contributions to political causes since <span class="minyear"></span><br>Data updated: {{ LAST_UPDATED|date:"N j, Y" }}</p>
+        <p>A search engine for Nebraska campaign finance</p>
+        <p class="ital" style="font-size:100%">Data updated {{ LAST_UPDATED|date:"N j, Y" }}</p>
     </div>
 </div>
 
@@ -31,19 +31,77 @@ h3 { margin-top:0px; }
             <div id="chart"></div>
         </div>
         
+        <div id="thisistrash" class="item">
+        I'm just shoehorning all these elements here<p>
+            Monthly donations, past year
+            <ul>
+            Total donations in past 30 days: ${{ last30donationstotal.totes|intcomma }}
+            {% for month in monthlydonations %}
+            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
+            {% endfor %}
+            </ul>
+        <br>
+            Monthly expenditures, past year
+            <ul>
+            Total dark money, past 30 days: ${{ last30expenditurestotal.totes|intcomma }}
+            {% for month in monthlyexpenditures %}
+            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
+            {% endfor %}
+            </ul>
+        <br>
+        
+        
+        
+        </div>
+        
         <div id="recentdonors" class="item">
-            <h3>All donations, last 30 days</h3>
-            {% if recentdonations.count > 0 %}
-            <table class="table">
-                <thead><td>Date</td><td>Recipient</td><td>Donor</td><td>Amount</td></thead>
-                {% for thing in recentdonations %}{% if thing.pledge == 0 %}<tr>
-                    <td>{{ thing.donation_date }}</td>
-                    <td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
-                    <td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
+            <h3 class="bold">Top donations, past 30 days</h3>
+            {% if toplast30donations.count > 0 %}
+            <table class="table tablesorter" id="#recentTable">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Recipient</th>
+                    <th>Donor</th>
+                    <th>Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for thing in toplast30donations %}{% if thing.pledge == 0 %}<tr>
+                    <td><span class="hidden">{{ thing.donation_date|date:"Y-m-d" }}</span>{{ thing.donation_date }}</td>
+                    <td class="bold"><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
+                    <td class="bold"><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
                     <td>${{ thing.totes|intcomma }}</td>
-                </tr>{% endif %}{% endfor %}
+                </tr>
+                {% endif %}{% endfor %}
+                </tbody>
             </table>
-            {% else %}No donations from the last 30 days have been reported{% endif %}
+            {% else %}No donations were reported in the past 30 days.{% endif %}
+        </div>
+        
+        <div id="recentexpenditures" class="item">
+            <h3 class="bold">Top dark money, past 30 days</h3>
+            {% if toplast30expenditures.count > 0 %}
+            <table class="table tablesorter" id="#recentTable">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Sponsor</th>
+                    <th>Target</th>
+                    <th>Amount</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for thing in toplast30expenditures %}<tr>
+                    <td><span class="hidden">{{ thing.exp_date|date:"Y-m-d" }}</span>{{ thing.exp_date }}</td>
+                    <td class="bold"><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
+                    <td class="bold">{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}</td>
+                    <td>${{ thing.totes|intcomma }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% else %}No donations were reported in the past 30 days.{% endif %}
         </div>
       
         <div id="topdonors" class="item">
@@ -76,8 +134,21 @@ h3 { margin-top:0px; }
         
         </div>
     <div class="col-md-4">
+            <div class="sticky" style="margin-bottom:20px;">
+            <h3 class="bold">
+            <i class="fa fa-mouse-pointer"></i> What is this?</h3>
+            <p>Who's influencing Nebraska politics? Find out using the only source the lets you search political donations and spending by the people bankrolling the process. Explore <strong>{{ DONATION_TOTAL|intcomma }}</strong> contributions to political causes in Nebraska since <span class="minyear"></span>.</p>
+            <p><a href="/campaign-finance/about">Learn more about this data &raquo;</a></p>
+            </div>    
             {% returnsearch %}
-            <p class="small pull-right"><a href="/campaign-finance/about">About this data</a></p>
+            <div class="well">
+            <h3 class="bold" style="margin-top:0;"><i class="fa fa-users"></i> Select a place</h3>
+            <select class="form-control input-lg" onchange="if (this.value) window.location.href=this.value">
+            {% for govt in governments %}
+            <option value="campaign-finance/{{ govt.office_govt|slugify }}">{{ govt.office_govt }}</option>
+            {% endfor %}
+            </select>
+            </div>
         </div>
     </div>
 </div>
@@ -85,9 +156,9 @@ h3 { margin-top:0px; }
 {% endblock %}
 
 {% block scripts %}
-<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.min.js"></script>
-<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
+<script src="http://dataomaha.com/media/scripts/tablesorter/jquery.tablesorter.min.js"></script>
 <script>
+
     var getYear = function(y) {
         return new Date(y, 0, 1).getTime();
     };
@@ -107,6 +178,8 @@ h3 { margin-top:0px; }
     var formatter = function(val, axis) {
         return '$' + addCommas(val);
     };
+    
+    var recent = []
     
     var by_year = [{% for dude in byyear %}{"year":{{ dude.donation_year }}, "sum":{{ dude.sum }}}{% if not forloop.last %},{% endif %}{% endfor%}];
 
@@ -152,8 +225,27 @@ h3 { margin-top:0px; }
         });
     };
 
+    
+    $.tablesorter.addParser({ 
+        id: 'currency',
+        is: function(s) {
+            return false;
+        }, 
+        format: function(s) {
+            return s.replace('$','').replace(/,/g,'');
+        },
+        type: 'numeric' 
+    }); 
+    
     $(document).ready(function() {
         chartIt();
+        $(".tablesorter").tablesorter({
+            headers: {
+                3: {
+                    sorter: 'currency'
+                }
+            }
+        });
     });
         
     window.onresize = function() {
@@ -162,14 +254,14 @@ h3 { margin-top:0px; }
 
         var $tw = $('#tw');
         var $fb = $('#fb');
-        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL }} Nebraska campaign finance records since {{ MIN_YEAR }} SOME YEAR: http://www.dataomaha.com/campaign-finance");
+        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL|intcomma }} Nebraska campaign finance records since " + minyear + ": http://www.dataomaha.com/campaign-finance");
         $tw.attr({
             'href': msg,
             'target': '_blank'
         });
         $fb.attr({
-            'href':'http://www.facebook.com/sharer.php?u=http://www.dataomaha.com/campaign-finance',
+            'href':'http://www.facebook.com/sharer.php?u=http://dataomaha.com/campaign-finance',
             'target': '_blank'           
-        });        
+        });
 </script>
 {% endblock %}

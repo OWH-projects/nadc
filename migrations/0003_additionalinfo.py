@@ -7,18 +7,18 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('nadc', '0014_entity'),
+        ('nadc', '0002_candidate_govslug'),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Ballot',
+            name='AdditionalInfo',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('ballot', models.CharField(max_length=80)),
-                ('ballot_type', models.CharField(max_length=80)),
-                ('stance', models.CharField(max_length=10, null=True, blank=True)),
-                ('nadcid', models.ForeignKey(to='nadc.Getter')),
+                ('canonical', models.CharField(max_length=20)),
+                ('mugshot', models.ImageField(upload_to=b'/home/omaha/webapps/media/nadc/mugs/')),
+                ('title', models.CharField(max_length=120)),
+                ('description', models.TextField(null=True, blank=True)),
             ],
         ),
     ]

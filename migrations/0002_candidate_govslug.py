@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('nadc', '0003_auto_20150930_1931'),
+        ('nadc', '0001_initial'),
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='donation',
-            old_name='date',
-            new_name='donation_date',
+        migrations.AddField(
+            model_name='candidate',
+            name='govslug',
+            field=models.CharField(max_length=100, null=True, blank=True),
         ),
     ]

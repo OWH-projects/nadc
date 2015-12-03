@@ -1,0 +1,37 @@
+{% extends 'nadc/base.html' %}
+{% load humanize %}
+{% load searchwidget %}
+
+{% block social %}{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-bottom:50px;">
+
+<div class="row">
+        <div class="col-md-8">
+        
+<div id="topdonors" class="item">
+<br><br><br>
+{% with candidates|first as singlerecord %}
+All candidates for {{ singlerecord.office_govt|title }} offices{% endwith %}
+
+{% regroup candidates by display_office as office_list %}
+
+{% for office in office_list %}
+<h3>{{ office.grouper|title }}</h3>
+{% for candidate in office.list %}
+<li><a href="/campaign-finance/{{ candidate.committee.canonical }}/{{ candidate.committee.standard_name|slugify }}">{{ candidate.cand_name|title }}</a></li>
+{% endfor %}
+{% endfor %}
+
+
+
+
+</div>
+</div>
+
+</div>
+{% returnsearch %}
+</div>
+{% endblock%}
+

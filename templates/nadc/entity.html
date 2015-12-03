@@ -6,7 +6,7 @@
 {% block title %}{% endblock %}
 
 {% block morestyles %}
-    <link rel="stylesheet" href="/static/nadc/entity.css">
+    <link rel="stylesheet" href="/media/nadc/entity.css">
 {% endblock %}
 
 {% block content %}
@@ -23,7 +23,7 @@
 
 {% if gives %}
 <h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|add:totalinkinddonated.inkind__sum|intcomma }}</h3>
-<p class="small ital">DONATED</p>
+<p class="small ital">CASH AND IN-KIND DONATIONS</p>
 {% endif %}
 {% if gets %}
 <h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|add:totalinkindreceived.inkind__sum|intcomma }}</h3>
@@ -67,20 +67,51 @@
 {% endcomment %}
 
 {% if person_candidates %}
-    <h4>{% for can in person_candidates %}{% if forloop.first %}{{ can.cand_name|title }}{% endif %}{% endfor %} ran for office {{ person_candidates.count|apnumber }} times.</h4>
+    <h4>{% for can in person_candidates %}{% if forloop.first %}{{ can.cand_name|title }}{% endif %}{% endfor %} ran for office {{ person_candidates.count|apnumber }} time{{ person_candidates.count|pluralize }}.</h4>
     {% for can in person_candidates %}
         <li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
     {% endfor %}
 {% endif %}
-   
+
 <p>{{ name.standard_name|title }} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donation{{ gives.count|pluralize }}{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contribution{{ gets.count|pluralize }} between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}It backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}<a href="/campaign-finance/{{ candidate.cand_id }}/{{ candidate.cand_name|slugify }}">{{ candidate.cand_name|title }}</a> for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}{% endif %}</p>
+
+
+
+<hr><hr>
+
+
+CLICK DUDER LINKS HERE:
+
+{% if gets %}
+Raised (active)
+{% endif %}
+
+{% if gives %}
+Donated
+{% endif %}
+
+{% if ind_expenditures or normal_expenditures %}
+Spent
+{% endif %}
+
+{% if loans %}
+Loans
+{% endif %}
+
+<div id="display_hed"></div>
+<div id="display_graphics"></div>
+<div id="display_table"></div>
+
+
+
+
 
 {% if gets %}
 	<h2>GETS</h2>
 
+    {% if groupedgets.count > 5 %}
 	<h3>Top donors</h3>
 		
-    {% if groupedgets.count > 5 %}
     
     <div id="getspiechart" style="width: 900px; height: 500px;"></div>
     {% endif %}
@@ -112,13 +143,13 @@
 	
 	<h3>Top committees supported</h3>
     
+    {% if groupedgives.count > 5 %}
     <div id="gives_chart_div"></div>
-    
-    {% if groupedgives.count > 5 %}<div id="givespiechart" style="width: 900px; height: 500px;"></div>{% endif %}
+    {% endif %}
     
 	<div id="timeline" style="width:100%;height:300px"></div>
 
-    <table>
+    <table class="table table-condensed">
 		<tbody>
 		{% for gift in groupedgives %}
 			<tr>
@@ -126,7 +157,6 @@
 				<td class="r">${{ gift.total|intcomma }}</td>
 			<tr>
 		{% endfor %}
-
 		</tbody>
 	</table>
 
@@ -160,28 +190,78 @@
 {% if ind_expenditures %}
 
 	<h2>POLITICAL SPENDING</h2>
+    <h4>Spending to support candidates or causes</h4>
 	<table class="table table-condensed">
 		<thead>
+            <th>Supporting</th>
 			<th>Paid to</th>
 			<th>For</th>
 			<th class="r">Date</th>
 			<th class="r">Amount</th>
 		</thead>
 		<tbody>
-		{% regroup ind_expenditures by stance as stance_list %}
-		{% for stance in stance_list %}
-        <tr>{{ stance.grouper }}</tr>
-        {% for exp in stance.list %}
+		{% for exp in ind_expenditures %}
+        {% if exp.stance == "0" %}
 			<tr>
+                <td>{% if exp.target_committee %}<a href="/campaign-finance/{{ exp.target_committee.pk }}/{{ exp.target_committee.standard_name|slugify }}">{{ exp.target_committee.standard_name|title }}</a>{% endif %}{% if exp.target_candidate %}<a href="/campaign-finance/{{ exp.target_candidate.pk }}/{{ exp.target_candidate.cand_name|slugify }}">{{ exp.target_candidate.cand_name }}</a>{% endif %}</td>
 				<td>{{ exp.payee|title }}</td>
 				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
 				<td class="r">{{ exp.exp_date }}</td>
 				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
 			</tr>
-		{% endfor %}
+        {% endif %}
         {% endfor %}
 		</tbody>
 	</table>
+    
+    <h4>Spending to attack candidates or causes</h4>
+	<table class="table table-condensed">
+		<thead>
+            <th>Opposing</th>
+			<th>Paid to</th>
+			<th>For</th>
+			<th class="r">Date</th>
+			<th class="r">Amount</th>
+		</thead>
+		<tbody>
+		{% for exp in ind_expenditures %}
+        {% if exp.stance == "1" %}
+			<tr>
+                <td>{% if exp.target_committee %}{{ exp.target_committee.standard_name|title }}{% endif %}{% if exp.target_candidate %}{{ exp.target_candidate.cand_name }}{% endif %}</td>
+				<td>{{ exp.payee|title }}</td>
+				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
+				<td class="r">{{ exp.exp_date }}</td>
+				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
+			</tr>
+        {% endif %}
+        {% endfor %}
+		</tbody>
+	</table>
+    
+    <h4>Spending that wasn't identified as being in opposition or support</h4>
+	<table class="table table-condensed">
+		<thead>
+            <th>Targeting</th>
+			<th>Paid to</th>
+			<th>For</th>
+			<th class="r">Date</th>
+			<th class="r">Amount</th>
+		</thead>
+		<tbody>
+		{% for exp in ind_expenditures %}
+        {% if exp.stance == "" %}
+			<tr>
+                <td>{% if exp.target_committee %}{{ exp.target_committee.standard_name|title }}{% endif %}{% if exp.target_candidate %}{{ exp.target_candidate.cand_name }}{% endif %}</td>
+				<td>{{ exp.payee|title }}</td>
+				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
+				<td class="r">{{ exp.exp_date }}</td>
+				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
+			</tr>
+        {% endif %}
+        {% endfor %}
+		</tbody>
+	</table>
+    
 {% endif %}
 
 {% if loans %}
@@ -209,6 +289,7 @@
 		</tbody>
 	</table>
 	
+    {% if loan.loan_repaid > 0 %}
 	<h3>Loans repaid</h3>
 	<table class="table table-condensed">
 		<thead>
@@ -220,78 +301,122 @@
 		</thead>
 		<tbody>
 			{% for loan in loans %}
-			{% if loan.loan_repaid > 0 %}
 			<tr>
 				<td>{{ loan.lender_name }}</td>
 				<td>{{ loan.loan_date }}</td>
 				<td>${{ loan.loan_repaid|intcomma  }}</td>
 			</tr>
-			{% endif %}
 			{% endfor %}
 		</tbody>
 	</table>
+    {% endif %}
 
+    {% if loan.loan_forgiven > 0 %}
 	<h3>Loans forgiven</h3>
 	<table class="table table-condensed">
 		<thead>
 			<tr>
 				<th>Lender</th>
-				<th>Date repaid</th>
+				<th>Date forgiven</th>
 				<th>Amount</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for loan in loans %}
-			{% if loan.loan_repaid > 0 %}
 			<tr>
 				<td>{{ loan.lender_name }}</td>
 				<td>{{ loan.loan_date }}</td>
-				<td>${{ loan.loan_repaid|intcomma  }}</td>
+				<td>${{ loan.loan_forgiven|intcomma  }}</td>
 			</tr>
-			{% endif %}
 			{% endfor %}
 		</tbody>
 	</table>
+    {% endif %}
 	
 {% endif %}
 
-<script type="text/html" class="gives_chart_template">
-
-Top five: $<%= sum(_.pluck(applejack.topfive, "sum")) %>
-Rest: $<%= applejack.rest.tot %><br>
-
-
-
-
-<% _.each( applejack.topfive, function( d ){ %>    
+<script type="text/html" class="gives_table_template">
     
-<% }); %>
+    <hr>
+    <p class="pull-right">Showing <%= data_to_template.table_start %>-<%= data_to_template.table_end %> of <%= data_to_template.give_data.length %> records.</p>
+
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Recipient (donations)</th>
+                <th>Total (click for details)</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% _.each( data_to_template.give_data, function( d, i ){ %>
+            <% if (i < data_to_template.table_end) { %>
+            <tr>
+                 <td><a href="/campaign-finance/<%= d.id %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
+                 <td><a class="click_to_expand" href="javascript:void(0)">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %></a></td>
+            </tr>
+            <% }; %>
+        <% }); %>
+        </tbody>
+    </table>
 </script>
 
+{% if groupedgives.count > 5 %}
+<script type="text/html" class="gives_chart_template">
 
+<h3 class="bold">Top committees supported</h3>
+<% _.each( data_to_template.topfive, function( d ){ %>
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-5" style="margin-top:6px;"><a class="bold" href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> ($<%= addCommas(Math.round(d.sum)) %>)</div>
+        <div class="col-md-7">
+            <div class="row" id="topper" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(d.sum, data_to_template.overall_tot) %>%,#4cae4c), color-stop(<%= getPct(d.sum, data_to_template.overall_tot) %>%,#eee)); background: -moz-linear-gradient(left center, #4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%); background: -o-linear-gradient(left,#4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%); linear-gradient(to right,#4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%)'>
+                <div class="pull-right" style="text-align:right;">
+                    <p class="bold" style="margin:5px 5px auto auto;"><%= getPct(d.sum, data_to_template.overall_tot).toFixed(2) %>%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+<% }); %>
+<hr>
+    <div class="row" style="margin-bottom:10px;">
+        <div class="col-md-5" style="margin-top:6px;"><%= data_to_template.rest.num %> other recipients ($<%= addCommas(Math.round(data_to_template.rest.tot)) %>)</div>
+        <div class="col-md-7">
+            <div class="row" id="topper" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%,#4cae4c), color-stop(<%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%,#eee)); background: -moz-linear-gradient(left center, #4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%); background: -o-linear-gradient(left,#4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%); linear-gradient(to right,#4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%)'>
+                <div class="pull-right" style="text-align:right;">
+                    <p class="bold" style="margin:5px 5px auto auto;"><%= getPct(data_to_template.rest.tot, data_to_template.overall_tot).toFixed(2) %>%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</script>
+{% endif %}
+</div>
 {% endblock %}
 
-</div>
+
 
 {% block scripts %}
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
-<script type="text/javascript">
-
-    _.templateSettings.variable = "applejack";
+<script src="/media/scripts/owh-utils.js"></script>
+<script>
+    
+    // set template variable
+    _.templateSettings.variable = "data_to_template";
 
     var sum = function(ls) {
         return _.reduce(ls, function(memo, num){ return memo + num; }, 0);
     };
     
     {% if gives %}
+    // cash and in-kind donations
     var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"o-m-d" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    
+    var cash_and_inkind = _.pluck(gives, "cash").concat(_.pluck(gives, "inkind"));
     
     var gives_out = _.chain(gives)
         .groupBy("recipient_id")
         .map(function(value, key) {
             return {
                 id: key,
-                sum: sum(_.pluck(value, "cash")),
+                sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
                 name: _.pluck(value, "recipient_name")[0],
                 gives: value
             }
@@ -299,44 +424,52 @@ Rest: $<%= applejack.rest.tot %><br>
         .sortBy("sum").reverse()
         .value();
 
-        
-    var gives_for_chart = {
-        topfive: _.first(gives_out, 5),
-        rest: {
-                num: gives_out.length - 5,
-                tot: sum(_.pluck(gives, "cash")) - sum(_.pluck(this.topfive, "sum"))
-        }
+    var make_gives_table = function(start, end) {
+        var gives_data_to_template = {
+            give_data: gives_out,
+            table_start: start,
+            table_end: end
+        };
+        // pass data to gives_table template
+        var gives_table_template = _.template($( "script.gives_table_template" ).html());
+        console.log(gives_data_to_template);
+        $("#display_table").html(gives_table_template(gives_data_to_template));
     };
     
+    make_gives_table(0, 25);
+        
+    {% if groupedgives.count > 5 %}
+    var top5 = _.first(gives_out, 5);
+    var restnum = gives_out.length - 5;
+    var ot = sum(cash_and_inkind);
+    var rest_tot = sum(cash_and_inkind) - sum(_.pluck(top5, "sum"));
+    
+    var gives_for_chart = {        
+        overall_tot: ot,
+        topfive: top5,
+        rest: {
+                num: restnum,
+                tot: rest_tot
+        }
+    };
+
+    // pass to template
     var template = _.template($( "script.gives_chart_template" ).html());
-    $('#gives_chart_div').html(template(gives_for_chart));
-   
-
-   
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Recipient', 'Dollars'],
-          {% for recipient in topgives %}
-          ['{{ recipient.recipient__name }}', {{ recipient.total }}]{% if othergivestotal > 0 %},{% endif %}
-          {% endfor %}{% if othergivestotal > 0 %}
-          ['{{ groupedgives.count|add:-5 }} other committees', {{ othergivestotal }}]
-          {% endif %}
-        ]);
-
-        var options = {
-          title: 'Top committees supported'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('givespiechart'));
-
-        chart.draw(data, options);
-      }
-    {% endif %}
+    $('#display_graphics').html(template(gives_for_chart));
+    $("#display_hed").html("<h2 class='bold'>Donations</h2>")
+    
+    //bind click event to drop table
+    $(".click_to_expand").bind("click", function(d) {
+        $(this).parent().parent().next().show();
+    });
+    
+    {% endif %}{# end if groupedgives.count > 5 #}
+    {% endif %}{# end if gives #}
       
-      {% if gets %}
-      var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.nadcid }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    {% if gets %}
+    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.nadcid }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+      
+      
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
@@ -357,11 +490,11 @@ Rest: $<%= applejack.rest.tot %><br>
         var chart = new google.visualization.PieChart(document.getElementById('getspiechart'));
 
         chart.draw(data, options);
-      }
+      };
       {% endif %}
 
       
-
+/*
 var timelinegives = [
 {% for row in allgives %}
     [{{ forloop.counter }}, {{ row.total }}]{% if not forloop.last %},{% endif %}
@@ -390,7 +523,7 @@ bars: {
             $.plot($("#timeline"), dataset, options);
 
         });
-
+*/
 </script>
 {% endblock %}
 
