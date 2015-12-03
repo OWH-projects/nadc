@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load staticfiles %}<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -30,15 +30,12 @@
     
     <link href='https://fonts.googleapis.com/css?family=Roboto:400,700' rel='stylesheet' type='text/css'>
     
-    <!-- Custom styles for this template -->
-    <link href="/media/nadc/main.css" rel="stylesheet">
+    <!-- Custom styles -->
+    <link href="{% static "nadc/base.css" %}" rel="stylesheet">
     {% block morestyles %}{% endblock %}
     
     <!-- Font Awesome icons, v4.4 -->
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-
     
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
@@ -80,9 +77,6 @@
 	</head>
 
   <body data-spy="scroll" data-target=".navbar-scroller">
-
-  
-  
       <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container">
         <div class="navbar-header">
@@ -115,11 +109,6 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script src="http://www.dataomaha.com/media/scripts/underscore-min.js"></script>
-    <script type="text/javascript" src="http://dataomaha.com/media/scripts/flot/jquery.flot.min.js"></script>
-    <script type="text/javascript" src="http://dataomaha.com/media/scripts/curvedLines.js"></script>
-    <script type="text/javascript" src="http://dataomaha.com/media/scripts/flot/jquery.flot.resize.min.js"></script>
-    <script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
-
     {% block scripts %}{% endblock %}
   
     <!--
@@ -160,5 +149,4 @@
 	  var s_code=s.t();if(s_code)document.write(s_code)
 	</script>   
     -->
-
 </html>

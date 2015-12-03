@@ -1,14 +1,12 @@
 {% extends 'nadc/base.html' %}
 {% load humanize %}
 {% load searchwidget %}
+{% load staticfiles %}
 
 {% block social %}{% endblock %}
 
 {% block morestyles %}
-<style>
-#chart { width: 100%; height: 250px; margin-bottom:30px;}
-.item { margin-bottom:40px; }
-</style>
+<link href="{% static "nadc/main.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -156,6 +154,10 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="http://dataomaha.com/media/scripts/flot/jquery.flot.min.js"></script>
+<script src="http://dataomaha.com/media/scripts/curvedLines.js"></script>
+<script src="http://dataomaha.com/media/scripts/flot/jquery.flot.resize.min.js"></script>
+<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
 <script src="http://dataomaha.com/media/scripts/tablesorter/jquery.tablesorter.min.js"></script>
 <script>
 
