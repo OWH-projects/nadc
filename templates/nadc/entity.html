@@ -1,6 +1,6 @@
 {% extends 'nadc/base.html' %}
-{% load humanize %}
 {% load staticfiles %}
+{% load additionalinfo %}
 {% load humanize %}
 
 {% block title %}{% endblock %}
@@ -11,9 +11,10 @@
 
 {% block content %}
 
-<div class="container">
+<div class="container" style="margin-top: 80px;">
 
-<br><br><br>
+<div class="col-sm-9">
+
 <h1><b>{% if name.standard_name %}{{ name.standard_name }}{% else %}{{ name.cand_name }}{% endif %}</b></h1>
 {% if name.city and name.state %}<h4>{{ name.city|title }}, {{ name.state }}</h4>{% endif %}
 {% if name.dissolved_date %}<h4>(Committee dissolved in {{ name.dissolved_date|date:"o" }}</h4>{% endif %}
@@ -73,7 +74,7 @@
     {% endfor %}
 {% endif %}
 
-<p>{{ name.standard_name|title }} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donation{{ gives.count|pluralize }}{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contribution{{ gets.count|pluralize }} between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}It backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}<a href="/campaign-finance/{{ candidate.cand_id }}/{{ candidate.cand_name|slugify }}">{{ candidate.cand_name|title }}</a> for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}{% endif %}</p>
+<p>{{ name.standard_name|title }} {% if gives %}gave {{ gives.count|apnumber|intcomma }} donation{{ gives.count|pluralize }}{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} received {{ gets.count|apnumber|intcomma }} contribution{{ gets.count|pluralize }} between {{ first }} and {{ mostrecent }}. {% endif %}{% if comm_candidates %}This committee backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}<a href="/campaign-finance/{{ candidate.cand_id }}/{{ candidate.cand_name|slugify }}">{{ candidate.cand_name|title }}</a> for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}{% endif %}</p>
 
 
 
@@ -83,7 +84,7 @@
 CLICK DUDER LINKS HERE:
 
 {% if gets %}
-Raised (active)
+Raised
 {% endif %}
 
 {% if gives %}
@@ -98,70 +99,12 @@ Spent
 Loans
 {% endif %}
 
-<div id="display_hed"></div>
+<h2 class="bold" id="display_hed"></h2>
 <div id="display_graphics"></div>
 <div id="display_table"></div>
 
 
-
-
-
-{% if gets %}
-	<h2>GETS</h2>
-
-    {% if groupedgets.count > 5 %}
-	<h3>Top donors</h3>
-		
-    
-    <div id="getspiechart" style="width: 900px; height: 500px;"></div>
-    {% endif %}
-	
-	<table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Donor</th>
-				<th class="r">Amount</th>
-			</tr>
-		</thead>
-		<tbody>
-
-		{% for donation in groupedgets %}
-			<tr>
-				<td><a href="/campaign-finance/{{ donation.donor__canonical }}/{{ donation.donor__standard_name|slugify }}">{{ donation.donor__standard_name|title }}</a></td>
-				<td class="r">${{ donation.total|intcomma }}</td>
-			</tr>
-		{% endfor %}
-		
-		</tbody>
-	</table>
-
-{% endif %}
-
-
-{% if gives %}
-	<h2>GIVES</h2>
-	
-	<h3>Top committees supported</h3>
-    
-    {% if groupedgives.count > 5 %}
-    <div id="gives_chart_div"></div>
-    {% endif %}
-    
-	<div id="timeline" style="width:100%;height:300px"></div>
-
-    <table class="table table-condensed">
-		<tbody>
-		{% for gift in groupedgives %}
-			<tr>
-				<td><a href="/campaign-finance/{{ gift.recipient__nadcid }}/{{ gift.recipient__name|slugify }}">{{ gift.recipient__name|title }}</a></td>
-				<td class="r">${{ gift.total|intcomma }}</td>
-			<tr>
-		{% endfor %}
-		</tbody>
-	</table>
-
-	
-{% endif %}
+<!-- killing all this eventually -->
 
 {% if normal_expenditures %}
 
@@ -335,38 +278,44 @@ Loans
 	
 {% endif %}
 
+{% if gives %}
+<!-- underscore template for "gives" table" -->
 <script type="text/html" class="gives_table_template">
-    
-    <hr>
-    <p class="pull-right">Showing <%= data_to_template.table_start %>-<%= data_to_template.table_end %> of <%= data_to_template.give_data.length %> records.</p>
-
-    <table class="table table-condensed">
+    <table class="table">
         <thead>
             <tr>
-                <th>Recipient (donations)</th>
-                <th>Total (click for details)</th>
+                <th>Recipient (number)</th>
+                <th class="r">Total</th>
             </tr>
         </thead>
         <tbody>
-        <% _.each( data_to_template.give_data, function( d, i ){ %>
-            <% if (i < data_to_template.table_end) { %>
+        <% _.each( data_to_template, function( d ){ %>
             <tr>
-                 <td><a href="/campaign-finance/<%= d.id %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
-                 <td><a class="click_to_expand" href="javascript:void(0)">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %></a></td>
+                 <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
+                 <td>$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-plus gray click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+            
+            <!-- here's the loop with the stuff to show/hide -->
+            <td>
+                    <% _.each( d.gives, function( ind_don ){ %>
+                        Date: <%= toAPDate(ind_don.donation_date) %><br>
+                        Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
+                    <% }); %>
+            </td>
+            <!-- // -->
+            
             </tr>
-            <% }; %>
         <% }); %>
         </tbody>
     </table>
 </script>
 
 {% if groupedgives.count > 5 %}
+<!-- underscore template for "gives" bar charts" -->
 <script type="text/html" class="gives_chart_template">
-
 <h3 class="bold">Top committees supported</h3>
 <% _.each( data_to_template.topfive, function( d ){ %>
-    <div class="row" style="margin-bottom:10px;">
-        <div class="col-md-5" style="margin-top:6px;"><a class="bold" href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> ($<%= addCommas(Math.round(d.sum)) %>)</div>
+    <div class="row" style="margin-bottom:15px;">
+        <div class="col-md-5"><a class="bold" href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> ($<%= addCommas(Math.round(d.sum)) %>)</div>
         <div class="col-md-7">
             <div class="row" id="topper" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(d.sum, data_to_template.overall_tot) %>%,#4cae4c), color-stop(<%= getPct(d.sum, data_to_template.overall_tot) %>%,#eee)); background: -moz-linear-gradient(left center, #4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%); background: -o-linear-gradient(left,#4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%); linear-gradient(to right,#4cae4c <%= getPct(d.sum, data_to_template.overall_tot) %>%, #eee <%= getPct(d.sum, data_to_template.overall_tot) %>%)'>
                 <div class="pull-right" style="text-align:right;">
@@ -378,7 +327,7 @@ Loans
 <% }); %>
 <hr>
     <div class="row" style="margin-bottom:10px;">
-        <div class="col-md-5" style="margin-top:6px;"><%= data_to_template.rest.num %> other recipients ($<%= addCommas(Math.round(data_to_template.rest.tot)) %>)</div>
+        <div class="col-md-5"><%= data_to_template.rest.num %> other recipient<%= jankPluralize(data_to_template.rest.num) %> ($<%= addCommas(Math.round(data_to_template.rest.tot)) %>)</div>
         <div class="col-md-7">
             <div class="row" id="topper" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%,#4cae4c), color-stop(<%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%,#eee)); background: -moz-linear-gradient(left center, #4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%); background: -o-linear-gradient(left,#4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%); linear-gradient(to right,#4cae4c <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%, #eee <%= getPct(data_to_template.rest.tot, data_to_template.overall_tot) %>%)'>
                 <div class="pull-right" style="text-align:right;">
@@ -388,19 +337,93 @@ Loans
         </div>
     </div>
 </script>
-{% endif %}
+{% endif %}{# end if groupedgives #}
+{% endif %}{# end if gives #}
+
+
+{% if gets %}
+<!-- underscore template for "gets" table" -->
+<script type="text/html" class="gets_table_template">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Donor (number)</th>
+                <th class="r">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% _.each( data_to_template, function( d ){ %>
+            <tr>
+                 <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
+                 <td>$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-plus gray click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+            
+            <!-- here's the loop with the stuff to show/hide -->
+            <td>
+                    <% _.each( d.gives, function( ind_don ){ %>
+                        Date: <%= toAPDate(ind_don.donation_date) %><br>
+                        Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
+                    <% }); %>
+            </td>
+            <!-- // -->
+            
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+</script>
+
+{% if groupedgets.count > 5 %}
+<!-- underscore template for "gets" bar charts" -->
+<script type="text/html" class="gets_chart_template">
+<h3 class="bold">Top donors</h3>
+<% _.each( data_to_template.topfive, function( d ){ %>
+    
+<% }); %>
+</script>
+{% endif %}{# end if groupedgets #}
+{% endif %}{# end if gets #}
+
+
+
+
+</div><!-- left side -->
+
+<div class="col-sm-3">{% additionalinfo id %}</div>
+
 </div>
 {% endblock %}
-
-
 
 {% block scripts %}
 <script src="http://www.dataomaha.com/media/scripts/owh-utils.js"></script>
 <script>
+
+    var jankPluralize = function(num) {
+        if (Number(num) === 1) {
+            return "";
+        } else {
+            return "s";
+        };
+    }
     
-    // set template variable
+    // set global template variable
     _.templateSettings.variable = "data_to_template";
 
+    // function to populate the table and hed
+    var makeTable = function(table_template, data, hed) {
+        $("#display_table").html(table_template(data));
+        $("#display_hed").html(hed)
+        
+        //bind click event to drop table
+        $(".click_to_expand").bind("click", function(d) {
+            // this is where we do the javascript to show/hide table rows
+        });
+    };
+    
+    // function to make the chart
+    var makeChart = function(chart_template, chart_data) {
+        $('#display_graphics').html(chart_template(chart_data));
+    };
+    
     var sum = function(ls) {
         return _.reduce(ls, function(memo, num){ return memo + num; }, 0);
     };
@@ -409,8 +432,14 @@ Loans
     // cash and in-kind donations
     var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"o-m-d" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
     
-    var cash_and_inkind = _.pluck(gives, "cash").concat(_.pluck(gives, "inkind"));
+    // define templates
+    var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
+    var gives_table_template = _.template($( "script.gives_table_template" ).html());
     
+    // get the donation total
+    var gives_cash_and_inkind = _.pluck(gives, "cash").concat(_.pluck(gives, "inkind"));
+    
+    // group donations by ID
     var gives_out = _.chain(gives)
         .groupBy("recipient_id")
         .map(function(value, key) {
@@ -424,27 +453,17 @@ Loans
         .sortBy("sum").reverse()
         .value();
 
-    var make_gives_table = function(start, end) {
-        var gives_data_to_template = {
-            give_data: gives_out,
-            table_start: start,
-            table_end: end
-        };
-        // pass data to gives_table template
-        var gives_table_template = _.template($( "script.gives_table_template" ).html());
-        console.log(gives_data_to_template);
-        $("#display_table").html(gives_table_template(gives_data_to_template));
-    };
-    
-    make_gives_table(0, 25);
-        
     {% if groupedgives.count > 5 %}
+    
+    // define template
+    var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
+    
     var top5 = _.first(gives_out, 5);
     var restnum = gives_out.length - 5;
-    var ot = sum(cash_and_inkind);
-    var rest_tot = sum(cash_and_inkind) - sum(_.pluck(top5, "sum"));
+    var ot = sum(gives_cash_and_inkind);
+    var rest_tot = sum(gives_cash_and_inkind) - sum(_.pluck(top5, "sum"));
     
-    var gives_for_chart = {        
+    var gives_for_chart = {
         overall_tot: ot,
         topfive: top5,
         rest: {
@@ -452,47 +471,52 @@ Loans
                 tot: rest_tot
         }
     };
-
-    // pass to template
-    var template = _.template($( "script.gives_chart_template" ).html());
-    $('#display_graphics').html(template(gives_for_chart));
-    $("#display_hed").html("<h2 class='bold'>Donations</h2>")
-    
-    //bind click event to drop table
-    $(".click_to_expand").bind("click", function(d) {
-        $(this).parent().parent().next().show();
-    });
     
     {% endif %}{# end if groupedgives.count > 5 #}
     {% endif %}{# end if gives #}
       
     {% if gets %}
-    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.nadcid }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    
+    // define templates
+    var gets_chart_template = _.template($( "script.gets_chart_template" ).html());
+    var gets_table_template = _.template($( "script.gets_table_template" ).html());
+    
+    // group gets by donor
+    var gets_out = _.chain(gets)
+        .groupBy("donor_id")
+        .map(function(value, key) {
+            return {
+                id: key,
+                sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
+                name: _.pluck(value, "donor")[0],
+                gives: value
+            }
+        })
+        .sortBy("sum").reverse()
+        .value();
+    
+    // get the donation total
+    var gets_cash_and_inkind = _.pluck(gets, "cash").concat(_.pluck(gets, "inkind"));
+    
+    //{"donation_date":"10-19-2015", "inkind": 0.00, "cash":1000.00,  "donor_id":"99CUA00091", "donor":"ANHEUSER-BUSCH COMPANIES"}
       
       
-      google.load("visualization", "1", {packages:["corechart"]});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Donor', 'Dollars'],
-          {% for donor in topgets %}
-          ['{{ donor.donor__standard_name }}', {{ donor.total }}]{% if othergetstotal > 0 %},{% endif %}
-          {% endfor %}
-          {% if othergetstotal > 0 %}
-          ['{{ groupedgets.count|add:-5 }} other donors', {{ othergetstotal }}]
-          {% endif %}
-        ]);
+    {% endif %}
 
-        var options = {
-          title: 'Top donors'
-        };
-
-        var chart = new google.visualization.PieChart(document.getElementById('getspiechart'));
-
-        chart.draw(data, options);
-      };
-      {% endif %}
-
+    $(document).ready(function() {
+        // pass data to templates for initial pageload
+        {% if gives %}
+        makeTable(gives_table_template, gives_out, "Donations");
+        makeChart(gives_chart_template, gives_for_chart);
+        {% endif %}
+        
+        {% if gets and not gives %}
+        makeTable(gets_table_template, gets_out, "Donations received");
+        makeChart(gets_chart_template, gets_for_chart);       
+        {% endif %}
+        
+    });
       
 /*
 var timelinegives = [
@@ -524,7 +548,9 @@ bars: {
 
         });
 */
+
+$('[data-toggle="tooltip"]').tooltip({"trigger": "hover"});
+
 </script>
 {% endblock %}
-
 

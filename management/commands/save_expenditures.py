@@ -6,3 +6,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for obj in Expenditure.objects.exclude(raw_target=""):
             obj.save()
+        for obj in Candidate.objects.all():
+            obj.save()

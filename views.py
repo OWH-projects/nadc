@@ -67,7 +67,7 @@ def Search(request):
     return render_to_response('nadc/search.html', dictionaries)    
     
 def EntityPage(request, id):
-
+ 
     #Test to see if we're dealing with a candidate record or not
     if Candidate.objects.filter(cand_id=id).count() > 0:
         candidatepage = True
@@ -87,7 +87,7 @@ def EntityPage(request, id):
         try:
             comm_candidates = Candidate.objects.filter(committee=id)
         except:
-            comm_candidates = []
+            comm_candidates = []       
 
         alldonations = Donation.objects.filter(Q(recipient__nadcid=id)|Q(donor__canonical=id)).order_by('donation_date')
         try:
@@ -102,7 +102,7 @@ def EntityPage(request, id):
             name = Entity.objects.filter(canonical=id)[0]
         except:
             name = Candidate.objects.filter(cand_id=id)[0]
-
+        
         # Get any/all records of donations given by entity
         try:
             gives = Donation.objects.filter(donor__canonical=id).order_by("-donation_date")
@@ -169,6 +169,6 @@ def EntityPage(request, id):
             loans = []
             totalborrowed - []
 
-        dictionaries = {'groupedgets': groupedgets, 'topgetstotal': topgetstotal, 'othergetstotal': othergetstotal, 'othergivestotal':othergivestotal, 'getsbymonth':getsbymonth, 'givesbymonth':givesbymonth, 'groupedgives': groupedgives, 'allgives': allgives, 'comm_candidates': comm_candidates, 'topgets': topgets, 'totalcashreceived': totalcashreceived, 'totalinkindreceived': totalinkindreceived, 'topgives': topgives, 'totalcashdonated': totalcashdonated, 'totalinkinddonated': totalinkinddonated,'gives': gives, 'gets': gets, 'normal_expenditures': normal_expenditures, 'normal_spent': normal_spent, 'ind_expenditures': ind_expenditures, 'ind_spent': ind_spent, 'loans': loans, 'totalborrowed': totalborrowed, 'name':name, 'first':first,'mostrecent':mostrecent, }
+        dictionaries = {'id': id, 'groupedgets': groupedgets, 'topgetstotal': topgetstotal, 'othergetstotal': othergetstotal, 'othergivestotal':othergivestotal, 'getsbymonth':getsbymonth, 'givesbymonth':givesbymonth, 'groupedgives': groupedgives, 'allgives': allgives, 'comm_candidates': comm_candidates, 'topgets': topgets, 'totalcashreceived': totalcashreceived, 'totalinkindreceived': totalinkindreceived, 'topgives': topgives, 'totalcashdonated': totalcashdonated, 'totalinkinddonated': totalinkinddonated,'gives': gives, 'gets': gets, 'normal_expenditures': normal_expenditures, 'normal_spent': normal_spent, 'ind_expenditures': ind_expenditures, 'ind_spent': ind_spent, 'loans': loans, 'totalborrowed': totalborrowed, 'name':name, 'first':first,'mostrecent':mostrecent, }
         return render_to_response('nadc/entity.html', dictionaries)
 

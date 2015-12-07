@@ -1,0 +1,30 @@
+{% if extrainfo %}
+<div class="well">
+    <img style="width: 100px; border-radius: 50%; background-position: center;" src="/media/{{ extrainfo.mugshot }}">
+    {% if candidates %}<div clas="clearfix" style="margin-top:20px;"></div><span class="label label-info">Candidate</span>{% endif %}
+    <h1>{{ extrainfo.name|title }}</h1>
+    <h4><em>{{ extrainfo.title }}</em></h4>
+    <p>{{ extrainfo.description|safe|linebreaks }}</p>
+    
+    {% if candidates %}
+        <p>{{ extrainfo.name|title }} has run for:</p>
+        <table class="table table-condensed">
+            <tbody>
+        {% for cand in candidates %}
+            <tr>
+                <td><strong>{{ cand.office_title }}</strong>
+                <br>
+                Campaign committee: <a href="/campaign-finance/{{ cand.committee.canonical }}/{{ cand.committee.standard_name|slugify }}">{{ cand.committee.standard_name|title }}</a></td>
+            </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+        
+    <p>
+        <a href="/campaign-finance/{{ extrainfo.canonical }}/{{ extrainfo.name|slugify }}">Related!</a>
+    </p>
+        
+    {% endif %}
+    
+</div>
+{% endif %}

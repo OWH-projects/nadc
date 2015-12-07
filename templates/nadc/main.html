@@ -13,7 +13,6 @@
 
 <div class="jumbotron" style="padding-top:60px; padding-bottom: 30px;">
     <div class="container">
-		<p class="sf">c</p>
         <h1 class="bold">Some catchy hed here</h1>
         <p>A search engine for Nebraska campaign finance</p>
         <p class="ital" style="font-size:100%">Data updated {{ LAST_UPDATED|date:"N j, Y" }}</p>
@@ -23,11 +22,11 @@
 <div class="container" style="margin-bottom:50px;">
     <div class="row">
         <div class="col-md-8">
-        
-        <div id="barchart" class="item">
+
+<!--        <div id="barchart" class="item">
             <h3>Political giving, <span class="minyear"></span> to <span class="maxyear"></span></h3>
             <div id="chart"></div>
-        </div>
+        </div>-->
         
         <div id="thisistrash" class="item">
         I'm just shoehorning all these elements here<p>
@@ -53,9 +52,9 @@
         </div>
         
         <div id="recentdonors" class="item">
-            <h3 class="bold">Top donations, past 30 days</h3>
+            <h3 class="bold">Five largest donations, past 30 days</h3>
             {% if toplast30donations.count > 0 %}
-            <table class="table tablesorter" id="#recentTable">
+            <table class="table" id="recentDonorTable">
                 <thead>
                 <tr>
                     <th>Date</th>
@@ -66,9 +65,9 @@
                 </thead>
                 <tbody>
                 {% for thing in toplast30donations %}{% if thing.pledge == 0 %}<tr>
-                    <td><span class="hidden">{{ thing.donation_date|date:"Y-m-d" }}</span>{{ thing.donation_date }}</td>
-                    <td class="bold"><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
-                    <td class="bold"><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
+                    <td>{{ thing.donation_date }}</td>
+                    <td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
+                    <td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
                     <td>${{ thing.totes|intcomma }}</td>
                 </tr>
                 {% endif %}{% endfor %}
@@ -78,9 +77,9 @@
         </div>
         
         <div id="recentexpenditures" class="item">
-            <h3 class="bold">Top dark money, past 30 days</h3>
+            <h3 class="bold"><span class="tip" data-toggle="tooltip" title="Spending earmarked to support or oppose a candidate or ballot question committee">Targeted spending</span>, past 30 days</h3>
             {% if toplast30expenditures.count > 0 %}
-            <table class="table tablesorter" id="#recentTable">
+            <table class="table" id="recentExpTable">
                 <thead>
                 <tr>
                     <th>Date</th>
@@ -91,9 +90,9 @@
                 </thead>
                 <tbody>
                 {% for thing in toplast30expenditures %}<tr>
-                    <td><span class="hidden">{{ thing.exp_date|date:"Y-m-d" }}</span>{{ thing.exp_date }}</td>
-                    <td class="bold"><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
-                    <td class="bold">{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}</td>
+                    <td>{{ thing.exp_date }}</td>
+                    <td><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
+                    <td>{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}</td>
                     <td>${{ thing.totes|intcomma }}</td>
                 </tr>
                 {% endfor %}
@@ -158,9 +157,10 @@
 <script src="http://dataomaha.com/media/scripts/curvedLines.js"></script>
 <script src="http://dataomaha.com/media/scripts/flot/jquery.flot.resize.min.js"></script>
 <script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
-<script src="http://dataomaha.com/media/scripts/tablesorter/jquery.tablesorter.min.js"></script>
 <script>
-
+    
+    $('[data-toggle="tooltip"]').tooltip({"trigger": "click"});
+    
     var getYear = function(y) {
         return new Date(y, 0, 1).getTime();
     };
@@ -226,28 +226,9 @@
                 }
         });
     };
-
-    
-    $.tablesorter.addParser({ 
-        id: 'currency',
-        is: function(s) {
-            return false;
-        }, 
-        format: function(s) {
-            return s.replace('$','').replace(/,/g,'');
-        },
-        type: 'numeric' 
-    }); 
     
     $(document).ready(function() {
         chartIt();
-        $(".tablesorter").tablesorter({
-            headers: {
-                3: {
-                    sorter: 'currency'
-                }
-            }
-        });
     });
         
     window.onresize = function() {

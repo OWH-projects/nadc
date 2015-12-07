@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import AdditionalInfo
 
-#Register your models here.
+
+@admin.register(AdditionalInfo)
+class AdditionalInfoAdmin(admin.ModelAdmin):
+    pass

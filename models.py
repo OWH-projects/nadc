@@ -97,9 +97,11 @@ class Expenditure(models.Model):
 class AdditionalInfo(models.Model):
     canonical = models.CharField(max_length=20, null=True, blank=True) #The canonical_id in the Entity table
     candidate = models.CharField(max_length=20, null=True, blank=True) #The candidate_id in the Candidate table
-    mugshot = models.FileField(upload_to="nadc/mugs/")
-    title = models.CharField(max_length=120)
+    mugshot = models.FileField(upload_to="nadc/mugs/", null=True, blank=True)
+    name = models.CharField(max_length=120)
+    title = models.CharField(max_length=120, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
+    care = models.BooleanField(default=False)
 
 class Ballot(models.Model):
     nadcid = models.ForeignKey(Entity)
