@@ -11,72 +11,181 @@
 
 {% block content %}
 
-<div class="jumbotron" style="padding-top:60px; padding-bottom: 30px;">
+<div class="jumbotron">
     <div class="container">
-        <h1 class="bold">Some catchy hed here</h1>
-        <p>A search engine for Nebraska campaign finance</p>
-        <p class="ital" style="font-size:100%">Data updated {{ LAST_UPDATED|date:"N j, Y" }}</p>
+		<img src="{% static 'logo-owh-black.png' %}" class="logo" />
+        <h1>Nebraska campaign contributions</h1>
+        <p>Who's influencing Nebraska politics? Find out using the only source the lets you search political donations and spending by the people bankrolling the process.</p>
     </div>
 </div>
 
-<div class="container" style="margin-bottom:50px;">
-    <div class="row">
-        <div class="col-md-8">
 
-<!--        <div id="barchart" class="item">
+<div id="search">
+<div class="container">
+
+
+	<div class="col-sm-7">
+
+		<h2>Search</h2>
+             
+		<form id="entity" action="/campaign-finance/search" method="GET">
+			<input type="search" class="form-control input-lg" name="q" value="" placeholder="Campaign, donor or PAC">
+		</form>
+		
+		<br />
+		
+		<select id="location" class="form-control input-lg" onchange="if (this.value) window.location.href=this.value">	
+			<option>City, County, or other random location grouping</option>
+			{% for govt in governments %}
+				<option value="campaign-finance/{{ govt.office_govt|slugify }}">{{ govt.office_govt }}</option>
+			{% endfor %}
+		</select>
+            
+	</div>
+
+	<div class="col-md-5">
+		<div class="sticky" style="margin-bottom:20px;">
+			<h3><b>A search engine for Nebraska campaign finance</b></h3>
+			<p>Explore {{ DONATION_TOTAL|intcomma }} contributions to political causes in Nebraska since <span class="minyear"></span>.</p>
+
+			<p><strong>Updated {{ LAST_UPDATED|date:"N j, Y" }}</strong></p>
+		
+			<br />
+			
+			<p><small><a href="/campaign-finance/about">Learn more about this data &raquo;</a></small></p>
+		</div>
+	</div>
+	
+	
+
+
+	
+</div>
+</div>
+
+<div id="explainer">
+<div class="container">
+	<h2>Explainer</h2>
+	
+	<p>Tell the people how we're using this data and how they can use it, too.</p>
+	<p>Probably a slider format with little illustrations explaining "donations" "expenditures" "entities" and the ins/outs of NADC data. </p>
+	<p>Maybe this can/should merge with the OWH coverage summary: "Here are the stories we found so far."</p>
+	
+</div>
+</div>
+
+
+<div id="donations">
+<div class="container">
+
+		<!--
+        <div id="barchart" class="item">
             <h3>Political giving, <span class="minyear"></span> to <span class="maxyear"></span></h3>
             <div id="chart"></div>
-        </div>-->
-        
-        <div id="thisistrash" class="item">
-        I'm just shoehorning all these elements here<p>
-            Monthly donations, past year
-            <ul>
-            Total donations in past 30 days: ${{ last30donationstotal.totes|intcomma }}
-            {% for month in monthlydonations %}
-            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
-            {% endfor %}
-            </ul>
-        <br>
-            Monthly expenditures, past year
-            <ul>
-            Total dark money, past 30 days: ${{ last30expenditurestotal.totes|intcomma }}
-            {% for month in monthlyexpenditures %}
-            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
-            {% endfor %}
-            </ul>
-        <br>
-        
-        
-        
         </div>
-        
-        <div id="recentdonors" class="item">
-            <h3 class="bold">Five largest donations, past 30 days</h3>
-            {% if toplast30donations.count > 0 %}
-            <table class="table" id="recentDonorTable">
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Recipient</th>
-                    <th>Donor</th>
-                    <th>Amount</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for thing in toplast30donations %}{% if thing.pledge == 0 %}<tr>
-                    <td>{{ thing.donation_date }}</td>
-                    <td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
-                    <td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
-                    <td>${{ thing.totes|intcomma }}</td>
-                </tr>
-                {% endif %}{% endfor %}
-                </tbody>
-            </table>
-            {% else %}No donations were reported in the past 30 days.{% endif %}
-        </div>
-        
-        <div id="recentexpenditures" class="item">
+        -->
+
+			<h2>Donations</h2>
+
+			<div class="col-sm-7">
+			
+				<div class="row">
+			
+			        <div id="recentdonors" class="item">
+						<h3 class="bold">Five largest donations, past 30 days</h3>
+						{% if toplast30donations.count > 0 %}
+						<table class="table" id="recentDonorTable">
+							<thead>
+							<tr>
+								<th>Date</th>
+								<th>Recipient</th>
+								<th>Donor</th>
+								<th class="r">Amount</th>
+							</tr>
+							</thead>
+							<tbody>
+							{% for thing in toplast30donations %}{% if thing.pledge == 0 %}<tr>
+								<td>{{ thing.donation_date }}</td>
+								<td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
+								<td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
+								<td class="r">${{ thing.totes|intcomma }}</td>
+							</tr>
+							{% endif %}{% endfor %}
+							</tbody>
+						</table>
+						{% else %}No donations were reported in the past 30 days.{% endif %}
+					</div>
+			
+			
+				</div>
+			
+				<div class="row">
+				
+					<h3 class="bold">Top donors</h3>
+						  
+					<div id="topdonors" class="col-sm-6">
+						<h4>By dollars</h4>
+					
+						<table class="table">
+							{% for thing in top10ind %}
+							<tr>
+								<td><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></td>
+								<td class="r">${{ thing.totes|apnumber|intcomma }}</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+						
+						
+					<div id="topdonors" class="col-sm-6">
+						<h4>By committees supported</h4>
+						<table class="table">
+							{% for thing in topvolumeunique %}
+							<tr>
+								<td><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></td>
+								<td class="r">{{ thing.recipient__count }}</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+			
+				</div>
+			
+			</div>
+			
+			<div class="col-md-4 col-sm-offset-1">
+
+				<h3 class="big">${{ last30donationstotal.totes|floatformat:"0"|intcomma }}</h3>
+				<p><b>Total donations in past 30 days</b></p>
+				
+				<hr />
+				<p>(This will be a chart)</p>
+				
+				Monthly donations, past year
+				<ul>
+				{% for month in monthlydonations %}
+				<li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
+				{% endfor %}
+				</ul>
+       	
+			</div>
+			
+			
+			
+</div>
+</div>			
+		
+
+<div id="expenditures">
+<div class="container">
+
+			<h2>Expenditures</h2>
+
+			
+			
+			
+			<div class="col-sm-8">
+			<div id="recentexpenditures" class="item">
             <h3 class="bold"><span class="tip" data-toggle="tooltip" title="Spending earmarked to support or oppose a candidate or ballot question committee">Targeted spending</span>, past 30 days</h3>
             {% if toplast30expenditures.count > 0 %}
             <table class="table" id="recentExpTable">
@@ -85,7 +194,7 @@
                     <th>Date</th>
                     <th>Sponsor</th>
                     <th>Target</th>
-                    <th>Amount</th>
+                    <th class="r">Amount</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -93,62 +202,45 @@
                     <td>{{ thing.exp_date }}</td>
                     <td><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
                     <td>{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}</td>
-                    <td>${{ thing.totes|intcomma }}</td>
+                    <td class="r">${{ thing.totes|intcomma }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
             </table>
             {% else %}No donations were reported in the past 30 days.{% endif %}
         </div>
-      
-        <div id="topdonors" class="item">
-            <h3>Top donors, by dollars</h3>
-            <table class="table">{% for thing in top10ind %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: ${{ thing.totes|apnumber|intcomma }}</td></tr>{% endfor %}
-            </table>
-        </div>
-        
-        <div id="topdonors" class="item">
-            <h3>Top donors, by number of contributions</h3>
-            <table class="table">{% for thing in topvolumeraw %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: {{ thing.recipient__count }}</td></tr>{% endfor %}
-            </table>
-        </div>
-        
-        <div id="topdonors" class="item">
-            <h3>Top donors, by committees supported</h3>
-            <table class="table">{% for thing in topvolumeunique %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></b>: {{ thing.recipient__count }}</td></tr>{% endfor %}
-            </table>
-        </div>
-        
-        <div id="toprecips" class="item">
-            <h3>Top recipients</h3>
-            <table class="table">{% for thing in toprecipients %}
-                <tr><td>{{ forloop.counter }}. <b><a href="/campaign-finance/{{ thing.recipient_id__canonical }}/{{ thing.recipient_id__standard_name|slugify }}">{{ thing.recipient_id__standard_name|title }}</a></b>: ${{ thing.totes|intcomma }}</td></tr>{% endfor %}
-            </table>
-        </div>
-        
-        </div>
-    <div class="col-md-4">
-            <div class="sticky" style="margin-bottom:20px;">
-            <h3 class="bold">
-            <i class="fa fa-mouse-pointer"></i> What is this?</h3>
-            <p>Who's influencing Nebraska politics? Find out using the only source the lets you search political donations and spending by the people bankrolling the process. Explore <strong>{{ DONATION_TOTAL|intcomma }}</strong> contributions to political causes in Nebraska since <span class="minyear"></span>.</p>
-            <p><a href="/campaign-finance/about">Learn more about this data &raquo;</a></p>
-            </div>    
-            {% returnsearch %}
-            <div class="well">
-            <h3 class="bold" style="margin-top:0;"><i class="fa fa-users"></i> Select a place</h3>
-            <select class="form-control input-lg" onchange="if (this.value) window.location.href=this.value">
-            {% for govt in governments %}
-            <option value="campaign-finance/{{ govt.office_govt|slugify }}">{{ govt.office_govt }}</option>
+			
+		</div>
+		
+		<div class="col-sm-4">
+			
+			<h3 class="big">${{ last30expenditurestotal.totes|floatformat:"0"|intcomma }}</h3>
+            <p><b>Total dark money, past 30 days</b> 
+
+			<hr />
+			<p>This will be a chart</p>
+			Monthly expenditures, past year
+            <ul>
+            {% for month in monthlyexpenditures %}
+            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
             {% endfor %}
-            </select>
-            </div>
-        </div>
-    </div>
+            </ul>
+
+			</div>
+			
 </div>
+</div>
+
+
+<div id="big-wigs">
+<div class="container">
+	<h2>Bigwigs</h2>
+	
+	<p>Tell the people which people and entities to pay attention to</p>
+	
+</div>
+</div>
+
 
 {% endblock %}
 
