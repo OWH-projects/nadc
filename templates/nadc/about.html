@@ -1,0 +1,39 @@
+{% extends 'nadc/base.html' %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block title %}About - {% endblock %}
+
+{% block morestyles %}
+    <link href="{% static "nadc/about.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+{% include 'nadc/nav.html' %}
+
+	<div id="upper">	
+        <div class="container">
+            <div class="row">
+            <div class="col-sm-12">
+                <h1><b>About this data</b></h1>
+                <p>Lorem ipsum</p>
+                
+                <h3>Assumptions and limitations</h3>
+                <p>Lorem ipsum</p>
+                
+                <hr>                
+                <h3>For the geeks</h3>
+                <p>
+                    <i class="fa fa-github"></i>&ensp;<a href="https://github.com/OWH-projects/nadc" target="_blank">Application code</a>
+                    <br>
+                    <i class="fa fa-github"></i>&ensp;<a href="https://github.com/OWH-projects/nadc_data" target="_blank">Parsing/loading scripts</a>
+                </p>
+                
+                <p class="small"><a href="http://twitter.com/dataomaha" target="_blank">Follow @dataomaha on Twitter</a></p>
+            </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

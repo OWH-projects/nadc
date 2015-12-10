@@ -17,8 +17,11 @@ def Main(request):
     toplast30donations = Donation.objects.filter(donation_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).annotate(totes=F('cash')+F('inkind')).order_by('-totes')[:5]
     last30donationstotal = Donation.objects.filter(donation_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).aggregate(totes=Sum("cash") + Sum("inkind"))
     monthlyexpenditures = Expenditure.objects.filter(exp_date__gte=lastyear).exclude(raw_target="").values('exp_date').extra(select={'month': "EXTRACT(month FROM exp_date)"}).values('month').annotate(monthly_total=Sum("amount") + Sum("in_kind"))
-    toplast30expenditures = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).annotate(totes=F('amount')+F('in_kind')).order_by('-totes')[:5]
-    last30expenditurestotal = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).exclude(raw_target="").aggregate(totes=Sum("amount") + Sum("in_kind"))
+    toplast30admin = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).filter(raw_target="").annotate(totes=F('amount')+F('in_kind')).order_by('-totes')[:5]
+    last30admintotal = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).filter(raw_target="").aggregate(totes=Sum("amount") + Sum("in_kind"))
+
+    toplast30targeted = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).exclude(raw_target="").annotate(totes=F('amount')+F('in_kind')).order_by('-totes')[:5]
+    last30targetedtotal = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).exclude(raw_target="").aggregate(totes=Sum("amount") + Sum("in_kind"))
     governments = Candidate.objects.values('office_govt').distinct().order_by('office_govt')
     donations = Donation.objects.all()
     top10ind = donations.filter(donor_id__entity_type="I").values("donor_id__canonical", "donor_id__standard_name").annotate(totes=Sum("cash")).order_by("-totes")[:10]
@@ -28,7 +31,7 @@ def Main(request):
     toprecipients = Donation.objects.values('recipient_id__canonical', 'recipient_id__standard_name').annotate(totes=Sum("cash")).order_by("-totes")[:10]
     recentdonations = donations.filter(donation_date__gte=LAST_UPDATED+datetime.timedelta(-30), donation_date__lte=datetime.datetime.now()).annotate(totes=F('cash')+F('inkind')).order_by('-donation_date')
 
-    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'toplast30donations':toplast30donations, 'last30donationstotal':last30donationstotal,'monthlyexpenditures': monthlyexpenditures,'toplast30expenditures': toplast30expenditures,'last30expenditurestotal': last30expenditurestotal, 'recentdonations':recentdonations,'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear, 'LAST_UPDATED': LAST_UPDATED,'toprecipients': toprecipients,}
+    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'toplast30donations':toplast30donations, 'last30donationstotal':last30donationstotal,'monthlyexpenditures': monthlyexpenditures,'toplast30targeted': toplast30targeted,'last30targetedtotal': last30targetedtotal,'toplast30admin': toplast30admin,'last30admintotal': last30admintotal, 'recentdonations':recentdonations,'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear, 'LAST_UPDATED': LAST_UPDATED,'toprecipients': toprecipients,}
     return render_to_response('nadc/main.html', dictionaries)
 
 def Govt(request, govslug):
