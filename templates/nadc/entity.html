@@ -36,7 +36,7 @@
 		
 			<p class="lead">&bull; {% if gives %}Gave {{ gives.count|apnumber|intcomma }} donation{{ gives.count|pluralize }}{% endif %}{% if not gets %} between {{ first }} and {{ mostrecent }}.{% else %} {% if gives and gets %}and{% endif %} {% if gets and not gives %}R{% else %}r{% endif %}eceived {{ gets.count|apnumber|intcomma }} contribution{{ gets.count|pluralize }} between {{ first }} and {{ mostrecent }}. {% endif %}</p>
 			
-			{% if comm_candidates %}<p class="lead">&bull; Backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}<a href="/campaign-finance/{{ candidate.cand_id }}/{{ candidate.cand_name|slugify }}">{{ candidate.cand_name|title }}</a> for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}</p>{% endif %}
+			{% if comm_candidates %}<p class="lead">&bull; Backed {% for candidate in comm_candidates %}{% if candidate.stance = "0" %}{{ candidate.cand_name|title }} for {{ candidate.office_desc|title }} {{ candidate.office_title|title }}{% if not forloop.last %}{% if comm_candidates.count > 2 %}{% if not forloop.last %}, {% else %} and {% endif %} {% else %} and {% endif %}{% endif %}{% endif %}{% endfor %}</p>{% endif %}
 			
 			<hr />
 
@@ -49,23 +49,23 @@
 
 			{% if gives %}
 			<div class="col-sm-3">
-					<h3 class="bold" style="margin-bottom:0;">${{ totalcashdonated.cash__sum|add:totalinkinddonated.inkind__sum|intcomma }}</h3>
-					<p class="small ital">CASH AND IN-KIND DONATIONS</p>
+					<h3 class="bold" id="givestotal" style="margin-bottom:0;"></h3>
+					<p class="small ital">Donated</p>
 			</div>
 			{% endif %}
 				
 			{% if gets %}
 			<div class="col-sm-3">
-					<h3 class="bold" style="margin-bottom:0;">${{ totalcashreceived.cash__sum|add:totalinkindreceived.inkind__sum|intcomma }}</h3>
-					<p class="small ital">RAISED</p>
+					<h3 class="bold" id="getstotal" style="margin-bottom:0;"></h3>
+					<p class="small ital">Raised</p>
 			</div>
 			{% endif %}
 
 			
 			{% if normal_expenditures %}
 			<div class="col-sm-3">
-				<h3 class="bold" style="margin-bottom:0;">${{ normal_spent.amount__sum|intcomma }}</h3>
-				<p class="small ital">SPENT</p>
+				<h3 class="bold" id="campaign_spending_total" style="margin-bottom:0;"></h3>
+				<p class="small ital">Campaign spending</p>
 			</div>
 			{% endif %}
 			
@@ -73,15 +73,15 @@
 
 			{% if ind_expenditures %}
 			<div class="col-sm-3">
-				<h3 class="bold" style="margin-bottom:0;">${{ ind_spent.amount__sum|intcomma }}</h3>
-				<p class="small ital">SPENT DIRECTLY ON OTHER POLITICAL RACES</p>
+				<h3 class="bold" id="targeted_spending_total" style="margin-bottom:0;"></h3>
+				<p class="small ital">Targeted political spending</p>
 			</div>
 			{% endif %}
 			
 			{% if loans %}
 			<div class="col-sm-3">
-				<h3 class="bold" style="margin-bottom:0;">${{ totalborrowed.loan_amount__sum|intcomma }}</h3>
-				<p class="small ital">BORROWED</p>
+				<h3 class="bold" id="loantotal" style="margin-bottom:0;"></h3>
+				<p class="small ital">Borrowed</p>
 			</div>
 			{% endif %}
 		
@@ -117,225 +117,22 @@
 					<li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
 				{% endfor %}
 			{% endif %}
-
-			
-
 		</div>
-
-
-	</div>
-		
+	</div>		
 </div>
 </div><!-- /#upper -->
 
-
 	{% additionalinfo id %}
-
-
 
 <div id="lower">
 <div class="container">
-
-		<div class="btn-group btn-group-justified" role="group">
-
-
-		{% if gets %}
-			<a type="button" id="gets_button" class="btn btn-default topclicker">Raised</a>
-		{% endif %}
-
-		{% if gives %}
-			<a type="button" id="gives_button" class="btn btn-default topclicker">Donated</a>
-		{% endif %}
-
-		{% if ind_expenditures or normal_expenditures %}
-			<a type="button" id="spending_button" class="btn btn-default topclicker">Spent</a>
-		{% endif %}
-
-		{% if loans %}
-			<a type="button" id="loans_button" class="btn btn-default topclicker">Loans</a>
-		{% endif %}
-		
-		</div>
-
-<h1 class="bold center" id="loading"><i class="fa fa-spinner fa-pulse muted"></i><h1>
-<h2 class="bold" id="display_hed"></h2>
-<div id="display_graphics"></div>
-<div id="display_table"></div>
-
-
-<!-- killing all this eventually -->
-
-{% if normal_expenditures %}
-
-	<h2>EXPENDITURES</h2>
-	<table class="table table-condensed">
-		<thead>
-			<th>Paid to</th>
-			<th>For</th>
-			<th class="r">Date</th>
-			<th class="r">Amount</th>
-		</thead>
-		<tbody>
-		
-		{% for exp in normal_expenditures %}
-			<tr>
-				<td>{{ exp.payee|title }}</td>
-				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
-				<td class="r">{{ exp.exp_date }}</td>
-				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
-			</tr>
-		{% endfor %}
-		</tbody>
-	</table>
-{% endif %}
-
-{% if ind_expenditures %}
-
-	<h2>POLITICAL SPENDING</h2>
-    <h4>Spending to support candidates or causes</h4>
-	<table class="table table-condensed">
-		<thead>
-            <th>Supporting</th>
-			<th>Paid to</th>
-			<th>For</th>
-			<th class="r">Date</th>
-			<th class="r">Amount</th>
-		</thead>
-		<tbody>
-		{% for exp in ind_expenditures %}
-        {% if exp.stance == "0" %}
-			<tr>
-                <td>{% if exp.target_committee %}<a href="/campaign-finance/{{ exp.target_committee.pk }}/{{ exp.target_committee.standard_name|slugify }}">{{ exp.target_committee.standard_name|title }}</a>{% endif %}{% if exp.target_candidate %}<a href="/campaign-finance/{{ exp.target_candidate.pk }}/{{ exp.target_candidate.cand_name|slugify }}">{{ exp.target_candidate.cand_name }}</a>{% endif %}</td>
-				<td>{{ exp.payee|title }}</td>
-				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
-				<td class="r">{{ exp.exp_date }}</td>
-				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
-			</tr>
-        {% endif %}
-        {% endfor %}
-		</tbody>
-	</table>
-    
-    <h4>Spending to attack candidates or causes</h4>
-	<table class="table table-condensed">
-		<thead>
-            <th>Opposing</th>
-			<th>Paid to</th>
-			<th>For</th>
-			<th class="r">Date</th>
-			<th class="r">Amount</th>
-		</thead>
-		<tbody>
-		{% for exp in ind_expenditures %}
-        {% if exp.stance == "1" %}
-			<tr>
-                <td>{% if exp.target_committee %}{{ exp.target_committee.standard_name|title }}{% endif %}{% if exp.target_candidate %}{{ exp.target_candidate.cand_name }}{% endif %}</td>
-				<td>{{ exp.payee|title }}</td>
-				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
-				<td class="r">{{ exp.exp_date }}</td>
-				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
-			</tr>
-        {% endif %}
-        {% endfor %}
-		</tbody>
-	</table>
-    
-    <h4>Spending that wasn't identified as being in opposition or support</h4>
-	<table class="table table-condensed">
-		<thead>
-            <th>Targeting</th>
-			<th>Paid to</th>
-			<th>For</th>
-			<th class="r">Date</th>
-			<th class="r">Amount</th>
-		</thead>
-		<tbody>
-		{% for exp in ind_expenditures %}
-        {% if exp.stance == "" %}
-			<tr>
-                <td>{% if exp.target_committee %}{{ exp.target_committee.standard_name|title }}{% endif %}{% if exp.target_candidate %}{{ exp.target_candidate.cand_name }}{% endif %}</td>
-				<td>{{ exp.payee|title }}</td>
-				<td>{% if exp.exp_purpose %}{{ exp.exp_purpose|title }}{% else %}Not reported{% endif %}</td>
-				<td class="r">{{ exp.exp_date }}</td>
-				<td class="r">{% if exp.amount > 0 %}${{ exp.amount|intcomma }}{% else %}${{ exp.in_kind|intcomma }} (In-kind){% endif %}</td>
-			</tr>
-        {% endif %}
-        {% endfor %}
-		</tbody>
-	</table>
-    
-{% endif %}
-
-{% if loans %}
-	<h2>LOANS</h2>
-	
-	<h3>Loans taken</h3>
-	<table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Lender</th>
-				<th>Date borrowed</th>
-				<th>Amount</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for loan in loans %}
-			{% if loan.loan_amount > 0 %}
-			<tr>
-				<td>{{ loan.lender_name }}</td>
-				<td>{{ loan.loan_date }}</td>
-				<td>${{ loan.loan_amount|intcomma  }}</td>
-			</tr>
-			{% endif %}
-			{% endfor %}
-		</tbody>
-	</table>
-	
-    {% if loan.loan_repaid > 0 %}
-	<h3>Loans repaid</h3>
-	<table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Lender</th>
-				<th>Date repaid</th>
-				<th>Amount</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for loan in loans %}
-			<tr>
-				<td>{{ loan.lender_name }}</td>
-				<td>{{ loan.loan_date }}</td>
-				<td>${{ loan.loan_repaid|intcomma  }}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-    {% endif %}
-
-    {% if loan.loan_forgiven > 0 %}
-	<h3>Loans forgiven</h3>
-	<table class="table table-condensed">
-		<thead>
-			<tr>
-				<th>Lender</th>
-				<th>Date forgiven</th>
-				<th>Amount</th>
-			</tr>
-		</thead>
-		<tbody>
-			{% for loan in loans %}
-			<tr>
-				<td>{{ loan.lender_name }}</td>
-				<td>{{ loan.loan_date }}</td>
-				<td>${{ loan.loan_forgiven|intcomma  }}</td>
-			</tr>
-			{% endfor %}
-		</tbody>
-	</table>
-    {% endif %}
-	
-{% endif %}
+    <h1 class="center" id="loading">
+        <i class="fa fa-spinner fa-pulse"></i>
+    <h1>
+    <div id="button_duder"></div>
+    <h2 class="bold" id="display_hed"></h2>
+    <div id="display_graphics"></div>
+    <div id="display_table"></div>
 
 {% if gives %}
 <!-- underscore template for "gives" table" -->
@@ -356,7 +153,7 @@
             <!-- here's the loop with the stuff to show/hide -->
             <td>
                     <% _.each( d.gives, function( ind_don ){ %>
-                        Date: <%= toAPDate(ind_don.donation_date) %><br>
+                        Date: <%= ind_don.donation_date %><br>
                         Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
                     <% }); %>
             </td>
@@ -368,7 +165,7 @@
     </table>
 </script>
 
-{% if groupedgives.count > 5 %}
+
 <!-- underscore template for "gives" bar charts" -->
 <script type="text/html" class="gives_chart_template">
 <h3 class="bold">Top 5 committees supported</h3>
@@ -396,7 +193,6 @@
         </div>
     </div>
 </script>
-{% endif %}{# end if groupedgives #}
 {% endif %}{# end if gives #}
 
 
@@ -419,7 +215,7 @@
             <!-- here's the loop with the stuff to show/hide -->
             <td>
                     <% _.each( d.gives, function( ind_don ){ %>
-                        Date: <%= toAPDate(ind_don.donation_date) %><br>
+                        Date: <%= ind_don.donation_date %><br>
                         Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
                     <% }); %>
             </td>
@@ -431,7 +227,7 @@
     </table>
 </script>
 
-{% if groupedgets.count > 5 %}
+
 <!-- underscore template for "gets" bar charts" -->
 <script type="text/html" class="gets_chart_template">
 <h3 class="bold">Top 5 donors</h3>
@@ -459,8 +255,152 @@
         </div>
     </div>
 </script>
-{% endif %}{# end if groupedgets #}
 {% endif %}{# end if gets #}
+
+{% if normal_expenditures or ind_expenditures %}
+<!-- underscore template for "expenditure" tables -->
+<script type="text/html" class="spending_table_template">
+    {% if ind_expenditures %}
+    <h3>Political spending</h3>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Paid to</th>
+                <th>For</th>
+                <th>Targeting</th>
+                <th>Stance</th>
+                <th class="r">Date</th>
+                <th class="r">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% _.each( data_to_template.targeted_spending, function( d ){ %>
+            <tr>
+                 <td><% if (d.recipient) { %><%= d.recipient %><% } else { %>Unspecified<% }; %></td>
+                 <td><%= d.purpose %></td>
+                 <td>
+                 <% if (d.target_committee_id) { %>
+                    <a href="/campaign-finance/<%= d.target_committee_id %>/<%= d.target_committee_slug %>"><%= d.target_committee_name %></a>
+                 <% } else if (exp.target_candidate) { %>
+                    <a href="/campaign-finance/<%= d.target_candidate_id %>/<%= d.target_candidate_slug %>"><%= d.target_candidate_name %></a>                 
+                 <% }; %>                 
+                 </td>
+                 <td>
+                    <%= d.stance %>
+                 </td>
+                 <td class="r"><%= d.exp_date %></td>
+                 <td class="r">
+                    <% if (d.amount) { %>$<%= addCommas(d.amount.toFixed(2)).replace(".00","") %><% }; %>
+                    <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2)).replace(".00","") %> (in-kind)<% }; %>
+                 </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+    {% endif %}
+    
+    {% if normal_expenditures %}
+    <h3>Campaign spending</h3>
+    <table class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Paid to</th>
+                <th>For</th>
+                <th class="r">Date</th>
+                <th class="r">Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+        <% _.each( data_to_template.campaign_spending, function( d ){ %>
+            <tr>
+                 <td><%= d.recipient %></td>
+                 <td><%= d.purpose %></td>
+                 <td class="r"><%= d.exp_date %></td>
+                 <td class="r">
+                    <% if (d.cash) { %>$<%= addCommas(d.cash.toFixed(2).replace(".00","")) %><% }; %>
+                    <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2).replace(".00","")) %> (in-kind)<% }; %>
+                 </td>
+            </tr>
+        <% }); %>
+        </tbody>
+    </table>
+    {% endif %}
+    
+</script>
+{% endif %}
+
+{% if loans %}
+<!-- underscore template for loans table -->
+<script type="text/html" class="loans_table_template">
+    <% if ( sum(_.pluck(data_to_template, "borrowed")) > 0 ) { %>
+    <h3>Borrowed: $<%= addCommas(sum(_.pluck(data_to_template, "borrowed")).toFixed(2).replace(".00","")) %></h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date</th>
+				<th class="r">Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% _.each(data_to_template, function(d) { %>
+			<tr>
+				<td><%= d.lender %></td>
+				<td><%= d.date %></td>
+				<td class="r">$<%= addCommas(d.borrowed.toFixed(2).replace(".00","")) %></td>
+			</tr>
+            <% }); %>
+		</tbody>
+	</table>       
+    <% }; %>
+        
+    <% if ( sum(_.pluck(_.filter(data_to_template, function(s) { return _.has(s, "repaid") } ), "repaid")) > 0 ) { %>
+    <h3>Repaid: $<%= addCommas(sum(_.pluck(_.filter(data_to_template, function(s) { return _.has(s, "repaid") } ), "repaid")).toFixed(2)).replace(".00","") %></h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date</th>
+				<th class="r">Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% _.each(_.filter(data_to_template, function(s) { return _.has(s, "repaid") }), function(d) { %>
+			<tr>
+				<td><%= d.lender %></td>
+				<td><%= d.date %></td>
+				<td class="r">$<%= addCommas(d.repaid.toFixed(2).replace(".00","")) %></td>
+			</tr>
+            <% }); %>
+		</tbody>
+	</table>
+    <% }; %>
+    
+    <% if ( sum(_.pluck(_.filter(data_to_template, function(s) { return _.has(s, "forgiven") } ), "forgiven")) > 0 ) { %>
+    <h3>Forgiven: $<%= addCommas(sum(_.pluck(_.filter(data_to_template, function(s) { return _.has(s, "forgiven") } ), "forgiven")).toFixed(2)).replace(".00","") %></h3>
+	<table class="table table-condensed">
+		<thead>
+			<tr>
+				<th>Lender</th>
+				<th>Date</th>
+				<th class="r">Amount</th>
+			</tr>
+		</thead>
+		<tbody>
+			<% _.each(_.filter(data_to_template, function(s) { return _.has(s, "forgiven") }), function(d) { %>
+			<tr>
+				<td><%= d.lender %></td>
+				<td><%= d.date %></td>
+				<td class="r">$<%= addCommas(d.forgiven.toFixed(2).replace(".00","")) %></td>
+			</tr>
+            <% }); %>
+		</tbody>
+	</table>
+    <% }; %>
+    
+</script>
+	
+{% endif %}
 
 
 
@@ -482,21 +422,25 @@
         };
     }
     
+    var elements = 0;
+    
     // set global template variable
     _.templateSettings.variable = "data_to_template";
 
-    // function to populate the table and hed
+    // function to populate the gives/gets table and hed
     var makeTable = function(table_template, data, hed) {
         $("#display_table").html(table_template(data));
         $("#display_hed").html(hed)
         
         //bind click event to drop table
         $(".click_to_expand").bind("click", function(d) {
+            
             // this is where we do the javascript to show/hide table rows
+            
         });
     };
     
-    // function to make the chart
+    // function to make the gives/gets charts
     var makeChart = function(chart_template, chart_data) {
         $('#display_graphics').html(chart_template(chart_data));
     };
@@ -506,15 +450,19 @@
     };
     
     {% if gives %}
+    elements++;
+    
     // cash and in-kind donations
-    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"o-m-d" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"N j, Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name|safe|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
     
     // define templates
-    var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
     var gives_table_template = _.template($( "script.gives_table_template" ).html());
     
     // get the donation total
     var gives_cash_and_inkind = _.pluck(gives, "cash").concat(_.pluck(gives, "inkind"));
+    
+    // feed it to topline hed
+    $('#givestotal').html("$" + addCommas(sum(gives_cash_and_inkind).toFixed(2).replace(".00","")));
     
     // group donations by ID
     var gives_out = _.chain(gives)
@@ -529,31 +477,32 @@
         })
         .sortBy("sum").reverse()
         .value();
-
-    {% if groupedgives.count > 5 %}
-    
-    // define template
-    var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
-    
-    var gives_top5 = _.first(gives_out, 5);
-    var gives_restnum = gives_out.length - 5;
-    var gives_ot = sum(gives_cash_and_inkind);
-    var gives_rest_tot = sum(gives_cash_and_inkind) - sum(_.pluck(gives_top5, "sum"));
-    
-    var gives_for_chart = {
-        overall_tot: gives_ot,
-        topfive: gives_top5,
-        rest: {
-                num: gives_restnum,
-                tot: gives_rest_tot
-        }
+        
+    if (gives_out.length > 5) {
+        // define template
+        var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
+        
+        var gives_top5 = _.first(gives_out, 5);
+        var gives_restnum = gives_out.length - 5;
+        var gives_ot = sum(gives_cash_and_inkind);
+        var gives_rest_tot = sum(gives_cash_and_inkind) - sum(_.pluck(gives_top5, "sum"));
+        
+        var gives_for_chart = {
+            overall_tot: gives_ot,
+            topfive: gives_top5,
+            rest: {
+                    num: gives_restnum,
+                    tot: gives_rest_tot
+            }
+        };
     };
     
-    {% endif %}{# end if groupedgives.count > 5 #}
     {% endif %}{# end if gives #}
       
     {% if gets %}
-    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"m-d-o" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    elements++;
+    
+    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"N j, Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
     
     // define templates
     var gets_chart_template = _.template($( "script.gets_chart_template" ).html());
@@ -573,120 +522,180 @@
         .sortBy("sum").reverse()
         .value();
     
-    {% if groupedgets.count > 5 %}
     // total gets
     var gets_cash_and_inkind = _.pluck(gets, "cash").concat(_.pluck(gets, "inkind"));
     
-    var gets_top5 = _.first(gets_out, 5);
-    var gets_restnum = gets_out.length - 5;
-    var gets_ot = sum(gets_cash_and_inkind);
-    var gets_rest_tot = sum(gets_cash_and_inkind) - sum(_.pluck(gets_top5, "sum"));
+    $('#getstotal').html("$" + addCommas(sum(gets_cash_and_inkind).toFixed(2).replace(".00","")));
     
-    var gets_for_chart = {
-        overall_tot: gets_ot,
-        topfive: gets_top5,
-        rest: {
-                num: gets_restnum,
-                tot: gets_rest_tot
-        }
-    };      
-      
+    if (gets_out.length > 5) {
+        var gets_top5 = _.first(gets_out, 5);
+        var gets_restnum = gets_out.length - 5;
+        var gets_ot = sum(gets_cash_and_inkind);
+        var gets_rest_tot = sum(gets_cash_and_inkind) - sum(_.pluck(gets_top5, "sum"));
+        
+        var gets_for_chart = {
+            overall_tot: gets_ot,
+            topfive: gets_top5,
+            rest: {
+                    num: gets_restnum,
+                    tot: gets_rest_tot
+            }
+        };
+    };
     {% endif %}
-    {% endif %}
-    
-
-    
-    
+        
     {% if normal_expenditures or ind_expenditures %}
-    {% if normal_expenditures %}var admin_expenses = [{% for record in normal_expenditures %}{"exp_date":"{{ record.exp_date|date:"o-m-d" }}",{% if record.in_kind > 0 %} "inkind": {{ record.in_kind }},{% endif %}{% if record.amount > 0 %} "cash":{{ record.amount }},{% endif %} "recipient":"{{ record.payee|title }}", "purpose": "{% if record.exp_purpose %}{{ record.exp_purpose|title }}{% else %}Not reported{% endif %}"}{% if not forloop.last %}, {% endif %}{% endfor %}];{% endif %}
+    elements++;
     
-    {% if ind_expenditures %}
+    // define spending table template
+    var spending_table_template = _.template($( "script.spending_table_template" ).html());
     
-    var ind_expenses = [
+    var expenditures = {};
     
-    {% for exp in ind_expenditures %}
+    {% if normal_expenditures %}var admin_expenses = [{% for record in normal_expenditures %}{"exp_date":"{{ record.exp_date|date:"N j, Y" }}",{% if record.in_kind and record.in_kind > 0 %} "inkind": {{ record.in_kind }},{% endif %}{% if record.amount and record.amount > 0 %} "cash":{{ record.amount }},{% endif %} "recipient":"{{ record.payee|safe|title }}", "purpose": "{% if record.exp_purpose %}{{ record.exp_purpose|title }}{% else %}Not reported{% endif %}"}{% if not forloop.last %}, {% endif %}{% endfor %}];
     
-    {% if exp.target_committee %}
-    "target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}
+    expenditures['campaign_spending'] = admin_expenses;
     
+    var total_campaign_spending = sum(_.pluck(
+        _.filter(admin_expenses, function(z) { return _.has(z, "cash" )}), "cash")
+        .concat(_.pluck(
+            _.filter(admin_expenses, function(z) { return _.has(z, "inkind" )}), "inkind")));
     
-    {% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %}
-    
-    "payee": "{{ exp.payee|title }}", "stance": "{{ exp.stance }}", "purpose": 
-    
-    {% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not reported", {% endif %}
-    
-    "exp_date": "{{ exp.exp_date|date:"o-m-d" }}"
-    
-    {% if exp.amount > 0 %}, "amount": "{{ exp.amount }}"{% endif %}
-    
-    {% if exp.in_kind > 0 %}, "inkind": "{{ exp.in_kind %}"{% endif %}{% if not forloop.last %}, 
+    $("#campaign_spending_total").html("$" + addCommas(total_campaign_spending.toFixed(2)).replace(".00",""));
     
     {% endif %}
     
-    {% endfor %}];
+    {% if ind_expenditures %}var ind_expenses = [{% for exp in ind_expenditures %} { {% if exp.target_committee %}"target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}{% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %} "payee": "{{ exp.payee|title }}", "stance": "{% if exp.stance == 0 %}Support{% elif exp.stance == 1 %}Oppose{% else %}Unspecified{% endif %}", "purpose":{% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not reported"{% endif %},"exp_date": "{{ exp.exp_date|date:"N j, Y" }}"{% if exp.amount > 0 %}, "amount": {{ exp.amount }}{% endif %}{% if exp.in_kind > 0 %}, "inkind": {{ exp.in_kind }}{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}];
     
-    console.log(ind_expenses);    
+    expenditures['targeted_spending'] = ind_expenses;
+
+    var total_targeted_spending = sum(_.pluck(
+        _.filter(ind_expenses, function(z) { return _.has(z, "amount" )}), "amount")
+        .concat(_.pluck(
+            _.filter(ind_expenses, function(z) { return _.has(z, "inkind" )}), "inkind")));
+    
+    $("#targeted_spending_total").html("$" + addCommas(total_targeted_spending.toFixed(2)).replace(".00",""));
+    
     {% endif %}
+
+    var makeExpTable = function() {
+        $("#display_table").html(spending_table_template(expenditures));
+        $("#display_hed").html("Expenditures")
+    };
     
-
-        {% endif %}    
-
-    $(document).ready(function() {
-        // pass data to templates for initial pageload
-        {% if gives %}
-        makeTable(gives_table_template, gives_out, "Donations");
-        {% if groupedgives.count > 5 %}
-        makeChart(gives_chart_template, gives_for_chart);
-        {% endif %}
         {% endif %}
         
-        {% if gets and not gives %}
-        makeTable(gets_table_template, gets_out, "Donations received");
-        {% if groupedgets.count > 5 %}
-        makeChart(gets_chart_template, gets_for_chart);       
-        {% endif %}
+        
+        {% if loans %}
+        elements++;
+        
+        // table template
+        var loan_table_template = _.template($( "script.loans_table_template" ).html());
+                
+        var loans = [{% for loan in loans %}{ {% if loan.loan_amount and loan.loan_amount > 0 %}"borrowed": {{ loan.loan_amount }}, {% endif %}{% if loan.loan_repaid and loan.loan_repaid > 0 %}"repaid": {{ loan.loan_repaid }}, {% endif %}{% if loan.loan_forgiven and loan.loan_forgiven > 0 %}"forgiven": {{ loan.loan_forgiven }}, {% endif %}"lender":"{{ loan.lender_name|safe|title }}", "date": "{{ loan.loan_date|date:"N j, Y" }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+        
+        var borrowed_total = sum(_.pluck(loans, "borrowed"));
+        
+        if (borrowed_total > 0) {
+            $("#loantotal").html("$" + addCommas(borrowed_total.toFixed(2)).replace(".00",""));
+        };
+
+        var makeLoanTable = function() {
+            $("#display_table").html(loan_table_template(loans));
+            $("#display_hed").html("Loans")
+        };
+        
         {% endif %}
         
-        $('.topclicker').click(function() {
-            console.log(this.id);
-        });
+    $(document).ready(function() {        
+        if (elements > 1) {        
+            // populate button duder
+            var buttonstring = '<div class="btn-group btn-group-justified" role="group">{% if gets %}<a type="button" id="gets_button" class="btn btn-default topclicker">Raised</a>{% endif %}{% if gives %}<a type="button" id="gives_button" class="btn btn-default topclicker">Donated</a>{% endif %}{% if ind_expenditures or normal_expenditures %}<a type="button" id="spending_button" class="btn btn-default topclicker">Spent</a>{% endif %}{% if loans %}<a type="button" id="loans_button" class="btn btn-default topclicker">Loans</a>{% endif %}</div>';
+            
+            $("#button_duder").html(buttonstring);
+            
+            $(".topclicker").bind("click", function(d) {
+                var id = this.id;
+
+                $(".topclicker").attr("class", "btn btn-default topclicker");
+                $(this).attr("class", "btn btn-success topclicker");
+                
+                {% if gives %}
+                if ( id === "gives_button" ) {
+                    $("#loading").show();
+                    makeTable(gives_table_template, gives_out, "Donations");
+                    $("#display_graphics").html("");
+                    if (gives_out.length > 5) {
+                        makeChart(gives_chart_template, gives_for_chart);
+                    };
+                    $("#loading").hide();                    
+                };
+                {% endif %}
+
+                {% if gets %}
+                if ( id === "gets_button" ) {
+                    $("#loading").show();
+                    makeTable(gets_table_template, gets_out, "Donations received");
+                    $("#display_graphics").html("");
+                    if (gets_out.length > 5) {
+                        makeChart(gets_chart_template, gets_for_chart);
+                    };
+                    $("#loading").hide();
+                };
+                {% endif %}
+
+                {% if ind_expenditures or normal_expenditures %}
+                if ( id === "spending_button" ) {
+                    $("#loading").show();
+                    $("#display_graphics").html("");
+                    makeExpTable();
+                    $("#loading").hide();
+                };
+                {% endif %}
+
+                {% if loans %}
+                if ( id === "loans_button" ) {
+                    $("#loading").show();
+                    $("#display_graphics").html("");
+                    makeLoanTable();
+                    $("#loading").hide();
+                };
+                {% endif %}                
+            });
+            
+            $(".topclicker").eq(0).trigger("click");
+            $("#loading").hide();
+        } else {
+            {% if gives %}
+            makeTable(gives_table_template, gives_out, "Donations");
+            if (gives_out.length > 5) {
+                makeChart(gives_chart_template, gives_for_chart);
+            };
+            $("#loading").hide();
+            {% endif %}
+            
+            {% if gets %}
+            makeTable(gets_table_template, gets_out, "Donations received");
+            if (gets_out.length > 5) {
+                makeChart(gets_chart_template, gets_for_chart);
+            };
+            $("#loading").hide();
+            {% endif %}
+
+            {% if ind_expenditures or normal_expenditures %}
+            makeExpTable();
+            $("#loading").hide();
+            {% endif %}
+
+            {% if loans %}
+            makeLoanTable();
+            $("#loading").hide();
+            {% endif %}
+        };
         
     });
-      
-/*
-var timelinegives = [
-{% for row in allgives %}
-    [{{ forloop.counter }}, {{ row.total }}]{% if not forloop.last %},{% endif %}
-{% endfor %}
-];
-var dataset = [{ data: timelinegives, color: "#5482FF" }];
-var ticks = [ {% for row in allgives %}
-    [{{ forloop.counter }}, "{{ row.donation_date }}"]{% if not forloop.last %},{% endif %}
-    {% endfor %}];
-    
-var options = {
-xaxis: {
-  ticks: ticks
-},
-series: {
-    bars: {
-        show: true
-    }
-},
-bars: {
-    align: "center",
-    barWidth: 0.5
-}}
-
- $(document).ready(function () {
-            $.plot($("#timeline"), dataset, options);
-
-        });
-*/
 
 $('[data-toggle="tooltip"]').tooltip({"trigger": "hover"});
 
 </script>
 {% endblock %}
-
