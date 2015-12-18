@@ -30,7 +30,7 @@
 			<p class="text-muted">
 			{% if name.city and name.state %}{{ name.city|title }}, {{ name.state }}{% endif %}  
 			{% if name.dissolved_date %} &bull; Committee dissolved in {{ name.dissolved_date|date:"o" }}{% endif %} 
-			{% if name.employer or name.occupation or name.place_of_business %} &bull; {% if name.occupation %}{{ name.occupation|title }}{% endif %}{% if name.employer %} at {{ name.employer|title }}{% endif %}{% if name.place_of_business %}, {{ name.place_of_business|title }}{% endif %}{% endif %}
+			<!--{% if name.employer or name.occupation or name.place_of_business %} &bull; {% if name.occupation %}{{ name.occupation|title }}{% endif %}{% if name.employer %} at {{ name.employer|title }}{% endif %}{% if name.place_of_business %}, {{ name.place_of_business|title }}{% endif %}{% endif %}-->
 			</p>
 			
 			<hr />
@@ -113,8 +113,9 @@
 <div class="container">
     <h1 class="center" id="loading">
         <i class="fa fa-spinner fa-pulse"></i>
-    <h1>
-   <div id="datefilter">
+    </h1>
+    
+    <div id="datefilter">
         <h4><span class="glyphicon glyphicon-calendar"></span> Filter records by date</h4>
         <div class="row">
         <div class="col-sm-5">
@@ -129,6 +130,7 @@
         </div>            
         </div>
     </div>
+    
     <div id="button_duder"></div>
     <h2 class="bold" id="display_hed"></h2>
     <div id="display_graphics"></div>
@@ -284,7 +286,7 @@
                  <td>
                  <% if (d.target_committee_id) { %>
                     <a href="/campaign-finance/<%= d.target_committee_id %>/<%= d.target_committee_slug %>"><%= d.target_committee_name %></a>
-                 <% } else if (exp.target_candidate) { %>
+                 <% } else if (d.target_candidate) { %>
                     <a href="/campaign-finance/<%= d.target_candidate_id %>/<%= d.target_candidate_slug %>"><%= d.target_candidate_name %></a>                 
                  <% }; %>                 
                  </td>
@@ -415,6 +417,13 @@
 <script src="http://www.dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
 <script>
+
+    var APmonths = ['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'];
+
+    var dateDuder = function(datestring) {
+        var d = datestring.split("/");
+        return APmonths[Number(d[0])-1] + " " + d[1] + ", " + d[2];
+    };
 
     var jankPluralize = function(num) {
         if (Number(num) === 1) {
@@ -755,15 +764,10 @@
         {% if ind_expenditures or normal_expenditures %}
         if ( e === "spending_button" || e === "expenditures" ) {
             var spending_table_template = _.template($( "script.spending_table_template" ).html());
-            var exp = {};
-            {% if ind_expenditures %}
-            exp['targeted_spending'] = targeted_spending_to_work_with;
-            {% endif %}
-            {% if normal_expenditures %}
-            exp['campaign_spending'] = campaign_spending_to_work_with;
-            {% endif %}
-            
-            $("#display_table").html(spending_table_template(exp));
+            var exp_out = {};
+            {% if ind_expenditures %}exp_out['targeted_spending'] = targeted_spending_to_work_with;{% endif %}
+            {% if normal_expenditures %}exp_out['campaign_spending'] = campaign_spending_to_work_with;{% endif %}
+            $("#display_table").html(spending_table_template(exp_out));
             $("#display_hed").html("Expenditures");
         };
         {% endif %}    
