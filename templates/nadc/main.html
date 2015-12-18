@@ -78,13 +78,6 @@
 <div id="donations">
 <div class="container">
 
-		<!--
-        <div id="barchart" class="item">
-            <h3>Political giving, <span class="minyear"></span> to <span class="maxyear"></span></h3>
-            <div id="chart"></div>
-        </div>
-        -->
-
 			<h2>Donations</h2>
 
 			<div class="col-sm-7">
@@ -158,15 +151,10 @@
 				<h3 class="big">${{ last30donationstotal.totes|floatformat:"0"|intcomma }}</h3>
 				<p><b>Total donations in past 30 days</b></p>
 				
-				<hr />
-				<p>(This will be a chart)</p>
-				
-				Monthly donations, past year
-				<ul>
-				{% for month in monthlydonations %}
-				<li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
-				{% endfor %}
-				</ul>
+				<hr style="border-top: 1px solid #fafafa;" />
+				<p class="bold">Donations by month, past year</p>
+                <div id="donations_chart"></div>
+                
        	
 			</div>
 			
@@ -218,13 +206,9 @@
             <p><b>Targeted spending, past 30 days</b> 
 
 			<hr />
-			<p>This will be a chart</p>
-			Monthly expenditures, past year
-            <ul>
-            {% for month in monthlyexpenditures %}
-            <li>{{ month.month }}, ${{ month.monthly_total|intcomma }}</li>
-            {% endfor %}
-            </ul>
+			<p class="bold">Expenditures by month, past year</p>
+            <div id="expenditures_chart"></div>
+            
 
 			</div>
 			
@@ -245,16 +229,16 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="http://dataomaha.com/media/scripts/flot/jquery.flot.min.js"></script>
-<script src="http://dataomaha.com/media/scripts/curvedLines.js"></script>
-<script src="http://dataomaha.com/media/scripts/flot/jquery.flot.resize.min.js"></script>
-<script src="http://www.dataomaha.com/media/scripts/flot/jquery.flot.time.min.js"></script>
+<script src="/media/scripts/flot/jquery.flot.min.js"></script>
+<script src="/media/scripts/flot/jquery.flot.resize.min.js"></script>
+<script src="/media/scripts/flot/jquery.flot.time.min.js"></script>
 <script>
     
     $('[data-toggle="tooltip"]').tooltip({"trigger": "click"});
     
-    var getYear = function(y) {
-        return new Date(y, 0, 1).getTime();
+    var getMonthTime = function(m, y) {
+        var month = Number(m) - 1;
+        return new Date(y, month, 1).getTime();
     };
     
     var addCommas = function(nStr) {
@@ -273,24 +257,19 @@
         return '$' + addCommas(val);
     };
     
-    var recent = []
+    var months = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
     
-    var by_year = [{% for dude in byyear %}{"year":{{ dude.donation_year }}, "sum":{{ dude.sum }}}{% if not forloop.last %},{% endif %}{% endfor%}];
-
-    var d1 = [];
+    var monthFormatter = function (val, axis) {
+        var d = new Date(val);
+        return months[d.getUTCMonth()];
+    };
     
-    _.each(by_year, function(d) {
-        d1.push([getYear(d.year), d.sum]);
-    });
+    var donations_by_month = [{% for month in monthlydonations %}[getMonthTime({{ month.month }}, {{ month.year }}), {{ month.monthly_total }}]{% if not forloop.last %},{% endif %}{% endfor %}];
     
-    var minyear = _.min(_.pluck(by_year, "year"));
-    var maxyear = _.max(_.pluck(by_year, "year"));
-    
-    $('.minyear').text(minyear);
-    $('.maxyear').text(maxyear);
+    var expenditures_by_month = [{% for month in monthlyexpenditures %}[getMonthTime({{ month.month }}, {{ month.year }}), {{ month.monthly_total }}]{% if not forloop.last %},{% endif %}{% endfor %}];
     
     var chartIt = function() {
-        $.plot($("#chart"), [d1], {
+        $.plot($("#donations_chart"), [donations_by_month], {
             series: {
                 bars: {
                     show: true,
@@ -298,13 +277,16 @@
                     fillColor: '#333',
                     align: "center"
                 },
-              color: "#fff"
+              color: "#f0f0f0"
             },
-            bars: { barWidth: 60*60*24*365*1000 },
+            bars: { barWidth: (60*60*24*365*1000) / 13 },
             shadowSize: 0,
             xaxis: {
                 mode: "time",
-                tickLength: 0
+                tickLength: 0,
+                ticks: 12,
+                tickFormatter: monthFormatter,
+                margin: 10
             },
             yaxis: {
                 tickFormatter: formatter
@@ -312,11 +294,42 @@
             grid: {
                 borderWidth: 0.5,
                 axisMargin: 0,
-                borderColor: '#eee',
-                color: '#eee',
+                borderColor: '#f0f0f0',
+                color: '#333',
                 labelMargin:15
                 }
         });
+        
+        $.plot($("#expenditures_chart"), [expenditures_by_month], {
+            series: {
+                bars: {
+                    show: true,
+                    fill: true,
+                    fillColor: '#333',
+                    align: "center"
+                },
+              color: "#f0f0f0"
+            },
+            bars: { barWidth: (60*60*24*365*1000) / 13 },
+            shadowSize: 0,
+            xaxis: {
+                mode: "time",
+                tickLength: 0,
+                ticks: 12,
+                tickFormatter: monthFormatter,
+                margin: 10
+            },
+            yaxis: {
+                tickFormatter: formatter
+            },        
+            grid: {
+                borderWidth: 0.5,
+                axisMargin: 0,
+                borderColor: '#f0f0f0',
+                color: '#333',
+                labelMargin:15
+                }
+        });        
     };
     
     $(document).ready(function() {
@@ -329,7 +342,7 @@
 
         var $tw = $('#tw');
         var $fb = $('#fb');
-        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL|intcomma }} Nebraska campaign finance records since " + minyear + ": http://www.dataomaha.com/campaign-finance");
+        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL|intcomma }} Nebraska campaign finance records since 1999: http://www.dataomaha.com/campaign-finance");
         $tw.attr({
             'href': msg,
             'target': '_blank'

@@ -1,0 +1,68 @@
+{
+
+{% if type == "donation" %}
+	"donations":[
+    {% for give in gives %}
+		{
+			"donor_id": "{{ give.donor_id }}",
+			"donor_name": "{{ give.donor.name|title }}",
+			"recipient_id": "{{ give.recipient_id }}",
+			"recipient_name": "{{ give.recipient.name|title }}",
+			"amount": {% if give.cash > 0 %}{{ give.cash }}{% else %}{{ give.inkind }}{% endif %},
+			"date": "{{ give.donation_date|date:"Y-m-d" }}"
+		}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+	]
+{% endif %}
+{% if type == "loan" %}
+	"loans":[
+    {% for loan in loans %}
+		{
+			"lender_name": "{{ loan.lender_name }}",
+			"recipient_name": "{{ loan.committee.name|title }}",
+			"recipient_id": "{{ loan.committee_id }}",
+			"amount": {{ loan.loan_amount }},
+            "repaid": {{ loan.loan_repaid }},
+			"forgiven": {{ loan.loan_forgiven }},
+			"date": "{{ loan.loan_date|date:"Y-m-d" }}"
+        }{% if not forloop.last %},{% endif %}  
+    {% endfor %}
+    ]
+{% endif %}
+{% if type == "campaignspending" %}
+	"campaign_spending":[
+    {% for item in normal_expenditures %}
+    {
+ 			"committee_id": "{{ item.committee_id }}",
+			"committee_name": "{{ item.committee.name|title }}",   
+			"payee": "{{ item.payee|title }}",
+			"recipient_id": {{ item.amount }},
+			"amount": {{ item.in_kind }},
+            "date": {{ item.exp_date|date:"Y-m-d" }},
+			"description": "{{ item.exp_purpose }}"
+        }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ]
+{% endif %}
+{% if type == "targetedspending" %}
+	"targeted_spending":[
+    {% for item in ind_expenditures %}
+    {
+ 			"committee_id": "{{ item.committee_id }}",
+			"committee_name": "{{ item.committee.name|title }}",  
+			"target_committee_id": "{{ item.target_committee_id }}",
+			"target_committee_name": "{{ item.target_committee.name|title }}",
+			"target_candidate_id": "{{ item.target_candidate_id }}",
+			"target_candidate_name": "{{ item.target_candidate.name|title }}",             
+			"payee": "{{ item.payee|title }}",
+			"recipient_id": {{ item.amount }},
+			"amount": {{ item.in_kind }},
+            "date": {{ item.exp_date|date:"Y-m-d" }},
+			"description": "{{ item.exp_purpose }}"
+        }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+    ]
+{% endif %}
+
+}
+

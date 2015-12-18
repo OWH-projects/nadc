@@ -3,10 +3,11 @@
 {% load additionalinfo %}
 {% load humanize %}
 
-{% block title %}{% endblock %}
+{% block title %}{% if name.standard_name %}{{ name.standard_name|title }}{% else %}{{ name.cand_name|title }}{% endif %} - {% endblock %}
 
 {% block morestyles %}
     <link href="{% static "nadc/entity.css" %}" rel="stylesheet">
+    <link href="http://dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
@@ -48,41 +49,24 @@
 		<div class="row">
 
 			{% if gives %}
-			<div class="col-sm-3">
-					<h3 class="bold" id="givestotal" style="margin-bottom:0;"></h3>
-					<p class="small ital">Donated</p>
-			</div>
+			<div class="col-sm-3" id="givestotal"></div>
 			{% endif %}
 				
 			{% if gets %}
-			<div class="col-sm-3">
-					<h3 class="bold" id="getstotal" style="margin-bottom:0;"></h3>
-					<p class="small ital">Raised</p>
-			</div>
+			<div class="col-sm-3" id="getstotal"></div>
 			{% endif %}
 
 			
 			{% if normal_expenditures %}
-			<div class="col-sm-3">
-				<h3 class="bold" id="campaign_spending_total" style="margin-bottom:0;"></h3>
-				<p class="small ital">Campaign spending</p>
-			</div>
+			<div class="col-sm-3" id="campaign_spending_total"></div>
 			{% endif %}
 			
-				
-
 			{% if ind_expenditures %}
-			<div class="col-sm-3">
-				<h3 class="bold" id="targeted_spending_total" style="margin-bottom:0;"></h3>
-				<p class="small ital">Targeted political spending</p>
-			</div>
+			<div class="col-sm-3" id="targeted_spending_total"></div>
 			{% endif %}
 			
 			{% if loans %}
-			<div class="col-sm-3">
-				<h3 class="bold" id="loantotal" style="margin-bottom:0;"></h3>
-				<p class="small ital">Borrowed</p>
-			</div>
+			<div class="col-sm-3" id="loantotal"></div>
 			{% endif %}
 		
 		</div>
@@ -117,8 +101,9 @@
 					<li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
 				{% endfor %}
 			{% endif %}
-		</div>
-	</div>		
+		
+        </div>
+    </div>		
 </div>
 </div><!-- /#upper -->
 
@@ -129,6 +114,21 @@
     <h1 class="center" id="loading">
         <i class="fa fa-spinner fa-pulse"></i>
     <h1>
+   <div id="datefilter">
+        <h4><span class="glyphicon glyphicon-calendar"></span> Filter records by date</h4>
+        <div class="row">
+        <div class="col-sm-5">
+            <div class="input-group input-daterange">
+                <input type="text" class="form-control" id="startdate">
+                <span class="input-group-addon">to</span>
+                <input type="text" class="form-control" id="enddate">
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button" id="date_filter_button">Filter</button>
+                </span>
+            </div>
+        </div>            
+        </div>
+    </div>
     <div id="button_duder"></div>
     <h2 class="bold" id="display_hed"></h2>
     <div id="display_graphics"></div>
@@ -140,26 +140,29 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Recipient (number)</th>
+                <th>Recipient</th>
+				<th class="r">Donations</th>
                 <th class="r">Total</th>
             </tr>
         </thead>
         <tbody>
         <% _.each( data_to_template, function( d ){ %>
-            <tr>
-                 <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
-                 <td>$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-plus gray click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
-            
+            <tr class="totals">
+				<td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a></td>
+				<td class="r"><%= d.gives.length %></td>
+				<td class="r">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+            </tr>
             <!-- here's the loop with the stuff to show/hide -->
-            <td>
                     <% _.each( d.gives, function( ind_don ){ %>
-                        Date: <%= ind_don.donation_date %><br>
-                        Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
+						<tr class="toggle small <%= d.id %>">
+							<td><%= d.name %></td>
+							<td class="r"><%= ind_don.display_date %></td>
+							<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></td>
+						</tr>
+						
                     <% }); %>
-            </td>
             <!-- // -->
             
-            </tr>
         <% }); %>
         </tbody>
     </table>
@@ -202,31 +205,31 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Donor (number)</th>
+                <th>Donor</th>
+				<th class="r">Donations</th>
                 <th class="r">Total</th>
             </tr>
         </thead>
         <tbody>
         <% _.each( data_to_template, function( d ){ %>
-            <tr>
-                 <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a> (<%= d.gives.length %>)</td>
-                 <td>$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-plus gray click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
-            
-            <!-- here's the loop with the stuff to show/hide -->
-            <td>
-                    <% _.each( d.gives, function( ind_don ){ %>
-                        Date: <%= ind_don.donation_date %><br>
-                        Amount: $<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %><br><br>
-                    <% }); %>
-            </td>
-            <!-- // -->
-            
+            <tr class="totals">
+                 <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a></td>
+				 <td class="r"><%= d.gives.length %></td>
+                 <td class="r">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
             </tr>
+            <!-- here's the loop with the stuff to show/hide -->
+					<% _.each( d.gives, function( ind_don ){ %>
+					<tr class="toggle small <%= d.id %>">
+						<td><%= d.name %></td>
+						<td class="r"><%= ind_don.display_date %></td>
+						<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></td>
+					</tr>
+                    <% }); %>
+            <!-- // -->
         <% }); %>
         </tbody>
     </table>
 </script>
-
 
 <!-- underscore template for "gets" bar charts" -->
 <script type="text/html" class="gets_chart_template">
@@ -288,7 +291,7 @@
                  <td>
                     <%= d.stance %>
                  </td>
-                 <td class="r"><%= d.exp_date %></td>
+                 <td class="r"><%= d.display_date %></td>
                  <td class="r">
                     <% if (d.amount) { %>$<%= addCommas(d.amount.toFixed(2)).replace(".00","") %><% }; %>
                     <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2)).replace(".00","") %> (in-kind)<% }; %>
@@ -315,7 +318,7 @@
             <tr>
                  <td><%= d.recipient %></td>
                  <td><%= d.purpose %></td>
-                 <td class="r"><%= d.exp_date %></td>
+                 <td class="r"><%= d.display_date %></td>
                  <td class="r">
                     <% if (d.cash) { %>$<%= addCommas(d.cash.toFixed(2).replace(".00","")) %><% }; %>
                     <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2).replace(".00","")) %> (in-kind)<% }; %>
@@ -346,7 +349,7 @@
 			<% _.each(data_to_template, function(d) { %>
 			<tr>
 				<td><%= d.lender %></td>
-				<td><%= d.date %></td>
+				<td><%= d.display_date %></td>
 				<td class="r">$<%= addCommas(d.borrowed.toFixed(2).replace(".00","")) %></td>
 			</tr>
             <% }); %>
@@ -368,7 +371,7 @@
 			<% _.each(_.filter(data_to_template, function(s) { return _.has(s, "repaid") }), function(d) { %>
 			<tr>
 				<td><%= d.lender %></td>
-				<td><%= d.date %></td>
+				<td><%= d.display_date %></td>
 				<td class="r">$<%= addCommas(d.repaid.toFixed(2).replace(".00","")) %></td>
 			</tr>
             <% }); %>
@@ -390,7 +393,7 @@
 			<% _.each(_.filter(data_to_template, function(s) { return _.has(s, "forgiven") }), function(d) { %>
 			<tr>
 				<td><%= d.lender %></td>
-				<td><%= d.date %></td>
+				<td><%= d.display_date %></td>
 				<td class="r">$<%= addCommas(d.forgiven.toFixed(2).replace(".00","")) %></td>
 			</tr>
             <% }); %>
@@ -402,16 +405,15 @@
 	
 {% endif %}
 
-
-
 </div>
 </div><!-- #lower -->
-
 
 {% endblock %}
 
 {% block scripts %}
 <script src="http://www.dataomaha.com/media/scripts/owh-utils.js"></script>
+<script src="http://www.dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+
 <script>
 
     var jankPluralize = function(num) {
@@ -422,280 +424,385 @@
         };
     }
     
-    var elements = 0;
-    
-    // set global template variable
-    _.templateSettings.variable = "data_to_template";
-
-    // function to populate the gives/gets table and hed
-    var makeTable = function(table_template, data, hed) {
-        $("#display_table").html(table_template(data));
-        $("#display_hed").html(hed)
-        
-        //bind click event to drop table
-        $(".click_to_expand").bind("click", function(d) {
-            
-            // this is where we do the javascript to show/hide table rows
-            
-        });
-    };
-    
-    // function to make the gives/gets charts
-    var makeChart = function(chart_template, chart_data) {
-        $('#display_graphics').html(chart_template(chart_data));
-    };
-    
     var sum = function(ls) {
         return _.reduce(ls, function(memo, num){ return memo + num; }, 0);
     };
     
-    {% if gives %}
-    elements++;
+    // set global template variable
+    _.templateSettings.variable = "data_to_template";
     
-    // cash and in-kind donations
-    var gives = [{% for record in gives %}{"donation_date":"{{ record.donation_date|date:"N j, Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name|safe|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
+    // instantiate datepickers
+    $('.input-daterange input').each(function() {
+        $(this).datepicker({
+            clearBtn: true
+        });
+    });
     
-    // define templates
-    var gives_table_template = _.template($( "script.gives_table_template" ).html());
+    //page data
+    var page_data = {};
     
-    // get the donation total
-    var gives_cash_and_inkind = _.pluck(gives, "cash").concat(_.pluck(gives, "inkind"));
+    {% if gives %}page_data['gives'] = [{% for record in gives %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name|safe|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
-    // feed it to topline hed
-    $('#givestotal').html("$" + addCommas(sum(gives_cash_and_inkind).toFixed(2).replace(".00","")));
+    {% if gets %}page_data['gets'] = [{% for record in gets %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title|safe }}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
-    // group donations by ID
-    var gives_out = _.chain(gives)
-        .groupBy("recipient_id")
-        .map(function(value, key) {
-            return {
-                id: key,
-                sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
-                name: _.pluck(value, "recipient_name")[0],
-                gives: value
-            }
-        })
-        .sortBy("sum").reverse()
-        .value();
-        
-    if (gives_out.length > 5) {
-        // define template
-        var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
-        
-        var gives_top5 = _.first(gives_out, 5);
-        var gives_restnum = gives_out.length - 5;
-        var gives_ot = sum(gives_cash_and_inkind);
-        var gives_rest_tot = sum(gives_cash_and_inkind) - sum(_.pluck(gives_top5, "sum"));
-        
-        var gives_for_chart = {
-            overall_tot: gives_ot,
-            topfive: gives_top5,
-            rest: {
-                    num: gives_restnum,
-                    tot: gives_rest_tot
-            }
-        };
-    };
-    
-    {% endif %}{# end if gives #}
-      
-    {% if gets %}
-    elements++;
-    
-    var gets = [{% for record in gets %}{"donation_date":"{{ record.donation_date|date:"N j, Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
-    
-    // define templates
-    var gets_chart_template = _.template($( "script.gets_chart_template" ).html());
-    var gets_table_template = _.template($( "script.gets_table_template" ).html());
-    
-    // group gets by donor
-    var gets_out = _.chain(gets)
-        .groupBy("donor_id")
-        .map(function(value, key) {
-            return {
-                id: key,
-                sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
-                name: _.pluck(value, "donor")[0],
-                gives: value
-            }
-        })
-        .sortBy("sum").reverse()
-        .value();
-    
-    // total gets
-    var gets_cash_and_inkind = _.pluck(gets, "cash").concat(_.pluck(gets, "inkind"));
-    
-    $('#getstotal').html("$" + addCommas(sum(gets_cash_and_inkind).toFixed(2).replace(".00","")));
-    
-    if (gets_out.length > 5) {
-        var gets_top5 = _.first(gets_out, 5);
-        var gets_restnum = gets_out.length - 5;
-        var gets_ot = sum(gets_cash_and_inkind);
-        var gets_rest_tot = sum(gets_cash_and_inkind) - sum(_.pluck(gets_top5, "sum"));
-        
-        var gets_for_chart = {
-            overall_tot: gets_ot,
-            topfive: gets_top5,
-            rest: {
-                    num: gets_restnum,
-                    tot: gets_rest_tot
-            }
-        };
-    };
-    {% endif %}
-        
     {% if normal_expenditures or ind_expenditures %}
-    elements++;
-    
-    // define spending table template
-    var spending_table_template = _.template($( "script.spending_table_template" ).html());
-    
     var expenditures = {};
     
-    {% if normal_expenditures %}var admin_expenses = [{% for record in normal_expenditures %}{"exp_date":"{{ record.exp_date|date:"N j, Y" }}",{% if record.in_kind and record.in_kind > 0 %} "inkind": {{ record.in_kind }},{% endif %}{% if record.amount and record.amount > 0 %} "cash":{{ record.amount }},{% endif %} "recipient":"{{ record.payee|safe|title }}", "purpose": "{% if record.exp_purpose %}{{ record.exp_purpose|title }}{% else %}Not reported{% endif %}"}{% if not forloop.last %}, {% endif %}{% endfor %}];
+    {% if normal_expenditures %}expenditures['campaign_expenditures'] = [{% for record in normal_expenditures %}{"display_date":"{{ record.exp_date|date:"N j, Y" }}", "exp_date":"{{ record.exp_date|date:"n/j/Y" }}",{% if record.in_kind and record.in_kind > 0 %} "inkind": {{ record.in_kind }},{% endif %}{% if record.amount and record.amount > 0 %} "cash":{{ record.amount }},{% endif %} "recipient":"{{ record.payee|safe|title }}", "purpose": "{% if record.exp_purpose %}{{ record.exp_purpose|title }}{% else %}Not reported{% endif %}"}{% if not forloop.last %}, {% endif %}{% endfor %}];{% endif %}
     
-    expenditures['campaign_spending'] = admin_expenses;
+    {% if ind_expenditures %}expenditures['targeted_expenditures'] = [{% for exp in ind_expenditures %} { {% if exp.target_committee %}"target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}{% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %} "payee": "{{ exp.payee|title }}", "stance": "{% if exp.stance == 0 %}Support{% elif exp.stance == 1 %}Oppose{% else %}Unspecified{% endif %}", "purpose":{% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not reported"{% endif %},"display_date": "{{ exp.exp_date|date:"N j, Y" }}","exp_date": "{{ exp.exp_date|date:"n/j/Y" }}"{% if exp.amount > 0 %}, "amount": {{ exp.amount }}{% endif %}{% if exp.in_kind > 0 %}, "inkind": {{ exp.in_kind }}{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
-    var total_campaign_spending = sum(_.pluck(
-        _.filter(admin_expenses, function(z) { return _.has(z, "cash" )}), "cash")
-        .concat(_.pluck(
-            _.filter(admin_expenses, function(z) { return _.has(z, "inkind" )}), "inkind")));
-    
-    $("#campaign_spending_total").html("$" + addCommas(total_campaign_spending.toFixed(2)).replace(".00",""));
-    
+    page_data['expenditures'] = expenditures;
     {% endif %}
     
-    {% if ind_expenditures %}var ind_expenses = [{% for exp in ind_expenditures %} { {% if exp.target_committee %}"target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}{% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %} "payee": "{{ exp.payee|title }}", "stance": "{% if exp.stance == 0 %}Support{% elif exp.stance == 1 %}Oppose{% else %}Unspecified{% endif %}", "purpose":{% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not reported"{% endif %},"exp_date": "{{ exp.exp_date|date:"N j, Y" }}"{% if exp.amount > 0 %}, "amount": {{ exp.amount }}{% endif %}{% if exp.in_kind > 0 %}, "inkind": {{ exp.in_kind }}{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}];
+    {% if loans %}page_data['loans'] = [{% for loan in loans %}{ {% if loan.loan_amount and loan.loan_amount > 0 %}"borrowed": {{ loan.loan_amount }}, {% endif %}{% if loan.loan_repaid and loan.loan_repaid > 0 %}"repaid": {{ loan.loan_repaid }}, {% endif %}{% if loan.loan_forgiven and loan.loan_forgiven > 0 %}"forgiven": {{ loan.loan_forgiven }}, {% endif %}"lender":"{{ loan.lender_name|safe|title }}", "display_date": "{{ loan.loan_date|date:"N j, Y" }}","loan_date": "{{ loan.loan_date|date:"n/j/Y" }}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
-    expenditures['targeted_spending'] = ind_expenses;
-
-    var total_targeted_spending = sum(_.pluck(
-        _.filter(ind_expenses, function(z) { return _.has(z, "amount" )}), "amount")
-        .concat(_.pluck(
-            _.filter(ind_expenses, function(z) { return _.has(z, "inkind" )}), "inkind")));
-    
-    $("#targeted_spending_total").html("$" + addCommas(total_targeted_spending.toFixed(2)).replace(".00",""));
-    
-    {% endif %}
-
-    var makeExpTable = function() {
-        $("#display_table").html(spending_table_template(expenditures));
-        $("#display_hed").html("Expenditures")
+    //function to get start/end dates, if present in datepicker, and return an object
+    var getDateRange = function() {
+        var start_date_val = $('#startdate').val();
+        var end_date_val = $('#enddate').val();
+        if ( start_date_val && start_date_val != "") {
+           var start_date = new Date(start_date_val);
+        };        
+        if ( end_date_val && end_date_val != "") {
+           var end_date = new Date(end_date_val);
+        };        
+        if ( start_date || end_date ) {
+            // if both dates are present, make sure the end date comes after the start date
+            if (start_date && end_date && (end_date < start_date)) {
+                alert("End date " + end_date_val + " comes before start date " + start_date_val);
+                return;
+            };
+            
+            var daterange = {};
+            
+            if (start_date) {
+                daterange["start"] = start_date;
+            };
+            if (end_date) {
+                daterange["end"] = end_date;
+            };
+            return daterange;
+        };
+        return;
     };
     
+    //main function to update tables, charts, heds, summaries
+    var updatePage = function(e) {
+        $("#loading").show();
+        
+        $("#display_graphics").html("");
+        $("#display_table").html("");
+        
+        // is the date range restricted?
+        var daterange = getDateRange();
+        
+        //get filtered data, or not
+        if (daterange) {
+            if ( daterange.start && daterange.end ) {
+            // is there a start and end date?
+                {% if gives %}var gives_data_to_work_with = _.filter(page_data.gives, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() <= daterange.end.getTime() && x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if gets %}var gets_data_to_work_with = _.filter(page_data.gets, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() <= daterange.end.getTime() && x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if loans %}var loan_data_to_work_with = _.filter(page_data.loans, function(d) {
+                    var x = new Date(d.loan_date);
+                    return x.getTime() <= daterange.end.getTime() && x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if ind_expenditures or normal_expenditures %}{% if ind_expenditures %}var targeted_spending_to_work_with = _.filter(page_data.expenditures.targeted_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() <= daterange.end.getTime() && x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if normal_expenditures %}var campaign_spending_to_work_with = _.filter(page_data.expenditures.campaign_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() <= daterange.end.getTime() && x.getTime() >= daterange.start.getTime()
+                });{% endif %}{% endif %}
+            } else if ( daterange.start && !daterange.end ) {
+            // is there a start date but no end date?                    
+                {% if gives %}var gives_data_to_work_with = _.filter(page_data.gives, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if gets %}var gets_data_to_work_with = _.filter(page_data.gets, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if loans %}var loan_data_to_work_with = _.filter(page_data.loans, function(d) {
+                        var x = new Date(d.loan_date);
+                        return x.getTime() >= daterange.start.getTime()
+                    });
+                {% endif %}
+                {% if ind_expenditures or normal_expenditures %}{% if ind_expenditures %}var targeted_spending_to_work_with = _.filter(page_data.expenditures.targeted_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() >= daterange.start.getTime()
+                });{% endif %}
+                {% if normal_expenditures %}var campaign_spending_to_work_with = _.filter(page_data.expenditures.campaign_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() >= daterange.start.getTime()
+                });{% endif %}{% endif %}
+            } else if ( daterange.end && !daterange.start ) {
+            // is there an end date but no start date?                    
+                {% if gives %}var gives_data_to_work_with = _.filter(page_data.gives, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() <= daterange.end.getTime()
+                });{% endif %}
+                {% if gets %}var gets_data_to_work_with = _.filter(page_data.gets, function(d) {
+                    var x = new Date(d.donation_date);
+                    return x.getTime() <= daterange.end.getTime()
+                });{% endif %}
+                {% if loans %}var loan_data_to_work_with = _.filter(page_data.loans, function(d) {
+                    var x = new Date(d.loan_date);
+                    return x.getTime() <= daterange.end.getTime()
+                });{% endif %}
+                {% if ind_expenditures or normal_expenditures %}{% if ind_expenditures %}var targeted_spending_to_work_with = _.filter(page_data.expenditures.targeted_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() <= daterange.end.getTime()
+                });{% endif %}
+                {% if normal_expenditures %}var campaign_spending_to_work_with = _.filter(page_data.expenditures.campaign_expenditures, function(d) {
+                    var x = new Date(d.exp_date);
+                    return x.getTime() <= daterange.end.getTime()
+                });{% endif %}{% endif %}
+            };
+        } else {
+            {% if gives %}var gives_data_to_work_with = page_data.gives;{% endif %}
+            {% if gets %}var gets_data_to_work_with = page_data.gets;{% endif %}
+            {% if loans %}var loan_data_to_work_with = page_data.loans;{% endif %}
+            {% if ind_expenditures or normal_expenditures %}{% if ind_expenditures %}var targeted_spending_to_work_with = page_data.expenditures.targeted_expenditures;{% endif %}
+            {% if normal_expenditures %}var campaign_spending_to_work_with = page_data.expenditures.campaign_expenditures;{% endif %}{% endif %}
+        };
+        
+        //update summary stats
+        {% if gives %}
+        //get total cash and inkind, feed to top-line summary hed
+        var gives_cash_and_inkind = _.pluck(gives_data_to_work_with, "cash").concat(_.pluck(page_data.gives, "inkind"));
+        
+        if (sum(gives_cash_and_inkind) > 0) {
+            $('#givestotal').html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(sum(gives_cash_and_inkind).toFixed(2).replace(".00","")) + '</h3><p class="small ital">Donated</p>');
+        };        
         {% endif %}
         
+        {% if gets %}        
+        //get total cash and inkind, feed to top-line summary hed
+        var gets_cash_and_inkind = _.pluck(gets_data_to_work_with, "cash").concat(_.pluck(gets_data_to_work_with, "inkind"));
+        
+        if (sum(gets_cash_and_inkind) > 0) {
+            $('#getstotal').html('<h3 class="bold" id="getstotal" style="margin-bottom:0;">$' + addCommas(sum(gets_cash_and_inkind).toFixed(2).replace(".00","")) + '</h3><p class="small ital">Raised</p>');                
+        };
+        
+        {% endif %}
         
         {% if loans %}
-        elements++;
-        
-        // table template
-        var loan_table_template = _.template($( "script.loans_table_template" ).html());
-                
-        var loans = [{% for loan in loans %}{ {% if loan.loan_amount and loan.loan_amount > 0 %}"borrowed": {{ loan.loan_amount }}, {% endif %}{% if loan.loan_repaid and loan.loan_repaid > 0 %}"repaid": {{ loan.loan_repaid }}, {% endif %}{% if loan.loan_forgiven and loan.loan_forgiven > 0 %}"forgiven": {{ loan.loan_forgiven }}, {% endif %}"lender":"{{ loan.lender_name|safe|title }}", "date": "{{ loan.loan_date|date:"N j, Y" }}"}{% if not forloop.last %},{% endif %}{% endfor %}];
-        
-        var borrowed_total = sum(_.pluck(loans, "borrowed"));
+        //get total borrowed, feed to top-line summary hed
+        var borrowed_total = sum(_.pluck(loan_data_to_work_with, "borrowed"));
         
         if (borrowed_total > 0) {
-            $("#loantotal").html("$" + addCommas(borrowed_total.toFixed(2)).replace(".00",""));
+            $("#loantotal").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(borrowed_total.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Borrowed</p>');
         };
+        {% endif %}
+        
+        {% if ind_expenditures or normal_expenditures %}
+        {% if ind_expenditures %}
+        // womp targeted spending into top-line summary
+        var total_targeted_spending = sum(_.pluck(
+            _.filter(targeted_spending_to_work_with, function(z) { return _.has(z, "amount" )}), "amount")
+                .concat(_.pluck(
+            _.filter(targeted_spending_to_work_with, function(z) { return _.has(z, "inkind" )}), "inkind")));
+            
+        if ( total_targeted_spending > 0 ) {
+            $("#targeted_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_targeted_spending.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Targeted political spending</p>');
+        };                
+        {% endif %}
 
-        var makeLoanTable = function() {
-            $("#display_table").html(loan_table_template(loans));
-            $("#display_hed").html("Loans")
+        {% if normal_expenditures %}        
+        // womp campaign spending into top-line summary
+        var total_campaign_spending = sum(_.pluck(
+                _.filter(campaign_spending_to_work_with, function(z) { return _.has(z, "cash" )}), "cash")
+                    .concat(_.pluck(
+                _.filter(campaign_spending_to_work_with, function(z) { return _.has(z, "inkind" )}), "inkind")));
+        
+        if ( total_campaign_spending > 0 ) {
+            $("#campaign_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_campaign_spending.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Campaign spending</p>');
         };
         
         {% endif %}
         
-    $(document).ready(function() {        
-        if (elements > 1) {        
-            // populate button duder
-            var buttonstring = '<div class="btn-group btn-group-justified" role="group">{% if gets %}<a type="button" id="gets_button" class="btn btn-default topclicker">Raised</a>{% endif %}{% if gives %}<a type="button" id="gives_button" class="btn btn-default topclicker">Donated</a>{% endif %}{% if ind_expenditures or normal_expenditures %}<a type="button" id="spending_button" class="btn btn-default topclicker">Spent</a>{% endif %}{% if loans %}<a type="button" id="loans_button" class="btn btn-default topclicker">Loans</a>{% endif %}</div>';
-            
-            $("#button_duder").html(buttonstring);
-            
-            $(".topclicker").bind("click", function(d) {
-                var id = this.id;
-
-                $(".topclicker").attr("class", "btn btn-default topclicker");
-                $(this).attr("class", "btn btn-success topclicker");
-                
-                {% if gives %}
-                if ( id === "gives_button" ) {
-                    $("#loading").show();
-                    makeTable(gives_table_template, gives_out, "Donations");
-                    $("#display_graphics").html("");
-                    if (gives_out.length > 5) {
-                        makeChart(gives_chart_template, gives_for_chart);
-                    };
-                    $("#loading").hide();                    
-                };
-                {% endif %}
-
-                {% if gets %}
-                if ( id === "gets_button" ) {
-                    $("#loading").show();
-                    makeTable(gets_table_template, gets_out, "Donations received");
-                    $("#display_graphics").html("");
-                    if (gets_out.length > 5) {
-                        makeChart(gets_chart_template, gets_for_chart);
-                    };
-                    $("#loading").hide();
-                };
-                {% endif %}
-
-                {% if ind_expenditures or normal_expenditures %}
-                if ( id === "spending_button" ) {
-                    $("#loading").show();
-                    $("#display_graphics").html("");
-                    makeExpTable();
-                    $("#loading").hide();
-                };
-                {% endif %}
-
-                {% if loans %}
-                if ( id === "loans_button" ) {
-                    $("#loading").show();
-                    $("#display_graphics").html("");
-                    makeLoanTable();
-                    $("#loading").hide();
-                };
-                {% endif %}                
-            });
-            
-            $(".topclicker").eq(0).trigger("click");
-            $("#loading").hide();
-        } else {
-            {% if gives %}
-            makeTable(gives_table_template, gives_out, "Donations");
-            if (gives_out.length > 5) {
-                makeChart(gives_chart_template, gives_for_chart);
-            };
-            $("#loading").hide();
-            {% endif %}
-            
-            {% if gets %}
-            makeTable(gets_table_template, gets_out, "Donations received");
-            if (gets_out.length > 5) {
-                makeChart(gets_chart_template, gets_for_chart);
-            };
-            $("#loading").hide();
-            {% endif %}
-
-            {% if ind_expenditures or normal_expenditures %}
-            makeExpTable();
-            $("#loading").hide();
-            {% endif %}
-
-            {% if loans %}
-            makeLoanTable();
-            $("#loading").hide();
-            {% endif %}
-        };
+        {% endif %}
         
-    });
+        {% if gives %}
+        if ( e === "gives_button" || e === "gives" ) {
+            var gives_table_template = _.template($( "script.gives_table_template" ).html());
+            
+            // group donations by ID
+            var gives_out = _.chain(gives_data_to_work_with)
+                .groupBy("recipient_id")
+                .map(function(value, key) {
+                    return {
+                        id: key,
+                        sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
+                        name: _.pluck(value, "recipient_name")[0],
+                        gives: value
+                    }
+                })
+                .sortBy("sum").reverse()
+                .value();
+            
+                // womp up a summary chart if there are more than 5 donations
+                if (gives_out.length > 5) {
+                    // define template
+                    var gives_chart_template = _.template($( "script.gives_chart_template" ).html());
+                    
+                    var gives_top5 = _.first(gives_out, 5);
+                    var gives_restnum = gives_out.length - 5;
+                    var gives_ot = sum(gives_cash_and_inkind);
+                    var gives_rest_tot = sum(gives_cash_and_inkind) - sum(_.pluck(gives_top5, "sum"));
+                    
+                    var gives_for_chart = {
+                        overall_tot: gives_ot,
+                        topfive: gives_top5,
+                        rest: {
+                                num: gives_restnum,
+                                tot: gives_rest_tot
+                        }
+                        };
+                        
+                    $('#display_graphics').html(gives_chart_template(gives_for_chart));
+                };
+            
+                // populate the underscore templates
+                $("#display_table").html(gives_table_template(gives_out));
+                $("#display_hed").html("Donations");            
+                
+                //bind click event to drop table row
+                $(".click_to_expand").bind("click", function(d) {
+                    
+                    // this is where we do the javascript to show/hide table rows
+               		console.log("Hello. It's me.");
+					$('tr.toggle').toggle();
+					$('tr.totals').css("background-color", "#ccc");
 
-$('[data-toggle="tooltip"]').tooltip({"trigger": "hover"});
+                });
+        };
+        {% endif %}
+        
+        {% if gets %}
+        if ( e === "gets_button" || e === "gets" ) {
+            var gets_table_template = _.template($( "script.gets_table_template" ).html());
+            
+            // group donations by ID
+            var gets_out = _.chain(gets_data_to_work_with)
+            .groupBy("donor_id")
+            .map(function(value, key) {
+                return {
+                    id: key,
+                    sum: sum(_.pluck(value, "cash").concat(_.pluck(value, "inkind"))),
+                    name: _.pluck(value, "donor")[0],
+                    gives: value
+                }
+            })
+            .sortBy("sum").reverse()
+            .value();
+            
+            // womp up a summary chart if there are more than 5 donations
+            if (gets_out.length > 5) {
+                // define template
+                var gets_chart_template = _.template($( "script.gets_chart_template" ).html());
+                
+                var gets_top5 = _.first(gets_out, 5);
+                var gets_restnum = gets_out.length - 5;
+                var gets_ot = sum(gets_cash_and_inkind);
+                var gets_rest_tot = sum(gets_cash_and_inkind) - sum(_.pluck(gets_top5, "sum"));
+                
+                var gets_for_chart = {
+                    overall_tot: gets_ot,
+                    topfive: gets_top5,
+                    rest: {
+                            num: gets_restnum,
+                            tot: gets_rest_tot
+                    }
+                }; 
+                $('#display_graphics').html(gets_chart_template(gets_for_chart));
+            };
+        
+            // populate the underscore templates
+            $("#display_table").html(gets_table_template(gets_out));
+            $("#display_hed").html("Donations received");            
+            
+            //bind click event to drop table row
+            $(".click_to_expand").bind("click", function(d) {
+                
+                // this is where we do the javascript to show/hide table rows
+           		console.log("Hello.");
+				$('tr.toggle').toggle();
+
+            });
+        };
+        {% endif %}
+        
+        {% if loans %}
+        if ( e === "loans_button" || e === "loans" ) {
+            var loan_table_template = _.template($( "script.loans_table_template" ).html());
+
+            $("#display_table").html(loan_table_template(loan_data_to_work_with));
+            $("#display_hed").html("Loans");
+            
+        };
+        {% endif %}
+        
+        {% if ind_expenditures or normal_expenditures %}
+        if ( e === "spending_button" || e === "expenditures" ) {
+            var spending_table_template = _.template($( "script.spending_table_template" ).html());
+            var exp = {};
+            {% if ind_expenditures %}
+            exp['targeted_spending'] = targeted_spending_to_work_with;
+            {% endif %}
+            {% if normal_expenditures %}
+            exp['campaign_spending'] = campaign_spending_to_work_with;
+            {% endif %}
+            
+            $("#display_table").html(spending_table_template(exp));
+            $("#display_hed").html("Expenditures");
+        };
+        {% endif %}    
+    
+        $("#loading").hide();
+    };
+  
+$(document).ready(function() {        
+    if (_.size(page_data) > 1) {
+        var buttonstring = '<div class="btn-group btn-group-justified" role="group">{% if gets %}<a type="button" id="gets_button" class="btn btn-default topclicker">Raised</a>{% endif %}{% if gives %}<a type="button" id="gives_button" class="btn btn-default topclicker">Donated</a>{% endif %}{% if ind_expenditures or normal_expenditures %}<a type="button" id="spending_button" class="btn btn-default topclicker">Spent</a>{% endif %}{% if loans %}<a type="button" id="loans_button" class="btn btn-default topclicker">Loans</a>{% endif %}</div>';
+        
+        $("#button_duder").html(buttonstring);
+        
+        $(".topclicker").bind("click", function(d) {
+            $(".topclicker").attr("class", "btn btn-default topclicker");
+            $(this).attr("class", "btn btn-success topclicker");
+            
+            var id = this.id;
+            updatePage(id);
+        });
+        // trigger click on first button
+        $(".topclicker").eq(0).trigger("click");
+    
+        $("#date_filter_button").click(function() {        
+            var active_button_id = $(".btn-success").attr("id");
+            updatePage(active_button_id);            
+        });    
+    
+    } else {
+        var k = _.keys(page_data)[0];
+        updatePage(k);        
+        $("#date_filter_button").click(function() {
+            updatePage(k);
+        });        
+    };
+    
+    $('[data-toggle="tooltip"]').tooltip({"trigger": "hover"});	
+
+});
 
 </script>
 {% endblock %}

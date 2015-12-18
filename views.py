@@ -7,16 +7,15 @@ from django.db.models import F
 from django.db import connection
 import datetime
 from last_updated import LAST_UPDATED
-import datetime
 
 DONATION_TOTAL = Donation.objects.count()
 
 def Main(request):
     lastyear = datetime.datetime.now() - datetime.timedelta(days=365)
-    monthlydonations = Donation.objects.filter(donation_date__gte=lastyear).values('donation_date').extra(select={'month': "EXTRACT(month FROM donation_date)"}).values('month').annotate(monthly_total=Sum("cash") + Sum("inkind"))
+    monthlydonations = Donation.objects.filter(donation_date__gte=lastyear).values('donation_date').extra(select={'month': "EXTRACT(month FROM donation_date)"}).extra(select={'year': "EXTRACT(year FROM donation_date)"}).values('month', 'year').annotate(monthly_total=Sum("cash") + Sum("inkind"))
     toplast30donations = Donation.objects.filter(donation_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).annotate(totes=F('cash')+F('inkind')).order_by('-totes')[:5]
     last30donationstotal = Donation.objects.filter(donation_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).aggregate(totes=Sum("cash") + Sum("inkind"))
-    monthlyexpenditures = Expenditure.objects.filter(exp_date__gte=lastyear).exclude(raw_target="").values('exp_date').extra(select={'month': "EXTRACT(month FROM exp_date)"}).values('month').annotate(monthly_total=Sum("amount") + Sum("in_kind"))
+    monthlyexpenditures = Expenditure.objects.filter(exp_date__gte=lastyear).exclude(raw_target="").values('exp_date').extra(select={'month': "EXTRACT(month FROM exp_date)"}).extra(select={'year': "EXTRACT(year FROM exp_date)"}).values('month', 'year').annotate(monthly_total=Sum("amount") + Sum("in_kind"))
     toplast30admin = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).filter(raw_target="").annotate(totes=F('amount')+F('in_kind')).order_by('-totes')[:5]
     last30admintotal = Expenditure.objects.filter(exp_date__gte=datetime.datetime.now() - datetime.timedelta(days=30)).filter(raw_target="").aggregate(totes=Sum("amount") + Sum("in_kind"))
 
@@ -38,6 +37,115 @@ def Govt(request, govslug):
     candidates = Candidate.objects.filter(govslug=govslug).order_by('office_title', 'office_dist', 'cand_name')
     dictionaries = {'candidates':candidates,}
     return render_to_response('nadc/govt.html', dictionaries)
+
+def DatePage(request, startdate, enddate=None):
+    startdate = "%s-%s-%s" % (startdate[4:], startdate[:2], startdate[2:4])
+    startdate = datetime.datetime.strptime(startdate , '%Y-%m-%d')
+    if enddate:
+        enddate = "%s-%s-%s" % (enddate[4:], enddate[:2], enddate[2:4])
+        enddate = datetime.datetime.strptime(enddate, '%Y-%m-%d')
+    else:
+        enddate = []
+        
+    if enddate:
+        try:
+            gives = Donation.objects.filter(donation_date__gte=startdate).filter(donation_date__lte=enddate).order_by("-donation_date")
+        except:
+            gives = []
+        try:
+            normal_expenditures = Expenditure.objects.filter(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+            ind_expenditures = Expenditure.objects.exclude(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+        except:
+            normal_expenditures = []
+            ind_expenditures = []
+        try:
+            loans = Loan.objects.filter(loan_date__gte=startdate).filter(loan_date__lte=enddate).order_by('-loan_date')
+        except:
+            loans = []
+    else:
+        try:
+            gives = Donation.objects.filter(donation_date=startdate)
+        except:
+            gives = []
+        try:
+            normal_expenditures = Expenditure.objects.filter(raw_target="").filter(exp_date=startdate).order_by('-exp_date')
+            ind_expenditures = Expenditure.objects.exclude(raw_target="").filter(exp_date=startdate).order_by('-exp_date')
+        except:
+            normal_expenditures = []
+            ind_expenditures = []
+        try:
+            loans = Loan.objects.filter(loan_date=startdate).order_by('-loan_date')
+        except:
+            loans = []
+    dictionaries = {'startdate':startdate, 'enddate':enddate,'gives': gives, 'normal_expenditures': normal_expenditures, 'ind_expenditures': ind_expenditures, 'loans': loans,'type':type}
+    return render_to_response('nadc/datepage.html', dictionaries)
+
+    
+    
+def DateJSON(request, startmonth, startday, startyear, endmonth=None, enddate=None, endyear=None, entity=None, type=None):
+
+    startdate = "%s-%s-%s" % (startyear, startmonth, startday)
+    
+    if endmonth:
+        enddate = "%s-%s-%s" % (endyear, endmonth, enddate)
+    else:
+        enddate = datetime.datetime.today().strftime("%Y-%m-%d")
+    
+    # Get any/all records of donations given, by entity if provided
+    if entity:
+        try:
+            gives = Donation.objects.filter(donor__canonical=entity).filter(donation_date__gte=startdate).filter(donation_date__lte=enddate).order_by("-donation_date")
+        except:
+            gives = []
+    else:
+        try:
+            gives = Donation.objects.filter(donation_date__gte=startdate).filter(donation_date__lte=enddate).order_by("-donation_date")
+        except:
+            gives = []
+
+    # Get any/all records of donations received, by entity if provided
+    if entity:
+        try:
+            gets = Donation.objects.filter(recipient__nadcid=entity).filter(donation_date__gte=startdate).filter(donation_date__lte=enddate).order_by("-donation_date")
+        except:
+            gets = []
+    else:
+        try:
+            gets = Donation.objects.filter(donation_date__gte=startdate).filter(donation_date__lte=enddate).order_by("-donation_date")
+        except:
+            gets = []
+        
+        
+    # Expenditures
+    if entity:
+        try:
+            normal_expenditures = Expenditure.objects.filter(committee=entity).filter(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+            ind_expenditures = Expenditure.objects.filter(committee=entity).exclude(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+        except:
+            normal_expenditures = []
+            ind_expenditures = []
+    else:
+        try:
+            normal_expenditures = Expenditure.objects.filter(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+            ind_expenditures = Expenditure.objects.exclude(raw_target="").filter(exp_date__gte=startdate).filter(exp_date__lte=enddate).order_by('-exp_date')
+        except:
+            normal_expenditures = []
+            ind_expenditures = []
+
+    # Loans
+    if entity:
+        try:
+            loans = Loan.objects.filter(committee=entity).filter(loan_date__gte=startdate).filter(loan_date__lte=enddate).order_by('-loan_date')
+        except:
+            loans = []
+    else:
+        try:
+            loans = Loan.objects.filter(loan_date__gte=startdate).filter(loan_date__lte=enddate).order_by('-loan_date')
+        except:
+            loans = []
+
+    dictionaries = {'gives': gives, 'gets': gets, 'normal_expenditures': normal_expenditures, 'ind_expenditures': ind_expenditures, 'loans': loans,'type':type}
+    return render_to_response('nadc/date.json', dictionaries, content_type='application/json')
 
     
 def About(request):
