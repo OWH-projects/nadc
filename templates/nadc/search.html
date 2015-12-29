@@ -10,35 +10,72 @@
 
 <div class="container" style="margin-bottom:50px;">
 
-<div class="row">
-        <div class="col-md-8">
-        
-<div id="topdonors" class="item">
-<br><br><br>
-{% if candidate_results or entity_results %}
-<h3>Search results for '{{ query }}'</h3>
+	{% if candidate_results or entity_results %}
 
+	<div class="row">
+	<div class="col-md-12">
+	
+		<h1><b>Search results for '{{ query }}'</b></h1>
+					
+		
+	</div>
+	</div>
+	
+	<div class="row">
+	<div class="col-sm-8">
+	
+					<table class="table table-condensed">
+						<thead>
+							<tr>
+								<th>Entity</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+						
+							{% for match in entity_results %}
+							<tr>
+								<td><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></td>
+								</tr>
+							{% endfor %}
+							
+						</tbody>
+					</table>
+	
+			</div>
+	
+			<div class="col-sm-3 col-sm-offset-1">
+					
+					
+					
+				{% if candidate_results %}
+				{% with candidate_results|first as candname %}
+		
+				<div class="sticky">
+		
+				<p><small>It looks like someone with a similar name has run for office. You may be looking for <a href="/campaign-finance/{{ candname.cand_id }}/{{ candname.cand_name|slugify }}">{{ candname.cand_name|title }}</a>, who ran for {% endwith %}
+				{% for match in candidate_results %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ match.office_desc|title }}{% endfor %}.</small></p>
+				
+				</div>
+				
+				{% endif %}
+		
+				
+				{% returnsearch %}
 
-{% if candidate_results %}
-{% with candidate_results|first as candname %}
-It looks like someone with a similar name has run for office. You may be looking for <a href="/campaign-finance/{{ candname.cand_id }}/{{ candname.cand_name|slugify }}">{{ candname.cand_name|title }}</a>, who ran for {% endwith %}
-{% for match in candidate_results %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ match.office_desc|title }}{% endfor %}. 
-{% endif %}
+				
+			</div>
 
-
-<ul>
-{% for match in entity_results %}
-<li><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></li>
-{% endfor %}
-</ul>
-{% endif %}
+			
+				
+	</div>
+	
+	
+					
+	{% endif %}
 
 
 </div>
-</div>
 
-</div>
-{% returnsearch %}
-</div>
 {% endblock%}
 

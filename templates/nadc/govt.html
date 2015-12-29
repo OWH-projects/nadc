@@ -5,29 +5,40 @@
 {% block social %}{% endblock %}
 
 {% block content %}
+
+{% include 'nadc/nav.html' %}
+
 <div class="container" style="margin-bottom:50px;">
 
-<div class="row">
-        <div class="col-md-8">
-        
-<div id="topdonors" class="item">
-<br><br><br>
-{% with candidates|first as singlerecord %}
-All candidates for {{ singlerecord.office_govt|title }} offices{% endwith %}
+	<div class="row">
+			{% with candidates|first as singlerecord %}
+			<h1>All candidates for {{ singlerecord.office_govt|title }} offices</h1>{% endwith %}
+	 
+	</div>
+	 
+	 <div class="row">
+	 
+		<div class="col-md-8">
+			
+			<div id="topdonors" class="item">
 
-{% regroup candidates by display_office as office_list %}
+				{% regroup candidates by display_office as office_list %}
 
-{% for office in office_list %}
-<h3>{{ office.grouper|title }}</h3>
-{% for candidate in office.list %}
-<li><a href="/campaign-finance/{{ candidate.committee.canonical }}/{{ candidate.committee.standard_name|slugify }}">{{ candidate.cand_name|title }}</a></li>
-{% endfor %}
-{% endfor %}
+				{% for office in office_list %}
+					<h3>{{ office.grouper|title }}</h3>
 
-</div>
-</div>
+					{% for candidate in office.list %}
+					<li><a href="/campaign-finance/{{ candidate.committee.canonical }}/{{ candidate.committee.standard_name|slugify }}">{{ candidate.cand_name|title }}</a></li>
+					{% endfor %}
+				{% endfor %}
 
-</div>
-{% returnsearch %}
+			</div>
+		</div>
+
+		<div class="col-sm-4">
+			{% returnsearch %}
+		</div>
+	</div>
+
 </div>
 {% endblock%}

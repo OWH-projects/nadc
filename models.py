@@ -50,6 +50,10 @@ class Candidate(models.Model):
         else:
             return "%s" % (self.office_title)
 
+    def __str__(self):
+        return "%s, %s" % (self.cand_name, self.office_title)
+        
+
     def save(self):
         self.govslug = '%s' % slugify(self.office_govt)
         print self.govslug
@@ -95,13 +99,16 @@ class Expenditure(models.Model):
 #This table stores information we want on people that does not exist in the database. Therefore, it's divorced from the normal database structure, with relationships that aren't defined explicitly in the data. Instead, they are handled through views. 
 #Yes. This is gross.
 class AdditionalInfo(models.Model):
-    canonical = models.CharField(max_length=20, null=True, blank=True) #The canonical_id in the Entity table
-    candidate = models.CharField(max_length=20, null=True, blank=True) #The candidate_id in the Candidate table
+    canonical = models.CharField(max_length=20, null=True, blank=True, help_text="The canonical_id in the Entity table") #The canonical_id in the Entity table
+    candidate = models.CharField(max_length=20, null=True, blank=True, help_text="Candidate_id from candidate table") #The candidate_id in the Candidate table
     mugshot = models.FileField(upload_to="nadc/mugs/", null=True, blank=True)
     name = models.CharField(max_length=120)
     title = models.CharField(max_length=120, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     care = models.BooleanField(default=False)
+    def __str__(self):
+        return self.name
+
 
 class Ballot(models.Model):
     nadcid = models.ForeignKey(Entity)

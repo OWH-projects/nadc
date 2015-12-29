@@ -1,0 +1,52 @@
+{% extends 'nadc/base.html' %}
+{% load humanize %}
+{% load searchwidget %}
+
+
+{% block title %}Donations from zip code {{ zip }} - {% endblock %}
+
+    {% block social %}
+    <meta name="description" content="XXXXXXXXXX">
+
+	<meta property="og:title" content="XXXXXXXXXX">
+	<meta property="og:image" content="XXXXXXXXXX">
+	<meta property="og:site_name" content="Dataomaha.com">
+	<meta property="og:description" content="XXXXXXXXXX">
+	<meta property="fb:app_id" content="117714391577072">
+	
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:site" content="@OWHnews">
+	<meta name="twitter:creator" content="@dataomaha">
+	<meta name="twitter:title" content="XXXXXXXXXX">
+	<meta name="twitter:description" content="XXXXXXXXXX">
+	<meta name="twitter:image:src" content="XXXXXXXXXX">
+    {% endblock %}
+
+{% block content %}
+
+	{% include 'nadc/nav.html' %}
+	
+	<div class="container">
+	
+		<div class="row">
+		<div class="col-sm-12">
+			<h1 class="bold">Donations from zip code {{ zip }}</h1>
+		</div>
+		</div>
+		
+		<div class="row">
+
+			<div class="col-sm-8">
+
+				{% for entity in entities %}
+					<li><a href="/campaign-finance/{{ entity.canonical }}/{{ entity.standard_name|slugify }}">{{ 	entity.standard_name|title }}</a></li>
+				{% endfor %}
+			</div>
+			
+			<div class="col-sm-4">
+				{% returnsearch %}
+			</div>
+		</div>
+	</div>
+	
+{% endblock %}

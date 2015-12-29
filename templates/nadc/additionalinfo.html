@@ -8,21 +8,24 @@
 	<div class="row">
 	
 		<div class="col-sm-2">
-			<img style="width: 100px; height: 100px; border-radius: 50%; background-position: center;" src="/media/{{ extrainfo.mugshot }}">
+			{% if extrainfo.mugshot %}<img style="width: 100px; height: 100px; border-radius: 50%; background-position: center;" src="/media/{{ extrainfo.mugshot }}">{% endif %}
 			<!-- {% if candidates %}<div class="clearfix" style="margin-top:20px;"></div><span class="label label-info">Candidate</span>{% endif %} -->
 			<h4>{{ extrainfo.name|title }}</h4>
 			<h5><em>{{ extrainfo.title }}</em></h5>
 		</div>
 		
-		<div class="col-sm-6">
+		<div class="{% if candidates %}col-sm-6{% else %}col-sm-10{% endif %}">
 			
 			<p>{{ extrainfo.description|safe|linebreaks }}</p>
+			<p>				
+				<a href="/campaign-finance/{{ extrainfo.canonical }}/{{ extrainfo.name|slugify }}">Donations by {{ extrainfo.name| title }} as a private citizen</a>
+			</p>
     
 		</div>
 		
+			{% if candidates %}
 		<div class="col-sm-4">
 	
-			{% if candidates %}
 			<p>{{ extrainfo.name|title }} has run for:</p>
         
 			<table class="table table-condensed">
@@ -36,12 +39,10 @@
 				</tbody>
 			</table>
 			
-			<p>
-				<a href="/campaign-finance/{{ extrainfo.canonical }}/{{ extrainfo.name|slugify }}">Related!</a>
-			</p>
-			{% endif %}
+
 
 		</div>
+			{% endif %}
 			
 	</div>
     

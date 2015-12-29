@@ -1,0 +1,8 @@
+{% load humanize %}
+{{ object.donor.name|title }} gave 
+
+${{ object.cash|intcomma }}
+
+{{ object.donation_date|date:"M d, Y" }}
+
+{{ 

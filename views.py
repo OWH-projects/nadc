@@ -7,6 +7,7 @@ from django.db.models import F
 from django.db import connection
 import datetime
 from last_updated import LAST_UPDATED
+from django.views.generic import DetailView
 
 DONATION_TOTAL = Donation.objects.count()
 
@@ -29,8 +30,12 @@ def Main(request):
     byyear = donations.values('donation_year').annotate(sum=Sum('cash'))
     toprecipients = Donation.objects.values('recipient_id__canonical', 'recipient_id__standard_name').annotate(totes=Sum("cash")).order_by("-totes")[:10]
     recentdonations = donations.filter(donation_date__gte=LAST_UPDATED+datetime.timedelta(-30), donation_date__lte=datetime.datetime.now()).annotate(totes=F('cash')+F('inkind')).order_by('-donation_date')
+    today = datetime.datetime.now()
+    today_minus_30 = datetime.datetime.now() - datetime.timedelta(days=30)
 
-    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'toplast30donations':toplast30donations, 'last30donationstotal':last30donationstotal,'monthlyexpenditures': monthlyexpenditures,'toplast30targeted': toplast30targeted,'last30targetedtotal': last30targetedtotal,'toplast30admin': toplast30admin,'last30admintotal': last30admintotal, 'recentdonations':recentdonations,'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear, 'LAST_UPDATED': LAST_UPDATED,'toprecipients': toprecipients,}
+    bigwigs = AdditionalInfo.objects.filter
+
+    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'toplast30donations':toplast30donations, 'last30donationstotal':last30donationstotal,'monthlyexpenditures': monthlyexpenditures,'toplast30targeted': toplast30targeted,'last30targetedtotal': last30targetedtotal,'toplast30admin': toplast30admin,'last30admintotal': last30admintotal, 'recentdonations':recentdonations,'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind,'topvolumeunique':topvolumeunique,'topvolumeraw':topvolumeraw,'byyear':byyear, 'LAST_UPDATED': LAST_UPDATED,'toprecipients': toprecipients, 'today': today, 'today_minus_30': today_minus_30, }
     return render_to_response('nadc/main.html', dictionaries)
 
 def Govt(request, govslug):
@@ -162,7 +167,7 @@ def Search(request):
     entity_qset = Q()
     candidate_qset = Q()
     for term in exploded:
-        entity_qset &= Q(standard_name__icontains=term) | Q(candidate_detail__cand_name__icontains=term)
+        entity_qset &= Q(standard_name__icontains=term) | Q(candidate_detail__cand_name__icontains=term) | Q(zip=term)
 
     for term in exploded:
         candidate_qset &= Q(cand_name__icontains=term)
@@ -226,3 +231,16 @@ def EntityPage(request, id):
     
     return render_to_response('nadc/entity.html', dictionaries)
 
+def DateWidget(request):
+    dictionaries = {}
+    return render_to_response('nadc/datewidget.html', dictionaries)
+	
+def ZipCode(request,zipcode):
+    entities =  Entity.objects.filter(zip=zipcode)
+    zip = zipcode
+
+    dictionaries = { 'zip': zip, 'entities': entities, }    
+    return render_to_response('nadc/zip.html', dictionaries)
+    
+class DonationDetailView(DetailView):
+    model = Donation
