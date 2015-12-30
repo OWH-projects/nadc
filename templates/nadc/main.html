@@ -431,10 +431,9 @@
     $(document).ready(function() {
         chartIt();
     });
-        
-    window.onresize = function() {
-        chartIt();
-    };
+    
+    var updateLayout = _.debounce(chartIt, 300);
+    $(window).resize(updateLayout);
 
         var $tw = $('#tw');
         var $fb = $('#fb');
