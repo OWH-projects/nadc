@@ -23,16 +23,18 @@
 				<h3 class="big">${{ last30donationstotal.totes|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Donations, past 30 days</p>
 			</div>
-			
-			<div class="col-sm-4">
-				<h3 class="big">${{ last30admintotal.totes|floatformat:"0"|intcomma }}</h3>
-				<p class="small">Campaign spending, past 30 days</p> 
-			</div>
-			
+
 			<div class="col-sm-4">
 				<h3 class="big">${{ last30targetedtotal.totes|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Support/opposition spending, past 30 days</p> 
 			</div>
+			
+			<div class="col-sm-4">
+				<h3 class="big">${{ last30admintotal.totes|floatformat:"0"|intcomma }}</h3>
+				<p class="small">Other campaign spending, past 30 days</p> 
+			</div>
+			
+
 
 			
 		</div>
@@ -194,16 +196,11 @@
 				<hr style="border-top: 1px solid #fafafa;" />
 				<p class="bold">Donations by month, past year</p>
                 <div id="donations_chart"></div>
-                
-       	
 			</div>
-			
-			
 			
 </div>
 </div>			
 		
-
 <div id="expenditures">
 <div class="container">
 
@@ -286,20 +283,13 @@
 				</div>
 				
 				<div class="col-sm-4">
-				
 					<h3 class="big blue">${{ last30admintotal.totes|floatformat:"0"|intcomma }}</h3>
 					<p><b>Campaign spending, past 30 days</b> 
-
 					<hr />
 					<p class="bold">Monthly campaign spending, past year</p>
 					<div id="expenditures_chart"></div>
-					
-
 				</div>
 			</div>
-			
-			
-			
 			
 </div>
 </div>
@@ -319,14 +309,11 @@
 
 {% block scripts %}
 
-<script src="http://www.dataomaha.com/media/scripts/owh-utils.js"></script>
-<script src="http://www.dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.js"></script>
-
-
+<script src="/media/scripts/owh-utils.js"></script>
+<script src="/media/scripts/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 <script src="/media/scripts/flot/jquery.flot.min.js"></script>
 <script src="/media/scripts/flot/jquery.flot.resize.min.js"></script>
 <script src="/media/scripts/flot/jquery.flot.time.min.js"></script>
-
 
 <script>
     
@@ -432,24 +419,9 @@
         chartIt();
     });
     
-    var updateLayout = _.debounce(chartIt, 300);
-    $(window).resize(updateLayout);
+    var updateChart = _.debounce(chartIt, 300);
+    $(window).resize(updateChart);
 
-        var $tw = $('#tw');
-        var $fb = $('#fb');
-        var msg = "https://twitter.com/intent/tweet?text=" + encodeURIComponent("New from @dataomaha @owhnews: Search {{ DONATION_TOTAL|intcomma }} Nebraska campaign finance records since 1999: http://www.dataomaha.com/campaign-finance");
-        $tw.attr({
-            'href': msg,
-            'target': '_blank'
-        });
-        $fb.attr({
-            'href':'http://www.facebook.com/sharer.php?u=http://dataomaha.com/campaign-finance',
-            'target': '_blank'           
-        });
-</script>
-
-<script>
-	
 	// instantiate datepickers
     $('.input-daterange input').each(function() {
         $(this).datepicker({
@@ -457,16 +429,11 @@
         });
     });
 	
-	
-	
-	
     //function to get start/end dates, if present in datepicker, and return an object
-    
 	function pad(x){
 		if(x < 10) return "0" + x;
 		return x;
-	}
-	
+	};
 	
 	$(".date-filter").bind("click", function(d) {
 		var start_date_val = $('#startdate').val();
@@ -479,7 +446,7 @@
 
             if (start_date && end_date && (end_date < start_date)) {
                 alert("End date " + end_date_val + " comes before start date " + start_date_val);
-            }
+            };
 			
 			var start_formatted = pad(start_date.getMonth() + 1).toString() + pad(start_date.getDate()).toString() + pad(start_date.getFullYear()).toString();
 			console.log("Start date:" + start_formatted);
@@ -487,17 +454,13 @@
 			var end_formatted = pad((end_date.getMonth() + 1)).toString() + pad(end_date.getDate()).toString() + pad(end_date.getFullYear()).toString();
 			console.log("End date:" + end_formatted);
 			
-			url = "campaign-finance/daterange/" + start_formatted + "/" + end_formatted;
+			var url = "campaign-finance/daterange/" + start_formatted + "/" + end_formatted;
 			window.location = url; 
 		}
-
 		else {
 			alert("Please enter two dates for the range.");
 		};
-		
-        return;
+        return false;
     });
 </script>
-
-
 {% endblock %}

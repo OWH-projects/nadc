@@ -17,29 +17,26 @@
             <div class="row">
             <div class="col-sm-12">
                 <h1><b>About this data</b></h1>
-                {% lorem 3 p %}
+                <p>Every week, computer scripts written by reporters at The World-Herald automatically download new campaign finance data from a state website, parse it and load it into this web application.</p>
                 
-				
+                <p>This is the first time Nebraska campaign finance data has been made available at the transaction level. It means that citizens can start drawing connections between the people and organizations financing state and local elections. It also means XXXXXXXXXXXXXX.</p>
+                
+                <p>Contributions in federal races are not included here. To explore that data, we recommend <a href="http://www.opensecrets.org/" target="_blank">the Center for Responsive Politics' search tool</a>.</p>
+                
 				
 				<h3>Models</h3>
 				<p>&bull; <b>Entity:</b> Any group, committee, donor, lender or other entity that has been assigned a unique ID by the NADC. This is the parent table.</p>
 				<p>&bull; <b>Donation:</b> Money, in-kind donations, "direct expenditures" to a committee, pledges.</p>
 				<p>&bull; <b>Candidate:</b> Candidates tied to campaign committees and ballot questions.</p>
-				<p>&bull; <b>Loans:</b></p>
+				<p>&bull; <b>Loans</b></p>
 				<p>&bull; <b>Expenditure:</b> Includes both administrative expenses and "targeted" expenses that were earmarked to support or oppose a candidate or committee.</p>
 				
 				
                 <h3>Assumptions and limitations</h3>
-                <p>Lorem ipsum</p>
+                {% lorem 1 p %}
                 
-                <hr>                
                 <h3>For the geeks</h3>
-                <p>
-                    <i class="fa fa-github"></i>&ensp;<a href="https://github.com/OWH-projects/nadc" target="_blank">Application code</a>
-                    <br>
-                    <i class="fa fa-github"></i>&ensp;<a href="https://github.com/OWH-projects/nadc_data" target="_blank">Parsing/loading scripts</a>
-                </p>
-				
+                <p>Our code is on Github <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a> and <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a>. (Pull requests welcome.)</p>
 				
 				<hr />
                 

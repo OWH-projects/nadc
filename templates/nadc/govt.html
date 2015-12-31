@@ -12,7 +12,7 @@
 
 	<div class="row">
 			{% with candidates|first as singlerecord %}
-			<h1>All candidates for {{ singlerecord.office_govt|title }} offices</h1>{% endwith %}
+			<h1>{% if singlerecord.office_govt|upper == "BALLOT QUESTION" %}Ballot question committees{% else %}All candidates for {{ singlerecord.office_govt|title }} offices{% endif %}</h1>{% endwith %}
 	 
 	</div>
 	 
@@ -28,7 +28,7 @@
 					<h3>{{ office.grouper|title }}</h3>
 
 					{% for candidate in office.list %}
-					<li><a href="/campaign-finance/{{ candidate.committee.canonical }}/{{ candidate.committee.standard_name|slugify }}">{{ candidate.cand_name|title }}</a></li>
+					<li><a href="/campaign-finance/{{ candidate.committee.canonical }}/{{ candidate.committee.standard_name|slugify }}">{{ candidate.cand_name|title }}</a>{% if candidate.notes %} ({{ candidate.notes|lower }}){% endif %}</li>
 					{% endfor %}
 				{% endfor %}
 
