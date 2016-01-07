@@ -20,21 +20,19 @@
 		<br />
 		<div class="row">
 			<div class="col-sm-4">
-				<h3 class="big">${{ last30donationstotal.totes|floatformat:"0"|intcomma }}</h3>
+				<h3 class="big">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Donations, past 30 days</p>
 			</div>
 
 			<div class="col-sm-4">
-				<h3 class="big">${{ last30targetedtotal.totes|floatformat:"0"|intcomma }}</h3>
+				<h3 class="big">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Support/opposition spending, past 30 days</p> 
 			</div>
 			
 			<div class="col-sm-4">
-				<h3 class="big">${{ last30admintotal.totes|floatformat:"0"|intcomma }}</h3>
+				<h3 class="big">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Other campaign spending, past 30 days</p> 
 			</div>
-			
-
 
 			
 		</div>
@@ -93,7 +91,11 @@
 		
 			<br />
 			
-			<p><small><a href="/campaign-finance/about">Learn more about this data &raquo;</a></small></p>
+
+  <h3 class="bold"><i class="fa fa-exclamation-triangle"></i> Important</h3>
+  <p>These numbers are approximate. <a href="/campaign-finance/about">Find out why &raquo;</a></p>
+            
+
 		</div>
 	</div>
 	
@@ -126,8 +128,8 @@
 				<div class="row">
 			
 			        <div id="recentdonors" class="item">
-						<h3 class="bold">Largest donations in the past 30 days</h3>
-						{% if toplast30donations.count > 0 %}
+						<h3 class="bold">Largest donations, past 30 days</h3>
+						{% if last30donations.count > 0 %}
 						<table class="table" id="recentDonorTable">
 							<thead>
 							<tr>
@@ -138,7 +140,7 @@
 							</tr>
 							</thead>
 							<tbody>
-							{% for thing in toplast30donations %}{% if thing.pledge == 0 %}<tr>
+							{% for thing in last30donations|slice:":5" %}{% if thing.pledge == 0 %}<tr>
 								<td>{{ thing.donation_date }}</td>
 								<td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
 								<td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
@@ -148,7 +150,7 @@
 							</tbody>
 						</table>
 						{% else %}<p>No donations were reported in the past 30 days.</p>{% endif %}
-						<p><a href='/campaign-finance/daterange/{{ today_minus_30|date:"mdY" }}/{{ today|date:"mdY" }}'>See all donations in the past 30 days &raquo;</a></p>
+						{% if last30donations.count > 5 %}<p><a href='/campaign-finance/daterange/{{ today_minus_30|date:"mdY" }}/{{ today|date:"mdY" }}'>See all donations in the past 30 days &raquo;</a></p>{% endif %}
 					</div>
 			
 			
@@ -190,10 +192,10 @@
 			
 			<div class="col-md-4 col-sm-offset-1">
 
-				<h3 class="big purple">${{ last30donationstotal.totes|floatformat:"0"|intcomma }}</h3>
-				<p><b>Total donations in past 30 days</b></p>
+				<h3 class="big purple">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+				<p><b>All donations, past 30 days</b></p>
 				
-				<hr style="border-top: 1px solid #fafafa;" />
+				<hr />
 				<p class="bold">Donations by month, past year</p>
                 <div id="donations_chart"></div>
 			</div>
@@ -205,14 +207,13 @@
 <div class="container">
 
 			<h2 class="blue">Expenditures</h2>
-
 			
 			<div class="row">
 			
 				<div class="col-sm-8">
 					<div id="recentexpenditures" class="item">
-						<h3 class="bold">Campaign spending supporting or opposing candidates and committees, past 30 days</h3>
-						{% if toplast30targeted.count > 0 %}
+						<h3 class="bold">Campaign spending to support or oppose a candidate or committee, past 30 days</h3>
+						{% if last30targeted.count > 0 %}
 						<table class="table" id="recentExpTable">
 							<thead>
 							<tr>
@@ -223,28 +224,28 @@
 							</tr>
 							</thead>
 							<tbody>
-							{% for thing in toplast30targeted %}<tr>
+							{% for thing in last30targeted|slice:":5" %}<tr>
 								<td>{{ thing.exp_date }}</td>
-								<td><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
-								<td>{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}</td>
+								<td>{% if thing.committee %}<a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a>{% else %}Not specified{% endif %}</td>
+								<td>{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}{% if thing.stance %}{% if thing.stance == "0" %} (support){% elif thing.stance == "1" %} (oppose){% endif %}{% endif %}</td>
 								<td class="r">${{ thing.totes|intcomma }}</td>
 							</tr>
 							{% endfor %}
 							</tbody>
 						</table>
-						{% else %}No donations were reported in the past 30 days.{% endif %}
+						{% else %}<p>No targeted campaign donations were reported in the past 30 days.</p>{% endif %}
+                        {% if last30targeted.count > 5 %}<p><a href='/campaign-finance/daterange/{{ today_minus_30|date:"mdY" }}/{{ today|date:"mdY" }}'>See all donations in the past 30 days &raquo;</a></p>{% endif %}
 					</div>
 					
 				</div>
 				
 				<div class="col-sm-4">
 				
-					<h3 class="big blue">${{ last30targetedtotal.totes|floatformat:"0"|intcomma }}</h3>
-					<p><b>Targeted spending, past 30 days</b> 
-
+					<h3 class="big blue">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+					<p><b>All targeted spending, past 30 days</b>
 					<hr />
-					<p class="bold">Expenditures by month, past year</p>
-					<div id="expenditures_chart"></div>
+					<p class="bold">Targeted spending by month, past year</p>
+					<div id="targeted_spending_chart"></div>
 					
 
 				</div>
@@ -254,8 +255,8 @@
 			
 				<div class="col-sm-8">
 					<div id="recentexpenditures" class="item">
-						<h3 class="bold">All other campaign spending, past 30 days</h3>
-						{% if toplast30admin.count > 0 %}
+						<h3 class="bold">Other campaign spending, past 30 days</h3>
+						{% if last30admin.count > 0 %}
 						<table class="table" id="recentExpTable">
 							<thead>
 							<tr>
@@ -267,27 +268,28 @@
 							</tr>
 							</thead>
 							<tbody>
-							{% for thing in toplast30admin %}<tr>
+							{% for thing in last30admin|slice:":5" %}<tr>
 								<td>{{ thing.exp_date }}</td>
 								<td><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
-								<td>(XXXXXX - Paid to?)</td>
-								<td>(XXXXX - For?)</td>
+								<td>{% if thing.payee %}{{ thing.payee|title }}{% else %}Unspecified{% endif %}</td>
+								<td>{% if thing.exp_purpose %}{{ thing.exp_purpose|title }}{% else %}Unspecified{% endif %}</td>
 								<td class="r">${{ thing.totes|intcomma }}</td>
 							</tr>
 							{% endfor %}
 							</tbody>
 						</table>
-						{% else %}No donations were reported in the past 30 days.{% endif %}
+						{% else %}<p>No other campaign spending reported in the past 30 days.</p>{% endif %}
+                        {% if last30admin.count > 5 %}<p><a href='/campaign-finance/daterange/{{ today_minus_30|date:"mdY" }}/{{ today|date:"mdY" }}'>See all other campaign spending in the past 30 days &raquo;</a></p>{% endif %}
 					</div>
 					
 				</div>
 				
 				<div class="col-sm-4">
-					<h3 class="big blue">${{ last30admintotal.totes|floatformat:"0"|intcomma }}</h3>
-					<p><b>Campaign spending, past 30 days</b> 
+					<h3 class="big blue">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+					<p><b>All other campaign spending, past 30 days</b> 
 					<hr />
-					<p class="bold">Monthly campaign spending, past year</p>
-					<div id="expenditures_chart"></div>
+					<p class="bold">Other campaign spending by month, past year</p>
+					<div id="admin_spending_chart"></div>
 				</div>
 			</div>
 			
@@ -351,7 +353,10 @@
     
     var expenditures_by_month = [{% for month in monthlyexpenditures %}[getMonthTime({{ month.month }}, {{ month.year }}), {{ month.monthly_total }}]{% if not forloop.last %},{% endif %}{% endfor %}];
     
+    var admin_expenditures_by_month = [{% for month in monthlyadminexpenditures %}[getMonthTime({{ month.month }}, {{ month.year }}), {{ month.monthly_total }}]{% if not forloop.last %},{% endif %}{% endfor %}];
+    
     var chartIt = function() {
+        
         $.plot($("#donations_chart"), [donations_by_month], {
             series: {
                 bars: {
@@ -360,7 +365,7 @@
                     fillColor: '#472f44',
                     align: "center"
                 },
-              color: "#f0f0f0"
+              color: "#fff"
             },
             bars: { barWidth: (60*60*24*365*1000) / 13 },
             shadowSize: 0,
@@ -377,13 +382,13 @@
             grid: {
                 borderWidth: 0.5,
                 axisMargin: 0,
-                borderColor: '#f0f0f0',
+                borderColor: '#fff',
                 color: '#333',
                 labelMargin:15
                 }
         });
         
-        $.plot($("#expenditures_chart"), [expenditures_by_month], {
+        $.plot($("#targeted_spending_chart"), [expenditures_by_month], {
             series: {
                 bars: {
                     show: true,
@@ -391,7 +396,7 @@
                     fillColor: '#1f3c4c',
                     align: "center"
                 },
-              color: "#f0f0f0"
+              color: "#fff"
             },
             bars: { barWidth: (60*60*24*365*1000) / 13 },
             shadowSize: 0,
@@ -408,18 +413,50 @@
             grid: {
                 borderWidth: 0.5,
                 axisMargin: 0,
-                borderColor: '#f0f0f0',
+                borderColor: '#fff',
                 color: '#333',
                 labelMargin:15
                 }
-        });        
+        });
+        
+        $.plot($("#admin_spending_chart"), [admin_expenditures_by_month], {
+            series: {
+                bars: {
+                    show: true,
+                    fill: true,
+                    fillColor: '#1f3c4c',
+                    align: "center"
+                },
+              color: "#fff"
+            },
+            bars: { barWidth: (60*60*24*365*1000) / 13 },
+            shadowSize: 0,
+            xaxis: {
+                mode: "time",
+                tickLength: 0,
+                ticks: 12,
+                tickFormatter: monthFormatter,
+                margin: 10
+            },
+            yaxis: {
+                tickFormatter: formatter
+            },        
+            grid: {
+                borderWidth: 0.5,
+                axisMargin: 0,
+                borderColor: '#fff',
+                color: '#333',
+                labelMargin:15
+                }
+        });
+    
     };
     
     $(document).ready(function() {
         chartIt();
     });
     
-    var updateChart = _.debounce(chartIt, 300);
+    var updateChart = _.debounce(chartIt, 500);
     $(window).resize(updateChart);
 
 	// instantiate datepickers

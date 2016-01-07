@@ -56,7 +56,10 @@
 			
 		</div>
 		</div>
-		<h3><a id="tw"><i class="fa fa-twitter sharetop"></i></a>&ensp;<a id="fb"><i class="fa fa-facebook-square sharetop"></i></a></h3>
+		<h3><a id="tw"><i class="fa fa-twitter sharetop"></i></a>&ensp;<a id="fb"><i class="fa fa-facebook-square sharetop"></i></a></h3>{% if name.notes %}
+        
+        <p class="small muted">{{ name.notes }}</p>{% endif %}
+        
 		<hr />
 		
 		<div class="row amounts">
@@ -198,7 +201,7 @@
         <tbody>
         <% _.each( data_to_template.gives_table_data, function( d ){ %>
             <tr class="totals">
-				<td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a></td>
+				<td><% if (!d.id || d.id === "") { %><%= d.name %><% } else { %><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a><% }; %></td>
 				<td class="r"><%= d.gives.length %></td>
 				<td class="r">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
                 
@@ -213,7 +216,7 @@
 						<tr class="toggle small <%= d.id %>">
 							<td><%= d.name %></td>
 							<td class="r"><%= ind_don.display_date %></td>
-							<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+							<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></td>
 						</tr>
                     <% }); %>
             <!-- // -->
@@ -275,8 +278,6 @@
 	<table class="table table-condensed">
         <thead>
             <tr>
-                <th>Paid to</th>
-                <th style="max-width: 400px;">Purpose</th>
                 <th>Supporting/Opposing</th>
                 <th>Stance</th>
                 <th class="r">Date</th>
@@ -286,8 +287,6 @@
         <tbody>
         <% _.each( data_to_template.targeted_spending, function( d ){ %>
             <tr>
-                 <td><% if (d.recipient) { %><%= d.recipient %><% } else { %>Unspecified<% }; %></td>
-                 <td style="max-width: 400px;"><%= d.purpose %></td>
                  <td>
                  <% if (d.target_committee_id) { %>
                     <a href="/campaign-finance/<%= d.target_committee_id %>/<%= d.target_committee_slug %>"><%= d.target_committee_name %></a>
@@ -433,9 +432,9 @@
     //build page data object
     var page_data = {};
     
-    {% if gives %}page_data['gives'] = [{% for record in gives %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{{ record.recipient.standard_name|safe|title }}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
+    {% if gives %}page_data['gives'] = [{% for record in gives %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{% if record.recipient and record.recipient != "" %}{{ record.recipient.standard_name|safe|title }}{% else %}{{ record.notes }}{% endif %}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
-    {% if gets %}page_data['gets'] = [{% for record in gets %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title|safe }}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
+    {% if gets %}page_data['gets'] = [{% for record in gets %}{% if record.pledge == 0 %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title|safe }}"}{% if not forloop.last %},{% endif %}{% endif %}{% endfor %}];{% endif %}
     
     {% if normal_expenditures or ind_expenditures %}
     var expenditures = {};
@@ -867,7 +866,7 @@ $(document).ready(function() {
         return false;
       }
     }
-  });	
+  });
 
 });
 

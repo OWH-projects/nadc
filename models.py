@@ -29,7 +29,7 @@ class Donation(models.Model):
     inkind_desc = models.TextField(null=True, blank=True)
     donation_date = models.DateField()
     donation_year = models.CharField(max_length=4, default="")
-    stance = models.CharField(max_length=10, null=True, blank=True)
+    week = models.CharField(max_length=10, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     donor_name = models.CharField(max_length=200, null=True, blank=True)
     
@@ -96,6 +96,17 @@ class Expenditure(models.Model):
                 self.target_candidate = Candidate.objects.filter(cand_id=str(self.raw_target))[0]
         super(Expenditure, self).save()
 
+class Misc(models.Model):
+    misc_name = models.CharField(max_length=150, null=True, blank=True)
+    committee = models.ForeignKey(Entity, related_name="misc_peeps")
+    misc_title = models.CharField(max_length=50, null=True, blank=True)
+    misc_address = models.CharField(max_length=150, null=True, blank=True)
+    misc_phone = models.CharField(max_length=50, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return "%s, %s" % (self.misc_name, self.misc_title)
+        
 #This table stores information we want on people that does not exist in the database. Therefore, it's divorced from the normal database structure, with relationships that aren't defined explicitly in the data. Instead, they are handled through views. 
 #Yes. This is gross.
 class AdditionalInfo(models.Model):
