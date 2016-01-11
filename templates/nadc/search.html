@@ -10,67 +10,87 @@
 
 <div class="container" style="margin-bottom:50px;">
 
-	{% if candidate_results or entity_results %}
+	{% if candidate_results or entity_results or misc_results %}
 
-	<div class="row">
-	<div class="col-md-12">
-	
-		<h1><b>Search results for '{{ query }}'</b></h1>
-					
+		<div class="row">
+		<div class="col-md-12">
 		
-	</div>
-	</div>
-	
-	<div class="row">
-	<div class="col-sm-8">
-	
-					<table class="table table-condensed">
-						<thead>
-							<tr>
-								<th>Entity</th>
-							</tr>
-						</thead>
+			<h1><b>Search results for '{{ query }}'</b></h1>
 						
-						<tbody>
-						
-							{% for match in entity_results %}
-							<tr>
-								<td><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></td>
-								</tr>
-							{% endfor %}
-							
-						</tbody>
-					</table>
-	
-			</div>
-	
-			<div class="col-sm-3 col-sm-offset-1">
-					
-					
-					
-				{% if candidate_results %}
-				{% with candidate_results|first as candname %}
-		
-				<div class="sticky">
-		
-				<p><small>It looks like someone with a similar name has run for office. You may be looking for <a href="/campaign-finance/{{ candname.cand_id }}/{{ candname.cand_name|slugify }}">{{ candname.cand_name|title }}</a>, who ran for {% endwith %}
-				{% for match in candidate_results %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ match.office_desc|title }}{% endfor %}.</small></p>
-				
-				</div>
-				
-				{% endif %}
-		
-				
-				{% returnsearch %}
-
-				
-			</div>
-
 			
+		</div>
+		</div>
+		
+		<div class="row">
+		<div class="col-sm-8">
+		
+						<table class="table table-condensed">
+							<thead>
+								<tr>
+									<th>People, committees, businesses or PACS</th>
+								</tr>
+							</thead>
+							
+							<tbody>
+							
+								{% for match in entity_results %}
+								<tr>
+									<td><a href="/campaign-finance/{{ match.canonical }}/{{ match.standard_name|slugify }}">{{ match.standard_name|title }}</a></td>
+									</tr>
+								{% endfor %}
+								
+							</tbody>
+						</table>
+                        <h3>Committee leadership roles
+                        <table class="table table-condensed">
+							<thead>
+								<tr>
+									<th></th>
+                                    <th>Title</th>
+                                    <th>Committee</th>
+								</tr>
+							</thead>
+                        <tbody>
+                        {% for misc in misc_results %}
+                        <tr>
+                        <td>{{ misc.misc_name|title }}</td>
+                        <td>{{ misc.misc_title|title }}</td>
+                        <td><a href="/campaign-finance/{{ misc.committee.canonical }}/{{ misc.committee.standard_name|slugify }}">{{ misc.committee.standard_name|title }}</a></td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        </tr>
+                        </tbody>
+		
+				</div>
+		
+				<div class="col-sm-3 col-sm-offset-1">
+						
+						
+						
+					{% if candidate_results %}
+					{% with candidate_results|first as candname %}
+			
+					<div class="sticky">
+			
+					<p><small>It looks like someone with a similar name has run for office. You may be looking for <a href="/campaign-finance/{{ candname.cand_id }}/{{ candname.cand_name|slugify }}">{{ candname.cand_name|title }}</a>, who ran for {% endwith %}
+					{% for match in candidate_results %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{ match.office_desc|title }}{% endfor %}.</small></p>
+					
+					</div>
+					
+					{% endif %}
+			
+					
+					{% returnsearch %}
+
+					
+				</div>
+
 				
-	</div>
+					
+		</div>
 	
-	
+	<h1>No results</h1>
 					
 	{% endif %}
 

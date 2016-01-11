@@ -19,20 +19,26 @@
         <p>Who's funding Nebraska politics? Find out with the only source that lets you search for the people, companies and committees spending money to finance campaigns. New data every week.</p>
 		<br />
 		<div class="row">
-			<div class="col-sm-4">
+			{% if last30donations %}
+            <div class="col-sm-4">
 				<h3 class="big">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Donations, past 30 days</p>
 			</div>
+            {% endif %}
 
+            {% if last30targeted %}
 			<div class="col-sm-4">
 				<h3 class="big">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Support/opposition spending, past 30 days</p> 
 			</div>
+            {% endif %}
 			
-			<div class="col-sm-4">
-				<h3 class="big">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+			{% if last30admin %}
+            <div class="col-sm-4">
+                <h3 class="big">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
 				<p class="small">Other campaign spending, past 30 days</p> 
 			</div>
+            {% endif %}
 
 			
 		</div>
@@ -55,7 +61,7 @@
 		    </div>
 	    </form>		
 		
-		<br />
+		<br /><p class="or">OR</p>
 		
 		<select id="location" class="form-control input-lg" onchange="if (this.value) window.location.href=this.value">	
 			<option selected disabled>Pick a city, county or government</option>
@@ -64,7 +70,7 @@
 			{% endfor %}
 		</select>
 		
-		<br />
+		<br /><p class="or">OR</p>
 		
 			<div id="datefilter">
 				<div class="input-group input-daterange">
@@ -156,46 +162,17 @@
 			
 				</div>
 			
-				<div class="row">
 				
-					<h3 class="bold">Top donors since 1999</h3>
-						  
-					<div id="topdonors" class="col-sm-6">
-						<h4>By dollars</h4>
-					
-						<table class="table">
-							{% for thing in top10ind %}
-							<tr>
-								<td><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></td>
-								<td class="r">${{ thing.totes|apnumber|intcomma }}</td>
-							</tr>
-							{% endfor %}
-						</table>
-					</div>
-						
-						
-					<div id="topdonors" class="col-sm-6">
-						<h4>By committees supported</h4>
-						<table class="table">
-							{% for thing in topvolumeunique %}
-							<tr>
-								<td><a href="/campaign-finance/{{ thing.donor_id__canonical }}/{{ thing.donor_id__standard_name|slugify }}">{{ thing.donor_id__standard_name|title }}</a></td>
-								<td class="r">{{ thing.recipient__count }}</td>
-							</tr>
-							{% endfor %}
-						</table>
-					</div>
-			
-				</div>
 			
 			</div>
 			
 			<div class="col-md-4 col-sm-offset-1">
 
+            {% if last30donations %}
 				<h3 class="big purple">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</h3>
-				<p><b>All donations, past 30 days</b></p>
-				
+				<p><b>Total, past 30 days</b></p>
 				<hr />
+                {% endif %}
 				<p class="bold">Donations by month, past year</p>
                 <div id="donations_chart"></div>
 			</div>
@@ -206,13 +183,13 @@
 <div id="expenditures">
 <div class="container">
 
-			<h2 class="blue">Expenditures</h2>
 			
 			<div class="row">
+			<h2 class="blue">Support / opposition spending</h2>
 			
-				<div class="col-sm-8">
+				<div class="col-sm-7">
 					<div id="recentexpenditures" class="item">
-						<h3 class="bold">Campaign spending to support or oppose a candidate or committee, past 30 days</h3>
+						<h3 class="bold">Largest expenditures to directly support or oppose a candidate, past 30 days</h3>
 						{% if last30targeted.count > 0 %}
 						<table class="table" id="recentExpTable">
 							<thead>
@@ -239,12 +216,14 @@
 					
 				</div>
 				
-				<div class="col-sm-4">
+				<div class="col-sm-4 col-sm-offset-1">
 				
-					<h3 class="big blue">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
-					<p><b>All targeted spending, past 30 days</b>
+					{% if last30targeted %}
+                    <h3 class="big blue">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+					<p><b>Total, past 30 days</b>
 					<hr />
-					<p class="bold">Targeted spending by month, past year</p>
+                    {% endif %}
+					<p class="bold">Total by month, past year</p>
 					<div id="targeted_spending_chart"></div>
 					
 
@@ -252,10 +231,12 @@
 			</div>
 			
 			<div class="row">
+
+			<h2 class="blue">Campaign spending</h2>
 			
-				<div class="col-sm-8">
+				<div class="col-sm-7">
 					<div id="recentexpenditures" class="item">
-						<h3 class="bold">Other campaign spending, past 30 days</h3>
+						<h3 class="bold">Largest campaign expenses, past 30 days</h3>
 						{% if last30admin.count > 0 %}
 						<table class="table" id="recentExpTable">
 							<thead>
@@ -284,11 +265,13 @@
 					
 				</div>
 				
-				<div class="col-sm-4">
-					<h3 class="big blue">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
-					<p><b>All other campaign spending, past 30 days</b> 
+				<div class="col-sm-4 col-sm-offset-1">
+					{% if last30admin %}
+                    <h3 class="big blue">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+					<p><b>Total, past 30 days</b> 
 					<hr />
-					<p class="bold">Other campaign spending by month, past year</p>
+                    {% endif %}
+					<p class="bold">Total by month, past year</p>
 					<div id="admin_spending_chart"></div>
 				</div>
 			</div>
@@ -302,6 +285,10 @@
 	<h2 class="orange">Bigwigs</h2>
 	
 	<p>Tell the people which people and entities to pay attention to</p>
+	
+	{% for wig in bigwigs %}
+		<li>{{ wig.name }} - {{ wig.title }}</li>
+	{% endfor %}
 	
 </div>
 </div>

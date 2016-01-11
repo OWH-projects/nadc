@@ -19,19 +19,21 @@ class Entity(models.Model):
     place_of_business = models.TextField(null=True, blank=True)
     dissolved_date = models.DateField(null=True, blank=True)
     registered_date = models.DateField(null=True, blank=True)
-
+            
 class Donation(models.Model):
+    id = models.IntegerField(primary_key=True)
     donor = models.ForeignKey(Entity, related_name="giver", null=True, blank=True)
     recipient = models.ForeignKey(Entity, related_name="getter", null=True, blank=True)
     cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     pledge = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind_desc = models.TextField(null=True, blank=True)
-    donation_date = models.DateField()
+    donation_date = models.DateField(null=True, blank=True)
     donation_year = models.CharField(max_length=4, default="")
     week = models.CharField(max_length=10, null=True, blank=True)
     notes = models.TextField(null=True, blank=True)
     donor_name = models.CharField(max_length=200, null=True, blank=True)
+    source_table = models.CharField(max_length=10, null=True, blank=True)
     
 class Candidate(models.Model):
     cand_id = models.CharField(max_length=40, null=False, blank=False)
@@ -64,7 +66,7 @@ class Loan(models.Model):
     lending_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_lender")
     lender_name = models.CharField(max_length=70, null=False, blank=False)
     lender_addr = models.CharField(max_length=70)
-    loan_date = models.DateField()
+    loan_date = models.DateField(null=True, blank=True)
     loan_amount = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     loan_repaid = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     loan_forgiven = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
@@ -81,7 +83,7 @@ class Expenditure(models.Model):
     payee_committee = models.ForeignKey(Entity, null=True, blank=True, related_name="committee_payee") #(optional) if group being paid has an id, it goes here
     payee = models.CharField(max_length=70, null=True, blank=True)
     payee_addr = models.CharField(max_length=70)
-    exp_date = models.DateField()
+    exp_date = models.DateField(null=True, blank=True)
     exp_purpose = models.CharField(max_length=200)
     amount = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     in_kind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
@@ -119,14 +121,6 @@ class AdditionalInfo(models.Model):
     care = models.BooleanField(default=False)
     def __str__(self):
         return self.name
-
-
-class Ballot(models.Model):
-    nadcid = models.ForeignKey(Entity)
-    ballot = models.CharField(max_length=80)
-    ballot_type = models.CharField(max_length=5)
-    stance = models.CharField(max_length=10, null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
 
 class SearchForm(forms.Form):
     searchterm = forms.CharField(label="Search term", max_length=75)

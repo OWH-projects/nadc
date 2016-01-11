@@ -22,8 +22,6 @@
 	<meta name="twitter:image:src" content="XXXXXXXXXX">
     {% endblock %}
 
-
-
 {% block morestyles %}
     <link href="{% static "nadc/entity.css" %}" rel="stylesheet">
     <link href="http://dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.css" rel="stylesheet">
@@ -39,7 +37,16 @@
 		<div class="row">
 		<div class="col-sm-12">
 			<h1><b>{% if name.standard_name %}{{ name.standard_name|title }}{% else %}{{ name.cand_name|title }}{% endif %}</b></h1>
-	
+            
+            {% if not gets and not loans and not gives and not normal_expenditures and not ind_expenditures %}
+            
+            <p>This entity is registered with the NADC but doesn't have any reportable campaign activity.</p>
+        </div>
+		</div>
+    </div>
+    </div>
+            {% else %}
+    
 		</div>
 		</div>
 		
@@ -102,6 +109,8 @@
 			{% endif %}
 			
 			{% if gets %}<p>&raquo; <a href="http://www.nadc.nebraska.gov/ccdb/search.cgi?page=details&type=committee&IDNO={{ name.nadcid }}" target="_blank">Official NADC records</a></p>{% endif %}
+			
+			<p><small>{% for name in name.misc_peeps.all %}<li>{{ name }}</li>{% endfor %}</small></p>
 
 
 			</div>
@@ -147,8 +156,11 @@
 			{% endif %}
 		
         </div>
+        
+        
+        
+        
     </div>		<!-- /#upper -->
-
 	{% additionalinfo id %}
 
 <div id="filters">
@@ -216,7 +228,7 @@
 						<tr class="toggle small <%= d.id %>">
 							<td><%= d.name %></td>
 							<td class="r"><%= ind_don.display_date %></td>
-							<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></td>
+							<td class="r"><a href="/campaign-finance/<%= ind_don.pk %>">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></a></td>
 						</tr>
                     <% }); %>
             <!-- // -->
@@ -385,10 +397,11 @@
 {% endif %}
 
 </div>
-
+{% endif %}
 {% endblock %}
 
 {% block scripts %}
+{% if gets or loans or gives or normal_expenditures or ind_expenditures %}
 <script src="http://www.dataomaha.com/media/scripts/owh-utils.js"></script>
 <script src="http://www.dataomaha.com/media/scripts/bootstrap-datepicker/bootstrap-datepicker.js"></script>
 
@@ -432,7 +445,7 @@
     //build page data object
     var page_data = {};
     
-    {% if gives %}page_data['gives'] = [{% for record in gives %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{% if record.recipient and record.recipient != "" %}{{ record.recipient.standard_name|safe|title }}{% else %}{{ record.notes }}{% endif %}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
+    {% if gives %}page_data['gives'] = [{% for record in gives %}{"pk": "{{ record.pk }}", "display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "recipient_id":"{{ record.recipient.nadcid }}", "recipient_name":"{% if record.recipient and record.recipient != "" %}{{ record.recipient.standard_name|safe|title }}{% else %}{{ record.notes }}{% endif %}"}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
     {% if gets %}page_data['gets'] = [{% for record in gets %}{% if record.pledge == 0 %}{"display_date":"{{ record.donation_date|date:"N j, Y" }}", "donation_date":"{{ record.donation_date|date:"n/j/Y" }}", "inkind": {{ record.inkind }}, "cash":{{ record.cash }},  "donor_id":"{{ record.donor.canonical }}", "donor":"{{ record.donor.standard_name|title|safe }}"}{% if not forloop.last %},{% endif %}{% endif %}{% endfor %}];{% endif %}
     
@@ -871,4 +884,5 @@ $(document).ready(function() {
 });
 
 </script>
+{% endif %}
 {% endblock %}

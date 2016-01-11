@@ -1,8 +1,57 @@
+{% extends 'nadc/base.html' %}
+{% load staticfiles %}
+{% load additionalinfo %}
 {% load humanize %}
-{{ object.donor.name|title }} gave 
 
-${{ object.cash|intcomma }}
+{% block title %}XXXXXXXXXX - {% endblock %}
 
-{{ object.donation_date|date:"M d, Y" }}
+    {% block social %}
+    <meta name="description" content="XXXXXXXXXX">
 
-{{ 
+	<meta property="og:title" content="{% if name.standard_name %}{{ name.standard_name|title }}{% else %}{{ name.cand_name|title }}{% endif %} - Nebraska Campaign Finance">
+	<meta property="og:image" content="XXXXXXXXXX">
+	<meta property="og:site_name" content="Dataomaha.com">
+	<meta property="og:description" content="XXXXXXXXXX">
+	<meta property="fb:app_id" content="117714391577072">
+	
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:site" content="@OWHnews">
+	<meta name="twitter:creator" content="@dataomaha">
+	<meta name="twitter:title" content="XXXXXXXXXX -  Nebraska Campaign Finance">
+	<meta name="twitter:description" content="XXXXXXXXXX">
+	<meta name="twitter:image:src" content="XXXXXXXXXX">
+    {% endblock %}
+
+
+
+{% block morestyles %}{% endblock %}
+
+{% block content %}
+
+	{% include 'nadc/nav.html' %}
+	
+	<div class="container">
+
+		<div class="row">
+		<div class="col-sm-12">
+
+			<p>SINGLE DONATION</P>
+			
+			<table class="table">
+
+				<tr><td>Donor</td><td><a href="/campaign-finance/{{ object.donor.canonical }}/{{ object.donor.standard_name|slugify }}">{{ object.donor.standard_name|title }}</a></td></tr>
+				<tr><td>Recipient</td><td><a href="/campaign-finance/{{ object.recipient.canonical }}/{{ object.recipient.standard_name|slugify }}">{{ object.recipient.standard_name|title }}</a></td></tr>
+				<tr><td>Amount</td><td>${{ object.cash|intcomma }}</td></tr>
+				<tr><td>Date</td><td><a href="/campaign-finance/daterange/{{ object.donation_date }}">{{ object.donation_date|date:"M d, Y" }}</a></td></tr>			
+				<tr><td>Donation year</td><td>{{ object.donation_year }}</td></tr>			
+				<tr><td>Week</td><td>{{ object.week }}</td></tr>			
+				<tr><td>Cash</td><td>{{ object.cash }}</td></tr>			
+				<tr><td>In-kind</td><td>{{ object.inkind }}</td></tr>			
+				<tr><td>In-kind description</td><td>{{ object.inkind_desc }}</td></tr>			
+				<tr><td>Pledge</td><td>{{ object.pledge }}</td></tr>			
+				<tr><td>Notes</td><td>{{ object.notes }}</td></tr>			
+			
+			</table>		
+			
+	
+{% endblock %}

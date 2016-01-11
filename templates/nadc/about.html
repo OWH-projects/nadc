@@ -16,12 +16,29 @@
         <div class="container">
             <div class="row">
             <div class="col-sm-12">
-                <h1><b>About this data</b></h1>
-                <p>Every week, computer scripts written by reporters at The World-Herald automatically download new campaign finance data from a state website, parse it and load it into this web application.</p>
+                <h1><b>FAQ</b></h1>
+                <h3>Where does this data come from?</h3>
+                <p>The <a href="http://www.nadc.nebraska.gov/cf/campaign_filings.html">Nebraska Accountability and Disclosure Commission</a> publishes data every week that reports donations, loans, spending and other campaign activity. World-Herald reporters programmed a method to download, parse and display those transactions. </p>
                 
-                <p>This is the first time Nebraska campaign finance data has been made available at the transaction level. It means that citizens can start drawing connections between the people and organizations financing state and local elections. It also means XXXXXXXXXXXXXX.</p>
+                <h3>How is this different from NADC's own website?</h3>
+                <p>Most importantly, our site lets you search by donor name. For the first time, you can see how much a person or group has donated, and see where their money went: Citizens can start drawing connections between the people and organizations financing state and local elections. We also aggregate information at the transaction level. Campaigns report only donations over $250, though smaller donations are reflected in summary totals reported to the NADC. Because we use only reportable transactions, our totals are different from what the NADC reports. </p>
                 
-                <p>Contributions in federal races are not included here. To explore that data, we recommend <a href="http://www.opensecrets.org/" target="_blank">the Center for Responsive Politics' search tool</a>.</p>
+                <h3>Where are contributions to president, senate and other federal races?</h3>
+                <p>Federal contributions are not included here. To explore that data, we recommend <a href="http://www.opensecrets.org/" target="_blank">the Center for Responsive Politics' search tool</a>.</p>
+                
+                <h3>Why isn't there more information about committees?</h3>
+                <p>We can report named officers for a committee and the city where it is based. Details on a committee's purpose are not reported to the NADC, but that information can usually be gleaned by looking at a committee's spending, donations, donors and the like.</p>
+                
+                <h3>Why do some donors show up multiple times?</h3>
+                <p>The NADC makes no attempt to standardize donors. Gov. Peter Ricketts, for example, appears in the database as Peter Ricketts, Pete Ricketts and J. Peter Ricketts. To the NADC, these are all different people. For large donors such as Gov. Ricketts, the World-Herald has attempted to standardize these records. Many donors still appear multiple times, however.</p>
+                
+                <p>If you see records that ought to be standardized, <a href="mailto:matt.wynn@owh.com">please contact us</a>.</p>
+                
+                <h3>How are you grouping contributions</h3>
+                <p>oveview here,</p>
+                
+                <p>The code used to process and display the data is on Github <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a> and <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a>.</p>
+                
                 
 				
 				<h3>Models</h3>
@@ -35,8 +52,7 @@
                 <h3>Assumptions and limitations</h3>
                 {% lorem 1 p %}
                 
-                <h3>For the geeks</h3>
-                <p>Our code is on Github <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a> and <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a>. (Pull requests welcome.)</p>
+                
 				
 				<hr />
                 

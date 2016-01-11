@@ -91,44 +91,6 @@
 		
 		</div>
 		</div>
-		
-			
-			
-			
-		
-
-
-			{% comment %}
-			{% if comm_candidates %}
-				<h4>Candidate{{ comm_candidates|pluralize }} supported</h4>
-				<ul>
-				{% for can in comm_candidates %}
-				{% if can.stance == "0" %}
-					<li>{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</li>
-				{% endif %}
-				{% endfor %}
-				</ul>
-				{% if comm_candidates.count > 1 %}
-				<h4>Candidate{{ comm_candidates|pluralize }} opposed</h4>
-				<ul>
-				{% for can in comm_candidates %}
-				{% if can.stance == "1" %}
-					<li>{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</li>
-				{% endif %}
-				{% endfor %}
-				</ul>
-				{% endif %}
-
-			{% endif %}
-			{% endcomment %}
-
-			{% if person_candidates %}
-				<h4>{% for can in person_candidates %}{% if forloop.first %}{{ can.cand_name|title }}{% endif %}{% endfor %} ran for office {{ person_candidates.count|apnumber }} time{{ person_candidates.count|pluralize }}.</h4>
-				{% for can in person_candidates %}
-					<li><a href="/campaign-finance/candidate/{{ can.cand_id }}">{{ can.cand_name|title }} ({{ can.office_desc|title }} {{ can.office_title|title }})</a></li>
-				{% endfor %}
-			{% endif %}
-		
 
         
         </div>

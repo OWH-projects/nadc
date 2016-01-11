@@ -29,10 +29,9 @@ def Main(request):
     toprecipients = Donation.objects.values('recipient_id__canonical', 'recipient_id__standard_name').annotate(totes=Sum("cash")).order_by("-totes")[:10]
     today = datetime.datetime.now()
     today_minus_30 = datetime.datetime.now() - datetime.timedelta(days=30)
+    bigwigs = AdditionalInfo.objects.all()
 
-    #bigwigs = AdditionalInfo.objects.filter
-
-    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'last30donations':last30donations, 'last30donationstotal': last30donationstotal, 'monthlyexpenditures': monthlyexpenditures, 'monthlyadminexpenditures':monthlyadminexpenditures, 'last30targeted': last30targeted, 'last30targetedtotal':last30targetedtotal, 'last30admin': last30admin, 'last30admintotal': last30admintotal, 'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind, 'topvolumeunique':topvolumeunique, 'LAST_UPDATED': LAST_UPDATED, 'toprecipients': toprecipients, 'today':today, 'today_minus_30':today_minus_30,}
+    dictionaries = {'governments': governments, 'monthlydonations':monthlydonations, 'last30donations':last30donations, 'last30donationstotal': last30donationstotal, 'monthlyexpenditures': monthlyexpenditures, 'monthlyadminexpenditures':monthlyadminexpenditures, 'last30targeted': last30targeted, 'last30targetedtotal':last30targetedtotal, 'last30admin': last30admin, 'last30admintotal': last30admintotal, 'DONATION_TOTAL':DONATION_TOTAL, 'top10ind':top10ind, 'topvolumeunique':topvolumeunique, 'LAST_UPDATED': LAST_UPDATED, 'toprecipients': toprecipients, 'today':today, 'today_minus_30':today_minus_30, 'bigwigs': bigwigs, }
     return render_to_response('nadc/main.html', dictionaries)
 
 def Govt(request, govslug):
@@ -161,22 +160,28 @@ def Coverage(request):
 def Search(request):
     query = request.GET.get('q', '')
     exploded = query.split(" ")
+    misc_qset = Q()
     entity_qset = Q()
     candidate_qset = Q()
     for term in exploded:
         entity_qset &= Q(standard_name__icontains=term) | Q(candidate_detail__cand_name__icontains=term) | Q(zip=term)
 
     for term in exploded:
+        misc_qset &= Q(misc_name__icontains=term)
+        
+    for term in exploded:
         candidate_qset &= Q(cand_name__icontains=term)
 
     if query:
         entity_results = Entity.objects.values('canonical', 'standard_name').filter(entity_qset).distinct()
         candidate_results = Candidate.objects.filter(candidate_qset)
+        misc_results = Misc.objects.filter(misc_qset)
     else:
         entity_results = []
         candidate_results = []
+        misc_results = []
 
-    dictionaries = { 'entity_results': entity_results, 'candidate_results': candidate_results, 'query': query, }
+    dictionaries = { 'misc_results': misc_results, 'entity_results': entity_results, 'candidate_results': candidate_results, 'query': query, }
     return render_to_response('nadc/search.html', dictionaries)    
     
 def EntityPage(request, id):
