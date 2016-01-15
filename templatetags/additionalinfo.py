@@ -29,6 +29,15 @@ def additionalinfo(id):
         else:
             extrainfo = ""
             candidates = ""
+            
+    elif AdditionalInfo.objects.filter(associated__nadcid=id).count() > 0:
+        extrainfo = AdditionalInfo.objects.get(associated__nadcid=id)
+        if extrainfo.candidate:
+            candidates = Candidate.objects.filter(cand_id=extrainfo.candidate)
+        else:
+            candidates = ""
+            
+    
     
     #Otherwise, return nothing.
     else:

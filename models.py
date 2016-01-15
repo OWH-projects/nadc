@@ -19,11 +19,28 @@ class Entity(models.Model):
     place_of_business = models.TextField(null=True, blank=True)
     dissolved_date = models.DateField(null=True, blank=True)
     registered_date = models.DateField(null=True, blank=True)
+    def __str__(self):
+        return "%s, %s" % (self.name, self.nadcid)
             
 class Donation(models.Model):
     id = models.IntegerField(primary_key=True)
     donor = models.ForeignKey(Entity, related_name="giver", null=True, blank=True)
     recipient = models.ForeignKey(Entity, related_name="getter", null=True, blank=True)
+    cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    pledge = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
+    inkind_desc = models.TextField(null=True, blank=True)
+    donation_date = models.DateField(null=True, blank=True)
+    donation_year = models.CharField(max_length=4, default="")
+    week = models.CharField(max_length=10, null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    donor_name = models.CharField(max_length=200, null=True, blank=True)
+    source_table = models.CharField(max_length=10, null=True, blank=True)
+    
+class Firehose(models.Model):
+    id = models.IntegerField(primary_key=True)
+    donor = models.ForeignKey(Entity, related_name="firehose_giver", null=True, blank=True)
+    recipient = models.ForeignKey(Entity, related_name="firehose_getter", null=True, blank=True)
     cash = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     inkind = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
     pledge = models.DecimalField(null=True, max_digits=15, decimal_places=2, blank=True)
@@ -109,11 +126,12 @@ class Misc(models.Model):
     def __str__(self):
         return "%s, %s" % (self.misc_name, self.misc_title)
         
-#This table stores information we want on people that does not exist in the database. Therefore, it's divorced from the normal database structure, with relationships that aren't defined explicitly in the data. Instead, they are handled through views. 
+#This table stores information we want on people that does not exist in the database. We will dump it before we kill out old data, or else it will cease to exist. And that would be sad.
 #Yes. This is gross.
 class AdditionalInfo(models.Model):
     canonical = models.CharField(max_length=20, null=True, blank=True, help_text="The canonical_id in the Entity table") #The canonical_id in the Entity table
     candidate = models.CharField(max_length=20, null=True, blank=True, help_text="Candidate_id from candidate table") #The candidate_id in the Candidate table
+    associated = models.ManyToManyField(Entity, null=True, blank=True, help_text="Associated groups we want to tie to this person. For example, a business or PAC")
     mugshot = models.FileField(upload_to="nadc/mugs/", null=True, blank=True)
     name = models.CharField(max_length=120)
     title = models.CharField(max_length=120, null=True, blank=True)

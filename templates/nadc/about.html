@@ -18,41 +18,57 @@
             <div class="col-sm-12">
                 <h1><b>FAQ</b></h1>
                 <h3>Where does this data come from?</h3>
-                <p>The <a href="http://www.nadc.nebraska.gov/cf/campaign_filings.html">Nebraska Accountability and Disclosure Commission</a> publishes data every week that reports donations, loans, spending and other campaign activity. World-Herald reporters programmed a method to download, parse and display those transactions. </p>
+                <p>The <a href="http://www.nadc.nebraska.gov/cf/campaign_filings.html">Nebraska Accountability and Disclosure Commission</a> publishes data every week that reports donations, loans, spending and other campaign activity. World-Herald reporters programmed a method to download, parse and display those transactions as reported by committees that received or spent money.</p>
                 
                 <h3>How is this different from NADC's own website?</h3>
-                <p>Most importantly, our site lets you search by donor name. For the first time, you can see how much a person or group has donated, and see where their money went: Citizens can start drawing connections between the people and organizations financing state and local elections. We also aggregate information at the transaction level. Campaigns report only donations over $250, though smaller donations are reflected in summary totals reported to the NADC. Because we use only reportable transactions, our totals are different from what the NADC reports. </p>
+                <p>Most importantly, our site lets you search by donor name. For the first time, you can see how much a person or group has donated, and see where their money went. Citizens can start drawing connections between the people and organizations financing state and local elections. We also aggregate information at the transaction level. Campaigns report only donations over $250, though smaller donations are reflected in summary totals reported to the NADC. Because we use only reportable transactions, our totals differ from what the NADC reports.</p>
                 
                 <h3>Where are contributions to president, senate and other federal races?</h3>
                 <p>Federal contributions are not included here. To explore that data, we recommend <a href="http://www.opensecrets.org/" target="_blank">the Center for Responsive Politics' search tool</a>.</p>
                 
-                <h3>Why isn't there more information about committees?</h3>
-                <p>We can report named officers for a committee and the city where it is based. Details on a committee's purpose are not reported to the NADC, but that information can usually be gleaned by looking at a committee's spending, donations, donors and the like.</p>
+                <h3>I know a donation was made, but it doesn't appear here. Why?</h3>
+                <p>For reasons described below, we opted to include information only as reported by the receiving committees. Many of those committees are only required to report their donations a few times a year.</p>
+                
+                <h3>Why isn't there more information about a committee?</h3>
+                <p>We can report a committee's name, the candidate or ballot issue it supports, its named officers and the city where it is based. Details on an independent committee's purpose are not reported to the NADC. That information can usually be gleaned by looking at a committee's spending, donations, donors and the like.</p>
                 
                 <h3>Why do some donors show up multiple times?</h3>
-                <p>The NADC makes no attempt to standardize donors. Gov. Peter Ricketts, for example, appears in the database as Peter Ricketts, Pete Ricketts and J. Peter Ricketts. To the NADC, these are all different people. For large donors such as Gov. Ricketts, the World-Herald has attempted to standardize these records. Many donors still appear multiple times, however.</p>
+                <p>The NADC makes no attempt to standardize donors. Gov. Peter Ricketts, for example, appears in the database as Peter Ricketts, Pete Ricketts and J. Peter Ricketts. He also appears with two identification numbers under the same name. To the NADC, these all represent different people. For large donors such as Gov. Ricketts, the World-Herald has attempted to standardize these records. Many donors still appear multiple times.</p>
                 
                 <p>If you see records that ought to be standardized, <a href="mailto:matt.wynn@owh.com">please contact us</a>.</p>
-                
-                <h3>How are you grouping contributions</h3>
-                <p>oveview here,</p>
-                
+
+                <h1>Process, assumptions and limitations</h1>
                 <p>The code used to process and display the data is on Github <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a> and <a href="https://github.com/OWH-projects/nadc_data" target="_blank">here</a>.</p>
                 
+                <p>The NADC maintains 62 tables that track campaign finance and lobbying. We had planned to include all of them. In practice, that approach created inaccuracies while providing little additional detail. The problems were mostly due to slight differences in how donors and recipients reported transactions. For example, a company may report that it gave $2,000 to a campaign on Jan. 3. The campaign, then, might report the same donation as coming on Jan. 1. Since the same donor might give multiple donations over the course of a campaign, we were faced with a choice between universally deduplicating donations (undercounting the amount and number of donations) or leaving the likely duplicates in (overcounting).</p>
                 
-				
-				<h3>Models</h3>
+                <p>Instead, we chose to include donations only as reported by the receiving committees. Even with this approach, there were still duplicates -- donations to the same committee from the same donor for the same amount on the same day. After consulting with the NADC about some large examples of such duplication, we eliminated duplicates along those lines.</p>
+                
+                <p>In the end, 13 tables wound up in the data powering this site:<p>
+				<ul>
+                <li><b>B1AB:</b> Donations reported by campaign and ballot question committees.</li>
+                <li><b>B2A:</b> Donations reported by political party committees, such as the Douglas County Republican Party or the Nebraska Democratic Party.</li>
+                <li><b>B4A:</b> Donations reported by independent campaign committees, those not officially aligned with any single campaign.</li>
+                <li><b>B1D:</b> Expenditures reported by campaign and ballot question committees. </li>
+                <li><b>B2B:</b> Expenditures by political party committees. While the table also includes donations by political party committees, we did not include them here.</li>
+                <li><b>B4B1:</b> Expenditures and loans as reported by independent committees. Again, information on the committees' donations given, which is included in the table, was excluded.</li>
+                <li><b>B4B3:</b>"Disbursements" by independent committees. Similar to B4B1.</li>
+                <li><b>B6:</b> Independent expenditures reported to the NADC.</li>
+                <li><b>B73:</b> "Indirect contributions" from corporations, unions or other associations. While the raw data tracks in-kind donations and personal services, we track only independent expenditures.</li>
+                
+                </ul>
+                
+                
+                <p>Data from these tables, as well as four others, were used to identify "entities," committees able to receive or give donations.<p>
+                
+                
+                <p>This raw data was compressed into five tables:</p>
 				<p>&bull; <b>Entity:</b> Any group, committee, donor, lender or other entity that has been assigned a unique ID by the NADC. This is the parent table.</p>
-				<p>&bull; <b>Donation:</b> Money, in-kind donations, "direct expenditures" to a committee, pledges.</p>
+				<p>&bull; <b>Donation:</b> Money, in-kind donations, "direct expenditures" to a committee.</p>
 				<p>&bull; <b>Candidate:</b> Candidates tied to campaign committees and ballot questions.</p>
-				<p>&bull; <b>Loans</b></p>
+				<p>&bull; <b>Loan:</b>Loans borrowed, repaid or forgiven by committees.</p>
 				<p>&bull; <b>Expenditure:</b> Includes both administrative expenses and "targeted" expenses that were earmarked to support or oppose a candidate or committee.</p>
-				
-				
-                <h3>Assumptions and limitations</h3>
-                {% lorem 1 p %}
-                
-                
+			              
 				
 				<hr />
                 

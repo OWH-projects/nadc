@@ -215,11 +215,11 @@
             <tr class="totals">
 				<td><% if (!d.id || d.id === "") { %><%= d.name %><% } else { %><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a><% }; %></td>
 				<td class="r"><%= d.gives.length %></td>
-				<td class="r">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+				<td class="r">$<%= addCommas(d.sum.toFixed(0).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
                 
                 <td class="r" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(d.sum, data_to_template.gives_total_sum) %>%,<%= data_to_template.gives_color %>), color-stop(<%= getPct(d.sum, data_to_template.gives_total_sum) %>%,#eee)); background: -moz-linear-gradient(left center, <%= data_to_template.gives_color %> <%= getPct(d.sum, data_to_template.gives_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gives_total_sum) %>%); background: -o-linear-gradient(left,<%= data_to_template.gives_color %> <%= getPct(d.sum, data_to_template.gives_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gives_total_sum) %>%); linear-gradient(to right,<%= data_to_template.gives_color %> <%= getPct(d.sum, data_to_template.gives_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gives_total_sum) %>%)'>
                 
-                <%= getPct(d.sum, data_to_template.gives_total_sum).toFixed(2) %>%
+                <%= getPct(d.sum, data_to_template.gives_total_sum).toFixed(0) %>%
                 
                 </td>
             </tr>
@@ -228,7 +228,15 @@
 						<tr class="toggle small <%= d.id %>">
 							<td><%= d.name %></td>
 							<td class="r"><%= ind_don.display_date %></td>
-							<td class="r"><a href="/campaign-finance/<%= ind_don.pk %>">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></a></td>
+							<td class="r">
+                            <% if (ind_don.cash > 0) { %>
+                                <a href="/campaign-finance/<%= ind_don.pk %>">$<%= addCommas(ind_don.cash.toFixed(0)) %></a>
+                            <% }; %>
+                            <% if (ind_don.inkind > 0) { %>
+                                <a href="/campaign-finance/<%= ind_don.pk %>">$<%= addCommas(ind_don.inkind.toFixed(0)) %></a>
+                            <% }; %>
+                            </td>
+                            
 						</tr>
                     <% }); %>
             <!-- // -->
@@ -256,11 +264,11 @@
             <tr class="totals">
                  <td><a href="/campaign-finance/<%= d.id %>/<%= slugify(d.name) %>"><%= d.name %></a></td>
 				 <td class="r"><%= d.gives.length %></td>
-                 <td class="r">$<%= addCommas(d.sum.toFixed(2).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+                 <td class="r">$<%= addCommas(d.sum.toFixed(0).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
                  
                  <td class="r" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(d.sum, data_to_template.gets_total_sum) %>%,<%= data_to_template.gets_color %>), color-stop(<%= getPct(d.sum, data_to_template.gets_total_sum) %>%,#eee)); background: -moz-linear-gradient(left center, <%= data_to_template.gets_color %> <%= getPct(d.sum, data_to_template.gets_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gets_total_sum) %>%); background: -o-linear-gradient(left,<%= data_to_template.gets_color %> <%= getPct(d.sum, data_to_template.gets_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gets_total_sum) %>%); linear-gradient(to right,<%= data_to_template.gets_color %> <%= getPct(d.sum, data_to_template.gets_total_sum) %>%, #eee <%= getPct(d.sum, data_to_template.gets_total_sum) %>%)'>
                 
-                <%= getPct(d.sum, data_to_template.gets_total_sum).toFixed(2) %>%
+                <%= getPct(d.sum, data_to_template.gets_total_sum).toFixed(0) %>%
                  
                  </td>
             </tr>
@@ -269,7 +277,14 @@
 					<tr class="toggle small <%= d.id %>">
 						<td><%= d.name %></td>
 						<td class="r"><%= ind_don.display_date %></td>
-						<td class="r">$<%= addCommas(sum([ind_don.cash, ind_don.inkind]).toFixed(2).replace(".00","")) %></td>
+						<td class="r">
+                        <% if (ind_don.cash > 0) { %>
+                            $<%= addCommas(ind_don.cash.toFixed(0)) %>
+                        <% }; %>
+                        <% if (ind_don.inkind > 0) { %>
+                            $<%= addCommas(ind_don.inkind.toFixed(0)) %>*
+                        <% }; %>
+                        </td>
 					</tr>
                     <% }); %>
             <!-- // -->
@@ -290,34 +305,47 @@
 	<table class="table table-condensed">
         <thead>
             <tr>
-                <th>Supporting/Opposing</th>
-                <th>Stance</th>
-                <th class="r">Date</th>
-                <th class="r">Amount</th>                
+                <th>Supporting/opposing</th>
+				<th class="r">Expenditures</th>
+                <th class="r">Total</th>
+                <th class="r">% of total</th>            
             </tr>
         </thead>
         <tbody>
-        <% _.each( data_to_template.targeted_spending, function( d ){ %>
-            <tr>
-                 <td>
-                 <% if (d.target_committee_id) { %>
-                    <a href="/campaign-finance/<%= d.target_committee_id %>/<%= d.target_committee_slug %>"><%= d.target_committee_name %></a>
-                 <% } else if (d.target_candidate) { %>
-                    <a href="/campaign-finance/<%= d.target_candidate_id %>/<%= d.target_candidate_slug %>"><%= d.target_candidate_name %></a>                 
-                 <% }; %>                 
+    <% _.each( data_to_template.targeted_spending_data, function( d ){ %>
+        <tr class="totals">
+        <td><a href="/campaign-finance/<%= d.id %>/<%= d.slug %>"><%= d.name %></a></td>
+        <td class="r"><%= d.spending.length %></td>
+        <td class="r">$<%= addCommas(d.sum.toFixed(0).replace(".00","")) %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
+
+        <td class="r" style='margin:0px; background: -webkit-gradient(linear, left top,right top, color-stop(<%= getPct(d.sum, data_to_template.targeted_spending_total) %>%,<%= data_to_template.spending_color %>), color-stop(<%= getPct(d.sum, data_to_template.targeted_spending_total) %>%,#eee)); background: -moz-linear-gradient(left center, <%= data_to_template.spending_color %> <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%, #eee <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%); background: -o-linear-gradient(left,<%= data_to_template.spending_color %> <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%, #eee <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%); linear-gradient(to right,<%= data_to_template.spending_color %> <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%, #eee <%= getPct(d.sum, data_to_template.targeted_spending_total) %>%)'>
+                
+        <%= getPct(d.sum, data_to_template.targeted_spending_total).toFixed(0) %>%
                  </td>
-                 <td>
-                    <%= d.stance %>
-                 </td>
-                 <td class="r"><%= d.display_date %></td>
-                 <td class="r">
-                    <% if (d.amount) { %>$<%= addCommas(d.amount.toFixed(2)).replace(".00","") %><% }; %>
-                    <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2)).replace(".00","") %>*<% }; %>
-                 </td>
+        </tr>
+        
+        <!-- here's the loop with the stuff to show/hide -->
+        <% _.each( d.spending, function( spend ){ %>
+            <tr class="toggle small <%= spend.id %>">
+                <td>
+                <% if (spend.exp_purpose) { %><%= spend.exp_purpose %><% } else { %><%= d.name %><% }; %><% if (spend.stance) { %> (<%= spend.stance.toLowerCase() %>)<% }; %></td>
+                <td class="r"><%= spend.display_date %></td>
+                <td class="r">
+                    <% if (spend.amount > 0) { %>
+                        $<%= addCommas(spend.amount.toFixed(0)) %>
+                    <% }; %>
+                    <% if (spend.inkind > 0) { %>
+                        $<%= addCommas(spend.inkind.toFixed(0)) %>*
+                    <% }; %>
+                </td>
             </tr>
         <% }); %>
+        <!-- // -->
+        
+    <% }); %>
         </tbody>
-    </table>
+        </table>
+    
     {% endif %}
     
     {% if normal_expenditures %}
@@ -340,8 +368,12 @@
                  <td><%= d.purpose %></td>
                  <td class="r"><%= d.display_date %></td>
                  <td class="r">
-                    <% if (d.cash) { %>$<%= addCommas(d.cash.toFixed(2).replace(".00","")) %><% }; %>
-                    <% if (d.inkind) { %>$<%= addCommas(d.inkind.toFixed(2).replace(".00","")) %>*<% }; %>
+                    <% if (d.cash > 0) { %>
+                        $<%= addCommas(d.cash.toFixed(0)) %>
+                    <% }; %>
+                    <% if (d.inkind > 0) { %>
+                        $<%= addCommas(d.inkind.toFixed(0)) %>*
+                    <% }; %>
                  </td>
             </tr>
         <% }); %>
@@ -370,9 +402,9 @@
         <tr class="totals">
             <td><%= d.name %></td>
             <td class="r"><%= d.borrowed.length %>&ensp;<i class="fa fa-caret-down text-muted click_to_expand" data-toggle="tooltip" title="Click for more details"></i></td>
-            <td class="r">$<%= addCommas(sum(_.pluck(d.borrowed, "borrowed")).toFixed(2).replace(".00","")) %></td>
-            <td class="r">$<%= addCommas(sum(_.pluck(d.repaid, "repaid")).toFixed(2).replace(".00","")) %></td>
-            <td class="r">$<%= addCommas(sum(_.pluck(d.forgiven, "forgiven")).toFixed(2).replace(".00","")) %></td>
+            <td class="r">$<%= addCommas(sum(_.pluck(d.borrowed, "borrowed")).toFixed(0).replace(".00","")) %></td>
+            <td class="r">$<%= addCommas(sum(_.pluck(d.repaid, "repaid")).toFixed(0).replace(".00","")) %></td>
+            <td class="r">$<%= addCommas(sum(_.pluck(d.forgiven, "forgiven")).toFixed(0).replace(".00","")) %></td>
         </tr>
     <!-- here's the loop with the stuff to show/hide -->
         <% _.times(_.max([d.borrowed.length, d.repaid.length, d.forgiven.length]), function(z) { %>
@@ -454,7 +486,7 @@
     
     {% if normal_expenditures %}expenditures['campaign_expenditures'] = [{% for record in normal_expenditures %}{"display_date":"{{ record.exp_date|date:"N j, Y" }}", "exp_date":"{{ record.exp_date|date:"n/j/Y" }}",{% if record.in_kind and record.in_kind > 0 %} "inkind": {{ record.in_kind }},{% endif %}{% if record.amount and record.amount > 0 %} "cash":{{ record.amount }},{% endif %} "recipient":"{{ record.payee|safe|title }}", "purpose": "{% if record.exp_purpose %}{{ record.exp_purpose|title }}{% else %}Not listed{% endif %}"}{% if not forloop.last %}, {% endif %}{% endfor %}];{% endif %}
     
-    {% if ind_expenditures %}expenditures['targeted_expenditures'] = [{% for exp in ind_expenditures %} { {% if exp.target_committee %}"target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}{% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %} "payee": "{{ exp.payee|title }}", "stance": "{% if exp.stance == '0' %}Support{% elif exp.stance == '1' %}Oppose{% else %}Unspecified{% endif %}", "purpose":{% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not listed"{% endif %},"display_date": "{{ exp.exp_date|date:"N j, Y" }}","exp_date": "{{ exp.exp_date|date:"n/j/Y" }}"{% if exp.amount > 0 %}, "amount": {{ exp.amount }}{% endif %}{% if exp.in_kind > 0 %}, "inkind": {{ exp.in_kind }}{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
+    {% if ind_expenditures %}expenditures['targeted_expenditures'] = [{% for exp in ind_expenditures %} { {% if exp.target_committee %}"target_committee_id": "{{exp.target_committee.pk}}", "target_committee_slug": "{{ exp.target_committee.standard_name|slugify }}", "target_committee_name": "{{ exp.target_committee.standard_name|title }}", {% endif %}{% if exp.target_candidate %}"target_candidate_id": "{{ exp.target_candidate.pk }}", "target_candidate_slug": "{{ exp.target_candidate.cand_name|slugify }}", "target_candidate_name": "{{ exp.target_candidate.cand_name }}", {% endif %} "payee": "{{ exp.payee|title }}", "stance": "{% if exp.stance == '0' %}Support{% elif exp.stance == '1' %}Oppose{% else %}Unspecified{% endif %}", "purpose":{% if exp.exp_purpose %}"{{ exp.exp_purpose|title }}"{% else %}"Not listed"{% endif %},"display_date": "{{ exp.exp_date|date:"N j, Y" }}","exp_date": "{{ exp.exp_date|date:"n/j/Y" }}", "amount": {{ exp.amount }}, "inkind": {{ exp.in_kind }} }{% if not forloop.last %},{% endif %}{% endfor %}];{% endif %}
     
     page_data['expenditures'] = expenditures;
     {% endif %}
@@ -724,17 +756,48 @@
         {% if ind_expenditures or normal_expenditures %}
         if ( e === "spending_button" || e === "expenditures" ) {
             var exp_out = {};
-            {% if ind_expenditures %}exp_out['targeted_spending'] = targeted_spending_to_work_with;{% endif %}
+            
+            // change bg color etc.
+            $("#display_hed").html("Expenditures");
+            $("#wrapper").css("background", spendcolor);
+            exp_out['spending_color'] = spendcolor;
+            
+            {% if ind_expenditures %}
+            // group targeted spending by ID of targeted committee
+            var targeted_spending_out = _.chain(targeted_spending_to_work_with)
+                .groupBy("target_committee_id")
+                .map(function(value, key) {
+                    return {
+                        id: key,
+                        sum: sum(_.pluck(_.filter(value, function(d) { return _.has(d, "amount") }), "amount").concat(_.pluck(_.filter(value, function(d) { return _.has(d, "inkind") }), "inkind"))),
+                        name: _.pluck(value, "target_committee_name")[0],
+                        slug: _.pluck(value, "target_committee_slug")[0],
+                        spending: value
+                    }
+                })
+                .sortBy("sum").reverse()
+                .value();
+            
+            exp_out['targeted_spending_data'] = targeted_spending_out;
+            exp_out['targeted_spending_total'] = sum(_.pluck(targeted_spending_out,"sum"));
+            
+            {% endif %}
             {% if normal_expenditures %}exp_out['campaign_spending'] = campaign_spending_to_work_with;{% endif %}
             
-            $("#display_hed").html("Expenditures");
-            
-            // change bg color
-            $("#wrapper").css("background", spendcolor);
-            
-            if ((exp_out.targeted_spending && exp_out.targeted_spending.length > 0) || (exp_out.campaign_spending && exp_out.campaign_spending.length > 0) ) {
+            if ((exp_out.targeted_spending_data && exp_out.targeted_spending_data.length > 0) || (exp_out.campaign_spending && exp_out.campaign_spending.length > 0) ) {
                 var spending_table_template = _.template($( "script.spending_table_template" ).html());
                 $("#display_table").html(spending_table_template(exp_out));
+                if (exp_out.targeted_spending_data && exp_out.targeted_spending_data.length > 0) {
+                    //bind click event to drop table row
+                    $(".click_to_expand").bind("click", function(d) {
+                        if ($(this).attr("data-original-title") === "Click for more details") {
+                                $(this).attr("data-original-title", "Click to collapse")
+                            } else {
+                                $(this).attr("data-original-title", "Click for more details")
+                            };
+                        $(this).parent().parent().nextUntil("tr.totals").toggle();
+                    });
+                };
             } else {
                 $("#display_table").html("<p class='lead ital'>No expenditure records fall within that date range.</p>");
             };
@@ -766,7 +829,7 @@ $(document).ready(function() {
         var gives_cash_and_inkind = _.pluck(page_data.gives, "cash").concat(_.pluck(page_data.gives, "inkind"));
         
         if (sum(gives_cash_and_inkind) > 0) {
-            $('#givestotal').html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(sum(gives_cash_and_inkind).toFixed(2).replace(".00","")) + '</h3><p class="small ital">Donated</p>');
+            $('#givestotal').html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(sum(gives_cash_and_inkind).toFixed(0).replace(".00","")) + '</h3><p class="small ital">Donated</p>');
         };
         {% endif %}
         
@@ -775,7 +838,7 @@ $(document).ready(function() {
         var gets_cash_and_inkind = _.pluck(page_data.gets, "cash").concat(_.pluck(page_data.gets, "inkind"));
         
         if (sum(gets_cash_and_inkind) > 0) {
-            $('#getstotal').html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(sum(gets_cash_and_inkind).toFixed(2).replace(".00","")) + '</h3><p class="small ital">Raised</p>');                
+            $('#getstotal').html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(sum(gets_cash_and_inkind).toFixed(0).replace(".00","")) + '</h3><p class="small ital">Raised</p>');                
         };
         
         {% endif %}
@@ -787,7 +850,7 @@ $(document).ready(function() {
             , "borrowed"));
         
         if (borrowed_total > 0) {
-            $("#loantotal").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(borrowed_total.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Borrowed</p>');
+            $("#loantotal").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(borrowed_total.toFixed(0)).replace(".00","") + '</h3><p class="small ital">Borrowed</p>');
         };
         {% endif %}
         
@@ -800,7 +863,7 @@ $(document).ready(function() {
             _.filter(page_data.expenditures.targeted_expenditures, function(z) { return _.has(z, "inkind" )}), "inkind")));
             
         if ( total_targeted_spending > 0 ) {
-            $("#targeted_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_targeted_spending.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Spending to support/oppose</p>');
+            $("#targeted_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_targeted_spending.toFixed(0)).replace(".00","") + '</h3><p class="small ital">Spending to support/oppose</p>');
         };
         {% endif %}
 
@@ -813,7 +876,7 @@ $(document).ready(function() {
         
         
         if ( total_campaign_spending > 0 ) {
-            $("#campaign_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_campaign_spending.toFixed(2)).replace(".00","") + '</h3><p class="small ital">Campaign spending</p>');
+            $("#campaign_spending_total").html('<h3 class="bold" style="margin-bottom:0;">$' + addCommas(total_campaign_spending.toFixed(0)).replace(".00","") + '</h3><p class="small ital">Campaign spending</p>');
         };
         
         {% endif %}

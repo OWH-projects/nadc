@@ -16,26 +16,26 @@
     <div class="container">
 		<img src="{% static 'logo-owh-black.png' %}" class="logo" />
         <h1>Nebraska campaign finance</h1>
-        <p>Who's funding Nebraska politics? Find out with the only source that lets you search for the people, companies and committees spending money to finance campaigns. New data every week.</p>
+        <p>Millions of dollars are spent in Nebraska politics every year. Find out who it comes from and where it goes with the only source that lets you search for the people, companies and committees financing campaigns. New data every week.</p>
 		<br />
 		<div class="row">
 			{% if last30donations %}
             <div class="col-sm-4">
-				<h3 class="big">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+				<h3 class="big"><a href="#donations">${{ last30donationstotal.totes__sum|floatformat:"0"|intcomma }}</a></h3>
 				<p class="small">Donations, past 30 days</p>
 			</div>
             {% endif %}
 
             {% if last30targeted %}
 			<div class="col-sm-4">
-				<h3 class="big">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+				<h3 class="big"><a href="#support-oppose">${{ last30targetedtotal.totes__sum|floatformat:"0"|intcomma }}</a></h3>
 				<p class="small">Support/opposition spending, past 30 days</p> 
 			</div>
             {% endif %}
 			
 			{% if last30admin %}
             <div class="col-sm-4">
-                <h3 class="big">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</h3>
+                <h3 class="big"><a href="#campaign-spending">${{ last30admintotal.totes__sum|floatformat:"0"|intcomma }}</a></h3>
 				<p class="small">Other campaign spending, past 30 days</p> 
 			</div>
             {% endif %}
@@ -98,13 +98,10 @@
 			<br />
 			
 
-  <h3 class="bold"><i class="fa fa-exclamation-triangle"></i> Important</h3>
-  <p>These numbers are approximate. <a href="/campaign-finance/about">Find out why &raquo;</a></p>
+  <h5><i class="fa fa-exclamation-triangle"></i> Important: Some figures are approximate. <a href="/campaign-finance/about">Find out why &raquo;</a></h5>
             
-
 		</div>
 	</div>
-	
 	
 
 
@@ -114,11 +111,29 @@
 
 <div id="explainer">
 <div class="container">
-	<h2>Explainer</h2>
-	
-	<p>Tell the people how we're using this data and how they can use it, too.</p>
-	<p>Probably a slider format with little illustrations explaining "donations" "expenditures" "entities" and the ins/outs of NADC data. </p>
-	<p>Maybe this can/should merge with the OWH coverage summary: "Here are the stories we found so far."</p>
+	<h2>Explore $139 million spent in Nebraska politics</h2>
+    
+  
+  <div class="row">
+    
+    <div class="context col-sm-3">
+    <h3>Search by donor</h3>
+    <p>For the first time, you can search Nebraska campaign contributions by the person giving the money. <a href="/campaign-finance/search">Get started &raquo;</a></p>
+    </div>
+    
+    <div class="context col-sm-3 col-sm-offset-1">
+    <h3>Explore purchases</h3>
+    <p>Details 75,000 purchases by campaigns and interest groups on advertising, polling, salaries, food, car leases and more.</p>
+    </div>
+    
+    <div class="context col-sm-3 col-sm-offset-1">
+    <h3>What's included?</h3>
+    <p>State campaign finance data is collected by the Nebraska Accountability and Disclosure Commission. The agency's weekly data dump includes donations, expenditures, loans and other forms of political spending. <a href="/campaign-finance/about">Learn more &raquo;</a></p>
+    </div>
+    
+    </div>
+    
+    
 	
 </div>
 </div>
@@ -127,7 +142,13 @@
 <div id="gives">
 <div class="container">
 
-			<h2 class="purple">Donations</h2>
+			<a name="donations"></a>
+            <h2 class="purple">Donations <span class="info info-donations" data-toggle="tooltip" title="Cash, items or services contributed to a committee"><i class="small text-muted fa fa-question-circle"></i></span></h2>
+            
+            
+            <h4 class="muted">
+                
+            </h4>
 
 			<div class="col-sm-7">
 			
@@ -150,7 +171,7 @@
 								<td>{{ thing.donation_date }}</td>
 								<td><a href="/campaign-finance/{{ thing.recipient.canonical }}/{{ thing.recipient.standard_name|slugify }}">{{ thing.recipient.standard_name|title }}</a></td>
 								<td><a href="/campaign-finance/{{ thing.donor.canonical }}/{{ thing.donor.standard_name|slugify }}">{{ thing.donor.standard_name|title }}</a></td>
-								<td class="r">${{ thing.totes|intcomma }}</td>
+								<td class="r">${{ thing.totes|apnumber|intcomma }}</td>
 							</tr>
 							{% endif %}{% endfor %}
 							</tbody>
@@ -182,10 +203,11 @@
 		
 <div id="expenditures">
 <div class="container">
-
+				
+				<a name="support-oppose"></a>
+                <h2 class="blue">Support / opposition spending <span class="info info-spending" data-toggle="tooltip" title="Spending by third parties to support or oppose a candidate or ballot issue &mdash; for example, purchasing an ad to attack a candidate"><i class="small text-muted fa fa-question-circle"></i></span></h2>
 			
 			<div class="row">
-			<h2 class="blue">Support / opposition spending</h2>
 			
 				<div class="col-sm-7">
 					<div id="recentexpenditures" class="item">
@@ -203,9 +225,9 @@
 							<tbody>
 							{% for thing in last30targeted|slice:":5" %}<tr>
 								<td>{{ thing.exp_date }}</td>
-								<td>{% if thing.committee %}<a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a>{% else %}Not specified{% endif %}</td>
+								<td>{% if thing.committee %}<a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a>{% elif thing.committee_exp_name %}{{ thing.committee_exp_name|title }}{% else %}Not specified{% endif %}</td>
 								<td>{% if thing.target_committee %}<a href="/campaign-finance/{{ thing.target_committee.pk }}/{{ thing.target_committee.standard_name|slugify }}">{{ thing.target_committee.standard_name|title }}</a>{% endif %}{% if thing.target_candidate %}<a href="/campaign-finance/{{ thing.target_candidate.pk }}/{{ thing.target_candidate.cand_name|slugify }}">{{ thing.target_candidate.cand_name }}</a>{% endif %}{% if thing.stance %}{% if thing.stance == "0" %} (support){% elif thing.stance == "1" %} (oppose){% endif %}{% endif %}</td>
-								<td class="r">${{ thing.totes|intcomma }}</td>
+								<td class="r">${{ thing.totes|apnumber|intcomma }}</td>
 							</tr>
 							{% endfor %}
 							</tbody>
@@ -230,10 +252,10 @@
 				</div>
 			</div>
 			
-			<div class="row">
-
-			<h2 class="blue">Campaign spending</h2>
+            <a name="campaign-spending"></a>
+            <h2 class="blue">Campaign spending <span class="info info-spending" data-toggle="tooltip" title="Other campaign spending, such as staff salaries or voter canvassing"><i class="small text-muted fa fa-info-circle"></i></span></h2>
 			
+            <div class="row">
 				<div class="col-sm-7">
 					<div id="recentexpenditures" class="item">
 						<h3 class="bold">Largest campaign expenses, past 30 days</h3>
@@ -254,7 +276,7 @@
 								<td><a href="/campaign-finance/{{ thing.committee.pk }}/{{ thing.committee.standard_name|slugify }}">{{ thing.committee.standard_name|title }}</a></td>
 								<td>{% if thing.payee %}{{ thing.payee|title }}{% else %}Unspecified{% endif %}</td>
 								<td>{% if thing.exp_purpose %}{{ thing.exp_purpose|title }}{% else %}Unspecified{% endif %}</td>
-								<td class="r">${{ thing.totes|intcomma }}</td>
+								<td class="r">${{ thing.totes|apnumber|intcomma }}</td>
 							</tr>
 							{% endfor %}
 							</tbody>
@@ -282,12 +304,14 @@
 
 <div id="big-wigs">
 <div class="container">
-	<h2 class="orange">Bigwigs</h2>
-	
-	<p>Tell the people which people and entities to pay attention to</p>
-	
+	<h2 class="orange">Notable names</h2>
+	<br /><br />	
 	{% for wig in bigwigs %}
-		<li>{{ wig.name }} - {{ wig.title }}</li>
+		<li class="person col-sm-2">
+			<img src="/media/{{ wig.mugshot }}" />
+			<p><b>{{ wig.name }}</b></p>
+			<p><em>{{ wig.title }}</em></p>
+		</li>
 	{% endfor %}
 	
 </div>
@@ -307,6 +331,15 @@
 <script>
     
     $('[data-toggle="tooltip"]').tooltip({"trigger": "click"});
+    
+    $('body').on('click', function (e) {
+    $('[data-toggle="tooltip"]').each(function () {
+            if (!$(this).is(e.target) && $(this).has(e.target).length === 0 && $('.tooltip').has(e.target).length === 0) {
+                $(this).tooltip('hide');
+            }
+        });
+    });
+    
     
     var getMonthTime = function(m, y) {
         var month = Number(m) - 1;

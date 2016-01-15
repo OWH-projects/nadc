@@ -228,8 +228,14 @@ def EntityPage(request, id):
         loans = Loan.objects.filter(committee=id).order_by('-loan_date')
     except:
         loans = []
+        
+    #Spending that targeted this entity
+    try:
+        targetedbyothers = Expenditure.objects.filter(target_committee=id)
+    except:
+        targetedbyothers = []
 
-    dictionaries = {'id': id, 'comm_candidates': comm_candidates, 'gives': gives, 'gets': gets, 'normal_expenditures': normal_expenditures, 'ind_expenditures': ind_expenditures, 'loans': loans, 'name':name, 'first':first, 'mostrecent':mostrecent, }
+    dictionaries = {'targetedbyothers': targetedbyothers, 'id': id, 'comm_candidates': comm_candidates, 'gives': gives, 'gets': gets, 'normal_expenditures': normal_expenditures, 'ind_expenditures': ind_expenditures, 'loans': loans, 'name':name, 'first':first, 'mostrecent':mostrecent, }
     
     return render_to_response('nadc/entity.html', dictionaries)
 
